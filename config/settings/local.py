@@ -64,6 +64,7 @@ if env('USE_DOCKER') == 'yes':
 INSTALLED_APPS += ['django_extensions']  # noqa F405
 # Celery
 # ------------------------------------------------------------------------------
+# FIXME: Revisit whether this is a good development choice (probably not for our long running tasks)
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-always-eager
 CELERY_TASK_ALWAYS_EAGER = True
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-eager-propagates

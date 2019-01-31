@@ -18,3 +18,8 @@ django-redis==4.10.0  # https://github.com/niwinz/django-redis
 # Django REST Framework
 djangorestframework==3.9.0  # https://github.com/encode/django-rest-framework
 coreapi==2.3.3  # https://github.com/core-api/python-client
+djangorestframework-jsonapi==2.7.0
+pyyaml  # Required for OpenAPI rendering
+
+# Data ingestion pipeline
+git+git://github.com/statgen/pheweb.git@d3f6b1df826ae9548e3778eb7569915ee4ca5b6a

@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}Region plot- {{ object.analysis }}{% endblock %}
+{%  block extrahead %}
+  {#  LocusZoom requirements, incl D3 and Q #}
+  <script src="https://cdn.jsdelivr.net/npm/locuszoom@0.8.0/dist/locuszoom.vendor.min.js" integrity="sha384-XV3yQVSuWxH92vPmq4yJp9CQxbFoRQDgTLcsw56lToVwMUlguf8AA23PnmWirIpi" crossorigin="anonymous" type="application/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/locuszoom@0.8.0/dist/locuszoom.app.min.js" integrity="sha384-0u44dUbr/qBACdI3KFke8obseYwRwRPQifzO7WdOgFK9V7r7kxPx1X0EX8jLAcbu" crossorigin="anonymous" type="application/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/locuszoom@0.8.0/dist/ext/lz-dynamic-urls.min.js" integrity="sha384-LO7F2/Kfu/CMJ3fpCORU/7ICsAhAUBS2O+ja9+X1mHUtH3i2K6ijTXWw3R6LVZ1P" crossorigin="anonymous" type="application/javascript" ></script>
+
+  <script src="{% static 'js/lz-helpers.js' %}" type="application/javascript" ></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locuszoom@0.8.0/dist/locuszoom.css" type="text/css"/>
+{% endblock %}
+
+{%  block content %}
+  <h1>LocusZoom Plot</h1>
+  <h2>Analysis: {{ object.analysis }}</h2>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div>
+        {# TODO Future thought: a jump to gene feature would also be interesting #}
+        {# TODO FUTURE: Componentize and make reactive w/plot changes #}
+        <input type="text" id="input-region-picker" placeholder="10:114758349 or 10:114750000-114760000">
+        <button class="btn btn-primary" id="button-region">Go</button>
+        <p id="text-region-errors"></p>
+      </div>
+
+      <div id="lz-plot"></div>
+    </div>
+
+    <div class="col-md-4">
+      <p class="h4">Published Studies</p>
+      <div id="table-published-gwas"></div>
+
+      <p class="h4">Other GWAS</p>
+      <div id="table-hosted-gwas"></div>
+
+    </div>
+
+  </div>
+{% endblock %}
+
+{%  block extrafoot %}
+
+  {#  Table features #}
+  <script type="application/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/js/tabulator.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/css/bootstrap/tabulator_bootstrap4.min.css" rel="stylesheet">
+
+  {#  Define the LocusZoom plot #}
+  <script type="application/javascript">
+    "use strict";
+
+    // First, tell the plot how to find each kind of data it will use. By default, it fetches a specific dataset
+    //   from a UMich API, using a set of data sources that obey a specific URL format and payload structure.
+    // If your API has different URL syntax, or needs to reformat data from the server before giving it to LZ.js,
+    //   you can write a custom datasource.
+    var apiBase = "https://portaldev.sph.umich.edu/api/v1/";
+    window.data_sources = new LocusZoom.DataSources()
+      .add("assoc", ["AssociationApi", {url: "{% url 'apiv1:gwas-list' %}", params: {analysis: {{ object.id }}, id_field: "variant"}}])
+      .add("ld", ["LDLZ", { url:apiBase + "pair/LD/" }])
+      .add("gene", ["GeneLZ", { url: apiBase + "annotation/genes/", params: {source: 2} }])
+      .add("recomb", ["RecombLZ", { url: apiBase + "annotation/recomb/results/", params: {source: 15} }])
+      .add("constraint", ["GeneConstraintLZ", { url: "http://exac.broadinstitute.org/api/constraint" }]);
+
+
+    // Get the standard association plot layout from LocusZoom's built-in layouts
+    var stateUrlMapping = {chr: "chrom", start: "start", end: "end"};
+    // Fetch initial position from the URL, or use some defaults
+    var initialState = LocusZoom.ext.DynamicUrls.paramsFromUrl(stateUrlMapping);
+    if (!Object.keys(initialState).length) {  // TODO: JSON filter
+        initialState = {
+            chr: '{{ object.top_hit_view.chrom }}',
+            start: {{ object.top_hit_view.start }},
+            end: {{object.top_hit_view.end}}
+        };
+    }
+    // Second, specify what kind of information to display. This demo uses a pre-defined set of panels with common
+    //   display options.
+    var layout = LocusZoom.Layouts.get("plot", "standard_association", {state: initialState});
+
+    // Last, draw the plot in the div created in the HTML above.
+    //   Using window.x ensures that a reference to the plot is available via the JS console for debugging
+    window.plot = LocusZoom.populate("#lz-plot", data_sources, layout);
+
+    // Changes in the plot can be reflected in the URL, and vice versa (eg browser back button can go back to
+    //   a previously viewed region)
+    LocusZoom.ext.DynamicUrls.plotUpdatesUrl(plot, stateUrlMapping);
+    LocusZoom.ext.DynamicUrls.plotWatchesUrl(plot, stateUrlMapping);
+  </script>
+
+  <script type="application/javascript">
+    // Utility functions that can be moved elsewhere later
+    function addPlotPanel(study_metadata, origin) {
+        var source_class;
+        var base_url;
+        if (origin === 'published') {
+            source_class = 'AssociationLZ';
+            base_url = "https://portaldev.sph.umich.edu/api/v1/single/";
+        } else {
+            source_class = 'AssociationApi';
+            base_url = "{% url 'apiv1:gwas-list' %}";
+        }
+
+        var namespace = `assoc_${source_class}_${study_metadata.id}`;
+        window.data_sources.add(namespace,
+        [source_class, {
+            url: base_url,
+            params: { analysis: study_metadata.id,  id_field: "variant" }
+        }]);
+
+        // Define the new panel's layout
+        var mods = {
+            namespace: { "default": namespace, "assoc": namespace, ld: "ld" },
+            id: namespace,
+            title: { text: study_metadata.analysis },
+            y_index: -1,
+        };
+        var layout = LocusZoom.Layouts.get("panel", "association", mods);
+        // Add the panel and set up event handlers
+        var panel = plot.addPanel(layout);
+    }
+
+
+    // Create a method to parse a region string into a 600Kb genome range and load it
+    $('#button-region').click(function () {
+        // TODO: Rewrite with validation
+        var region = $('#input-region-picker').val();
+        var target = region.split(":");
+        var chr = target[0];
+        var pos = target[1];
+        var start = 0;
+        var end = 0;
+        if (pos.match(/[-+]/)) {
+            [start, end] = pos.split("-");
+        } else {
+            start = +pos - 250000;
+            end = +pos + 250000;
+        }
+        plot.applyState({chr: chr, start: start, end: end, ldrefvar: ""});
+    });
+
+    // Draw a table of published GWAS for comparison
+    $('#table-published-gwas').tabulator({
+        ajaxURL: 'https://portaldev.sph.umich.edu/api/v1/single/?format=objects',
+        ajaxResponse: function (url, params, response) {
+            return response.data;
+        },
+        pagination: 'local',
+        paginationSize: 10,
+        placeholder: 'No data available',
+        selectable: true,
+        selectablePersistence: true,
+        height: '300px',
+        layout: 'fitColumns',
+        columns: [
+            {title: 'ID', field: 'id', headerSort:true},
+            {title: 'Study', field: 'study', headerSort: true},
+            {title: 'Trait', field: 'trait', headerSort: true},
+            {title: 'Analysis', field: 'analysis', headerSort: true},
+        ],
+        rowSelected: function (row) {
+            addPlotPanel(row.getData(), 'published');
+        }
+    });
+
+
+    $('#table-hosted-gwas').tabulator({
+        ajaxURL: "{% url 'apiv1:gwas-list' %}",
+        ajaxResponse: function (url, params, response) {
+            return response.data.map(item => {
+                item.attributes.id = item.id;
+                return item.attributes;
+            });
+        },
+        pagination: 'local',  // TODO: Properly use remote pagination in future
+        paginationSize: 10,
+        placeholder: 'No data available',
+        selectable: true,
+        selectablePersistence: true,
+        height: '300px',
+        layout: 'fitColumns',
+        columns: [
+            { title: 'ID', field: 'id' },
+            { title: 'Analysis', field: 'analysis', headerSort: true },
+        ],
+        rowSelected: function (row) {
+          addPlotPanel(row.getData(), 'hosted');
+        }
+    });
+
+    // And draw a table of things stored on our server too
+  </script>
+
+{% endblock %}

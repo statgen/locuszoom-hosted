@@ -1,3 +1,4 @@
+# Exclude most hidden files, except for a few that control app / testing features
 .*
 !.coveragerc
 !.env

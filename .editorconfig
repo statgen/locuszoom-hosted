@@ -18,6 +18,9 @@ known_first_party=locuszoom_plotting_service
 multi_line_output=3
 default_section=THIRDPARTY
 
+[*.js]
+indent_size = 4
+
 [*.{html,css,scss,json,yml}]
 indent_style = space
 indent_size = 2

@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+  <form action="{% url 'gwas:upload' %}" enctype="multipart/form-data" method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" />
+  </form>
+{% endblock %}

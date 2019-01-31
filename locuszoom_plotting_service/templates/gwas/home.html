@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{%  block css %}
+  <link href="https://unpkg.com/tabulator-tables@4.1.4/dist/css/bootstrap/tabulator_bootstrap4.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+  <p>
+    <a href="{% url 'gwas:upload' %}" class="btn btn-success">Upload a file</a>
+  </p>
+  <div id="datasets-table"></div>
+{% endblock %}
+
+
+{% block javascript %}
+  {#  TODO: Unnecessary use of table widget here; revisit; #}
+  <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.1.4/dist/js/tabulator.min.js"></script>
+  <script type="application/javascript">
+    new Tabulator('#datasets-table', {
+      placeholder: 'No data available',
+      layout: "fitColumns",
+      ajaxURL: '/api/v1/gwas/',
+      ajaxResponse: function(url, params, response) {
+        return response.data.map(item => item.attributes);
+      },
+      columns: [
+        {title: 'Study name', field: 'analysis', sorter: 'string', formatter: 'link', formatterParams: { labelField: 'analysis', urlField: 'url' }},
+        {title: 'Genome build', field: 'build'},
+      ],
+      initialSort: [
+          {column: 'analysis', dir:'desc'}
+      ]
+    });
+  </script>
+
+{% endblock %}

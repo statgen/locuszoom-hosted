@@ -69,8 +69,9 @@ THIRD_PARTY_APPS = [
     'rest_framework',
 ]
 LOCAL_APPS = [
-    'locuszoom_plotting_service.users.apps.UsersAppConfig',
-    # Your stuff: custom apps go here
+    'locuszoom_plotting_service.users.apps.UsersAppConfig',  # Auth, login, and user detail pages
+    'locuszoom_plotting_service.gwas.apps.GwasConfig',  # Core pieces of the site: data ingestion and display
+    'locuszoom_plotting_service.api.apps.ApiConfig' # REST API
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -225,7 +226,8 @@ EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.s
 ADMIN_URL = 'admin/'
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = [
-    ("""University of Michigan""", 'locuszoom@googlegroups.com'),
+    # TODO: Add other developers as appropriate; perhaps don't commit to github?
+    ("""University of Michigan""", 'abought@umich.edu'),
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
@@ -248,6 +250,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-time-limit
 # TODO: set to whatever value is adequate in your circumstances
+# FIXME: This definitely won't be appropriate for our upload pipeline! Profile upload task to decide how much processing time is required
 CELERYD_TASK_TIME_LIMIT = 5 * 60
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-soft-time-limit
 # TODO: set to whatever value is adequate in your circumstances
@@ -256,7 +259,7 @@ CELERYD_TASK_SOFT_TIME_LIMIT = 60
 # ------------------------------------------------------------------------------
 ACCOUNT_ALLOW_REGISTRATION = env.bool('DJANGO_ACCOUNT_ALLOW_REGISTRATION', True)
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_EMAIL_REQUIRED = True
 # https://django-allauth.readthedocs.io/en/latest/configuration.html

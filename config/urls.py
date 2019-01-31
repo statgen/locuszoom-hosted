@@ -2,18 +2,19 @@ from django.conf import settings
 from django.urls import include, path
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path(
-        "about/",
-        TemplateView.as_view(template_name="pages/about.html"),
-        name="about",
+        "",
+         include("locuszoom_plotting_service.gwas.urls", namespace="gwas"),
     ),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
+    path(
+        "api/v1/",
+        include("locuszoom_plotting_service.api.urls", namespace="apiv1"),
+    ),
     # User management
     path(
         "users/",
