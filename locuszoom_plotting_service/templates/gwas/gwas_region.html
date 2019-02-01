@@ -2,52 +2,35 @@
 {% load staticfiles %}
 
 {% block title %}Region plot- {{ object.analysis }}{% endblock %}
-{%  block extrahead %}
-  {#  LocusZoom requirements, incl D3 and Q #}
-  <script src="https://cdn.jsdelivr.net/npm/locuszoom@0.8.0/dist/locuszoom.vendor.min.js" integrity="sha384-XV3yQVSuWxH92vPmq4yJp9CQxbFoRQDgTLcsw56lToVwMUlguf8AA23PnmWirIpi" crossorigin="anonymous" type="application/javascript"></script>
-  <script src="https://cdn.jsdelivr.net/npm/locuszoom@0.8.0/dist/locuszoom.app.min.js" integrity="sha384-0u44dUbr/qBACdI3KFke8obseYwRwRPQifzO7WdOgFK9V7r7kxPx1X0EX8jLAcbu" crossorigin="anonymous" type="application/javascript"></script>
-  <script src="https://cdn.jsdelivr.net/npm/locuszoom@0.8.0/dist/ext/lz-dynamic-urls.min.js" integrity="sha384-LO7F2/Kfu/CMJ3fpCORU/7ICsAhAUBS2O+ja9+X1mHUtH3i2K6ijTXWw3R6LVZ1P" crossorigin="anonymous" type="application/javascript" ></script>
-
-  <script src="{% static 'js/lz-helpers.js' %}" type="application/javascript" ></script>
-
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locuszoom@0.8.0/dist/locuszoom.css" type="text/css"/>
+{% block css %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locuszoom@0.9.0/dist/locuszoom.css" type="text/css"/>
 {% endblock %}
 
 {%  block content %}
   <h1>LocusZoom Plot</h1>
   <h2>Analysis: {{ object.analysis }}</h2>
-
   <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-12">
       <div>
-        {# TODO Future thought: a jump to gene feature would also be interesting #}
-        {# TODO FUTURE: Componentize and make reactive w/plot changes #}
-        <input type="text" id="input-region-picker" placeholder="10:114758349 or 10:114750000-114760000">
+        {# TODO: Replace with a modified LocalZoom feature! #}
+        <input type="text" id="input-region-picker"
+               placeholder="10:114758349 or 10:114750000-114760000">
         <button class="btn btn-primary" id="button-region">Go</button>
         <p id="text-region-errors"></p>
       </div>
 
       <div id="lz-plot"></div>
     </div>
-
-    <div class="col-md-4">
-      <p class="h4">Published Studies</p>
-      <div id="table-published-gwas"></div>
-
-      <p class="h4">Other GWAS</p>
-      <div id="table-hosted-gwas"></div>
-
-    </div>
-
   </div>
 {% endblock %}
 
-{%  block extrafoot %}
+{%  block javascript %}
+  {#  LocusZoom requirements, incl D3 and Q #}
+  <script src="https://cdn.jsdelivr.net/npm/locuszoom@0.9.0/dist/locuszoom.vendor.min.js" crossorigin="anonymous" type="application/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/locuszoom@0.9.0/dist/locuszoom.app.min.js" crossorigin="anonymous" type="application/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/locuszoom@0.9.0/dist/ext/lz-dynamic-urls.min.js" crossorigin="anonymous" type="application/javascript" ></script>
 
-  {#  Table features #}
-  <script type="application/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-  <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/js/tabulator.min.js"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/css/bootstrap/tabulator_bootstrap4.min.css" rel="stylesheet">
+  <script src="{% static 'js/lz-helpers.js' %}" type="application/javascript" ></script>
 
   {#  Define the LocusZoom plot #}
   <script type="application/javascript">
@@ -90,7 +73,6 @@
     LocusZoom.ext.DynamicUrls.plotUpdatesUrl(plot, stateUrlMapping);
     LocusZoom.ext.DynamicUrls.plotWatchesUrl(plot, stateUrlMapping);
   </script>
-
   <script type="application/javascript">
     // Utility functions that can be moved elsewhere later
     function addPlotPanel(study_metadata, origin) {
@@ -141,57 +123,5 @@
         }
         plot.applyState({chr: chr, start: start, end: end, ldrefvar: ""});
     });
-
-    // Draw a table of published GWAS for comparison
-    $('#table-published-gwas').tabulator({
-        ajaxURL: 'https://portaldev.sph.umich.edu/api/v1/single/?format=objects',
-        ajaxResponse: function (url, params, response) {
-            return response.data;
-        },
-        pagination: 'local',
-        paginationSize: 10,
-        placeholder: 'No data available',
-        selectable: true,
-        selectablePersistence: true,
-        height: '300px',
-        layout: 'fitColumns',
-        columns: [
-            {title: 'ID', field: 'id', headerSort:true},
-            {title: 'Study', field: 'study', headerSort: true},
-            {title: 'Trait', field: 'trait', headerSort: true},
-            {title: 'Analysis', field: 'analysis', headerSort: true},
-        ],
-        rowSelected: function (row) {
-            addPlotPanel(row.getData(), 'published');
-        }
-    });
-
-
-    $('#table-hosted-gwas').tabulator({
-        ajaxURL: "{% url 'apiv1:gwas-list' %}",
-        ajaxResponse: function (url, params, response) {
-            return response.data.map(item => {
-                item.attributes.id = item.id;
-                return item.attributes;
-            });
-        },
-        pagination: 'local',  // TODO: Properly use remote pagination in future
-        paginationSize: 10,
-        placeholder: 'No data available',
-        selectable: true,
-        selectablePersistence: true,
-        height: '300px',
-        layout: 'fitColumns',
-        columns: [
-            { title: 'ID', field: 'id' },
-            { title: 'Analysis', field: 'analysis', headerSort: true },
-        ],
-        rowSelected: function (row) {
-          addPlotPanel(row.getData(), 'hosted');
-        }
-    });
-
-    // And draw a table of things stored on our server too
   </script>
-
 {% endblock %}

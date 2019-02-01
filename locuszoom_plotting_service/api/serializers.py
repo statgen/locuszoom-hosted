@@ -27,11 +27,10 @@ class GwasFileSerializer(object):
         self.start = kwargs['context']['start']
         self.end = kwargs['context']['end']
 
-
     # TODO: to_representation on Serializer base class; define preset field serializers
     @property
     def data(self) -> dict:
-        fn = self.instance.file_location.name
+        fn = self.instance.normalized_fn
         reader = pysam.TabixFile(fn)
         if self.chrom not in reader.contigs:
             raise drf_exceptions.ValidationError('Invalid chromosome region specified')

@@ -3,14 +3,9 @@
 
 
 {% block title %}Overview- {{ object.analysis }}{% endblock %}
-{%  block extrahead %}
-  {#  PheWeb manhattan plot requirements #}
-  <script src="https://cdn.jsdelivr.net/npm/d3@3.5.16" type="application/javascript"></script>
-  <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3" type="application/javascript"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3-tip@0.6.7" type="application/javascript"></script>
 
-  <script src="{% static 'js/pheweb/pheno.js' %}" type="application/javascript"></script>
 
+{% block css %}
   <style type="text/css">
     .d3-tip {
       line-height: 1.4;
@@ -53,21 +48,15 @@
 </style>
 {% endblock %}
 
-{%  block content %}
-  <h1>Analysis summary</h1>
-  <h2>For: {{ object.analysis }}</h2>
+{%  block javascript %}
+  {#  PheWeb manhattan plot requirements #}
+  <script src="https://cdn.jsdelivr.net/npm/d3@3.5.16" type="application/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3" type="application/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-tip@0.6.7" type="application/javascript"></script>
 
-  <a href="{{ object.top_hit_view.get_absolute_url }}" class="btn btn-primary">LocusZoom Plot</a>
+  <script src="{% static 'js/pheweb/pheno.js' %}" type="application/javascript"></script>
 
-  {#  TODO: Track variant name #}
-  <p>
-    <strong>Top hit</strong>: {{ object.top_hit_view.chrom }} : {{ object.top_hit_view.start}} - {{ object.top_hit_view.end }}
-  </p>
 
-  <div id="manhattan_plot_container"></div>
-{% endblock %}
-
-{% block extrafoot %}
   <script type="application/javascript">
     // Required as hardcoded global reference in PheWeb pheno.js
     window.model = {
@@ -86,5 +75,19 @@
     });
 
   </script>
-
 {% endblock %}
+
+{%  block content %}
+  <h1>Analysis summary</h1>
+  <h2>For: {{ object.analysis }}</h2>
+
+  <a href="{{ object.top_hit_view.get_absolute_url }}" class="btn btn-primary">LocusZoom Plot</a>
+
+  {#  TODO: Track variant name #}
+  <p>
+    <strong>Top hit</strong>: {{ object.top_hit_view.chrom }} : {{ object.top_hit_view.start}} - {{ object.top_hit_view.end }}
+  </p>
+
+  <div id="manhattan_plot_container"></div>
+{% endblock %}
+

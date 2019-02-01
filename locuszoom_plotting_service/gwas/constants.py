@@ -14,3 +14,11 @@ IMPUTATION_PANELS = (
     ('1000G-phase1', '1000G Phase 1 v3 Shapeit2 (no singletons)'),
     ('1000G-phase3', '1000G Phase 3 v5')
 )
+
+PHENO_CLASSIFICATIONS = (
+    ('ICD9', 'ICD-9'),
+    ('ICD10', 'ICD-10'),
+    ('EFO', 'Experimental Factor Ontology'),
+    ('PC9', 'Vanderbilt PheCode (ICD-9)'),
+    ('PC10', 'Vanderbilt PheCode (ICD-10)'),
+)

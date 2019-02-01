@@ -20,6 +20,7 @@
       placeholder: 'No data available',
       layout: "fitColumns",
       ajaxURL: '/api/v1/gwas/',
+      ajaxConfig: { method: 'get', headers: { Accept: 'application/vnd.api+json' } },  // HACK: wrong header is auto-added by library
       ajaxResponse: function(url, params, response) {
         return response.data.map(item => item.attributes);
       },

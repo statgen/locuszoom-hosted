@@ -13,8 +13,9 @@ def home(request):
 
 
 class GwasCreate(CreateView):
+    # TODO: Rework upload UI later
     model = lz_models.Gwas
-    fields = ['analysis', 'build', 'imputed', 'file_location']
+    fields = ['analysis', 'build', 'imputed', 'raw_gwas_file']
     template_name = 'gwas/upload.html'
 
     def form_valid(self, form):
@@ -48,5 +49,5 @@ class GwasLocus(DetailView):
 
     In the future this might become, say, a manhattan plot with a detail view link (in line with PheWeb)
     """
-    template_name = 'gwas/gwas_locus.html'
-    queryset = lz_models.Gwas.objects.all()
+    template_name = 'gwas/gwas_region.html'
+    queryset = lz_models.Gwas.objects.all()  # TODO: Is this the right queryset?

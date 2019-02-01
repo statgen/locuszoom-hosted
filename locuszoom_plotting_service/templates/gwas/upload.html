@@ -1,8 +1,13 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 {% block content %}
-  <form action="{% url 'gwas:upload' %}" enctype="multipart/form-data" method="POST">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit" />
-  </form>
+  <div class="row">
+    <div class="col-md-6">
+      <form action="{% url 'gwas:upload' %}" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        {{ form | crispy }}
+        <input class="btn btn-success" type="submit" value="Submit" />
+      </form>
+    </div>
+  </div>
 {% endblock %}
