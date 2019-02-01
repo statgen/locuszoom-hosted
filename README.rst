@@ -33,12 +33,20 @@ Setting Up Your Users
 For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
 
 
-To generate database migrations within the docker container, run::
+* To generate database migrations within the docker container, run::
 
     $ docker-compose -f local.yml run --rm django python manage.py makemigrations
 
 
 Then verify the migration file is correct, and restart docker to apply the migrations automatically.
+
+
+Generating sample data for testing
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* A bootstrapping script has been created to populate the database with fake users and studies. To use it, run::
+
+    $ docker-compose -f local.yml run --rm django python3 util/populate_db.py -n 10
 
 
 Type checks
