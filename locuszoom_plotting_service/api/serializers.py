@@ -36,4 +36,3 @@ class GwasFileSerializer(drf_serializers.Serializer):
     def get_log_pvalue(self, row):
         # TODO: revisit whether to store pvalues or logpvalues internally
         return -decimal.Decimal(row.pvalue).log10(),
-

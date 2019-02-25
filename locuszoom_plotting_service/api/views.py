@@ -1,4 +1,5 @@
 import os
+import typing as ty
 
 from django.conf import settings
 from rest_framework import exceptions as drf_exceptions
@@ -70,7 +71,7 @@ class GwasRegionView(generics.RetrieveAPIView):
         reader = TabixReader(gwas.normalized_gwas_path, parser=standard_gwas_parser)
         return list(reader.fetch(chrom, start, end))
 
-    def _query_params(self)-> (str, int, int):
+    def _query_params(self)-> ty.Tuple[str, int, int]:
         """
         Specific rules for GWAS retrieval
         # TODO: Write tests!

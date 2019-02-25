@@ -12,4 +12,3 @@ class GwasAccessPermission(UserPassesTestMixin):
     def test_func(self):
         model = self.get_object()
         return model.can_view(self.request.user)
-

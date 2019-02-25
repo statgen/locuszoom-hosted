@@ -1,6 +1,7 @@
 """(mostly) Template-based front end views"""
 
 import os
+import typing as ty
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView
@@ -22,9 +23,9 @@ class BaseFileView(View, SingleObjectMixin):
     """
     queryset = lz_models.Gwas.objects.all()
 
-    path_arg: str = None
-    content_type: str = None
-    download_name: str = None
+    path_arg: str
+    content_type: ty.Union[str, None] = None
+    download_name: ty.Union[str, None] = None
 
     def get(self, request, *args, **kwargs):
         gwas = self.get_object()
@@ -43,9 +44,8 @@ def home(request):
     return render(request,  'gwas/home.html')
 
 
-class GwasCreate(CreateView):
+class GwasCreate(LoginRequiredMixin, CreateView):
     """Render a simple HTML form"""
-    # TODO: Rework upload UI later
     model = lz_models.Gwas
     fields = ['analysis', 'is_public', 'build', 'imputed', 'n_cases', 'n_controls', 'raw_gwas_file']
     template_name = 'gwas/upload.html'
@@ -92,7 +92,8 @@ class GwasLocus(LoginRequiredMixin, lz_permissions.GwasAccessPermission, DetailV
     """
     A LocusZoom plot associated with one specific GWAS region
 
-    The region is actually specified as query params; we will need a mechanism to define a "Default region" for bare URLs
+    The region is actually specified as query params; we will need a mechanism to define a "Default region"
+    for bare URLs (TODO)
     """
     template_name = 'gwas/gwas_region.html'
     queryset = lz_models.Gwas.objects.all()  # TODO: Is this the right queryset? Do any filters apply?

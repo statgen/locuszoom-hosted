@@ -169,11 +169,11 @@ def analysis_upload_pipeline(sender, instance: Gwas = None, created=None, **kwar
     # TODO: Move this to a celery task
     # Only run once when model first created.
     # This is a safeguard to prevent infinite recursion from re-saves
-    if not created:
+    if not created or not instance:
         return
 
     # Track the SHA of what was uploaded, so user can validate later.
-    with instance.raw_gwas_file.open('rb') as f:  # type: ignore
+    with instance.raw_gwas_file.open('rb') as f:
         shasum_256 = hashlib.sha256()
         if f.multiple_chunks():
             for chunk in f.chunks():
@@ -181,7 +181,7 @@ def analysis_upload_pipeline(sender, instance: Gwas = None, created=None, **kwar
         else:
             shasum_256.update(f.read())
 
-    instance.file_sha256 = shasum_256.hexdigest()  # type: ignore
+    instance.file_sha256 = shasum_256.hexdigest()
     instance.save()
 
     try:
@@ -200,7 +200,7 @@ def analysis_upload_pipeline(sender, instance: Gwas = None, created=None, **kwar
         # Mark analysis pipeline as having completed successfully
         instance.ingest_status = 2  # TODO: Use enum
     finally:
-        instance.ingest_complete = timezone.now()  # type: ignore
-        instance.save()  # type: ignore
+        instance.ingest_complete = timezone.now()
+        instance.save()
 
     # TODO: Send a notification email to the user with final pipeline status (succeeded or failed)

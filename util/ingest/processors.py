@@ -11,7 +11,7 @@ from pheweb.load import (
 )
 
 from util.zorp import exceptions as z_exc
-from .exceptions import ManhattanExeption, QQPlotException, UnexpectedIngestException
+# from .exceptions import ManhattanExeption, QQPlotException, UnexpectedIngestException
 from . loaders import make_reader
 from . import helpers
 
@@ -58,7 +58,7 @@ def _pheweb_adapter(reader) -> ty.Iterator[dict]:
 @helpers.capture_errors
 def generate_manhattan(in_filename: str, out_filename: str) -> bool:
     """Generate manhattan plot data for the processed file"""
-    reader = make_reader(in_filename).add_filter("pvalue", lambda v, row: v is not None )
+    reader = make_reader(in_filename).add_filter("pvalue", lambda v, row: v is not None)
     reader_adapter = _pheweb_adapter(reader)
 
     binner = manhattan.Binner()
