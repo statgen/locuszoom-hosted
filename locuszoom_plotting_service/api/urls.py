@@ -15,6 +15,6 @@ urlpatterns = [
     path('gwas/', views.GwasListView.as_view(), name='gwas-list'),
     path('gwas/<pk>/', views.GwasDetailView.as_view(), name='gwas-metadata'),
     path('gwas/<pk>/data/', views.GwasRegionView.as_view(), name='gwas-region'),
-    ## "Standardized" api schema; can be used to auto-create api clients.
+    # "Standardized" api schema; can be used to auto-create api clients.
     path('schema/', schema_view)
 ]

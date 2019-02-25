@@ -23,3 +23,5 @@ pyyaml  # Required for OpenAPI rendering
 
 # Data ingestion pipeline
 git+git://github.com/statgen/pheweb.git@d3f6b1df826ae9548e3778eb7569915ee4ca5b6a
+boltons~=18.0  # pinned by pheweb
+python-magic==0.4.15

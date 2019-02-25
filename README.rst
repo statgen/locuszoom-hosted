@@ -16,7 +16,7 @@ Settings
 
 Moved to settings_.
 
-.. _settings: http://cookiecutter-django.readthedocs.io/en/latest/settings.html
+.. _settings: https://cookiecutter-django.readthedocs.io/en/latest/settings.html
 
 Basic Commands
 --------------
@@ -72,14 +72,14 @@ Running tests with py.test
 
 ::
 
-  $ pytest
+  $ docker-compose -f local.yml run --rm django pytest
 
 Live reloading and Sass CSS compilation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Moved to `Live reloading and SASS compilation`_.
 
-.. _`Live reloading and SASS compilation`: http://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
+.. _`Live reloading and SASS compilation`: https://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
 
 
 
@@ -122,7 +122,7 @@ Docker
 
 See detailed `cookiecutter-django Docker documentation`_.
 
-.. _`cookiecutter-django Docker documentation`: http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
+.. _`cookiecutter-django Docker documentation`: https://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
 
 
 

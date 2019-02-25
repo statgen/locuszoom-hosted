@@ -7,8 +7,8 @@
 {% endblock %}
 
 {%  block content %}
-  <h1>LocusZoom Plot</h1>
-  <h2>Analysis: {{ object.analysis }}</h2>
+  <h1>LocusZoom Plot for {{ object.analysis }}</h1>
+  {% if object.is_public %}<span class="badge badge-primary">Public</span>{% endif %}
   <div class="row">
     <div class="col-md-12">
       <div>
@@ -54,11 +54,12 @@
     // Fetch initial position from the URL, or use some defaults
     var initialState = LocusZoom.ext.DynamicUrls.paramsFromUrl(stateUrlMapping);
     if (!Object.keys(initialState).length) {  // TODO: JSON filter
-        initialState = {
-            chr: '{{ object.top_hit_view.chrom }}',
-            start: {{ object.top_hit_view.start }},
-            end: {{object.top_hit_view.end}}
-        };
+        // TODO: What if anything is the "Default" region plot for a study? Presumably top hit?
+        //initialState = {
+        //    chr: '{{ object.top_hit_view.chrom }}',
+         //   start: {{ object.top_hit_view.start }},
+         //   end: {{object.top_hit_view.end}}
+        //};
     }
     // Second, specify what kind of information to display. This demo uses a pre-defined set of panels with common
     //   display options.

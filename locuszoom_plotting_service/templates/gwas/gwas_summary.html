@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 
-{% block title %}Overview- {{ object.analysis }}{% endblock %}
+{% block title %}Study- {{ object.analysis }}{% endblock %}
 
 
 {% block css %}
@@ -15,6 +15,7 @@
       border-radius: 4px;
       pointer-events: none;
     }
+
     /* Creates a small triangle extender for the tooltip */
     .d3-tip:after {
       display: inline;
@@ -25,6 +26,7 @@
       position: absolute;
       pointer-events: none;
     }
+
     /* Northward tooltips */
     .d3-tip.n:after {
       content: "\25BC";
@@ -37,18 +39,66 @@
     #manhattan_plot_container {
       min-width: 700px;
     }
+
     #manhattan_plot_container .axis > path.domain {
       stroke-width: 2px;
       stroke: #666;
       fill: none;
     }
+
     #manhattan_plot_container .axis g.tick line {
       stroke: #666;
     }
-</style>
+
+    #qq_plot_container .axis path.domain {
+      stroke: black;
+      fill: none;
+    }
+
+    #qq_plot_container .axis g.tick line {
+      stroke: #666;
+      opacity: 0.3;
+    }
+
+    .pheno-info > p {
+      margin-bottom: 0;
+    }
+  </style>
 {% endblock %}
 
-{%  block javascript %}
+{% block content %}
+  <h1>Analysis summary for: <em>{{ object.analysis }}</em></h1>
+  {% if object.is_public %}<span class="badge badge-primary">Public</span>{% endif %}
+  {% if object.ingest_complete %}
+    <div class="row">
+      <div class="col-md-8"></div>
+      <div class="col-md-4">
+        <a class="btn btn-outline-secondary float-right" href="{% url 'gwas:gwas-download' object.id %}">Download summary statistics</a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div id="manhattan_plot_container"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="pheno-info col-xs-12 col-sm-4 col-md-3 col-lg-3">
+        <h3>QQ plot:</h3>
+        <div id="qq_plot_container"></div>
+        <p class="gc-control"></p>
+        <i>(Genomic Control lambda calculated based on the 50th percentile (median), 10th percentile, 1st percentile,
+          and 1/10th of a percentile)</i>
+      </div>
+    </div>
+  {% else %}
+    {#  TODO: This page has success/pending states. Add a third state to model for "failed to upload"  #}
+    Your file is still being processed. A notification email will be sent when it is ready.
+  {% endif %}
+{% endblock %}
+
+{% block javascript %}
   {#  PheWeb manhattan plot requirements #}
   <script src="https://cdn.jsdelivr.net/npm/d3@3.5.16" type="application/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3" type="application/javascript"></script>
@@ -60,34 +110,42 @@
   <script type="application/javascript">
     // Required as hardcoded global reference in PheWeb pheno.js
     window.model = {
-        // TODO: make sure more variants have ref/alt information
-        urlprefix: '{% url 'gwas:region' object.id %}',
-        tooltip_underscoretemplate: '<b><%= d.chrom %>:<%= d.pos.toLocaleString() %> <%= d.ref %> / <%= d.alt %></b><br>'
+      // TODO: make sure more variants have ref/alt information
+      urlprefix: '{% url 'gwas:region' object.id %}',
+      tooltip_underscoretemplate: '<b><%= d.chrom %>:<%= d.pos.toLocaleString() %> <%= d.ref %> / <%= d.alt %></b><br>'
     };
     window.pheno = '';  // FIXME: Pheno.js hardcodes a specific link structure that will be wrong for this site
 
-    window.addEventListener('load', function() {
-      fetch('{% url 'gwas:manhattan-json' object.id %}')
+
+    {% if object.ingest_complete %}
+      window.addEventListener('load', function () {
+        fetch('{% url 'gwas:manhattan-json' object.id %}')
           .then(resp => resp.json())
           .then(data => {
-              create_gwas_plot(data.variant_bins, data.unbinned_variants);
+            create_gwas_plot(data.variant_bins, data.unbinned_variants);
           });
-    });
 
+        fetch('{% url 'gwas:qq-json' object.id %}')
+          .then(resp => resp.json())
+          .then(data => {
+            _.sortBy(_.pairs(data.overall.gc_lambda), function (d) {
+              return -d[0];
+            }).forEach(function (d, i) {
+              // FIXME: Manually constructed HTML; change
+              var text = 'GC lambda ' + d[0] + ': ' + d[1].toFixed(3);
+              if (i === 0) {
+                text = '<b>' + text + '</b>';
+              }
+              text = '<br>' + text;
+              $('.gc-control').append(text);
+            });
+            if (data.by_maf) {
+              create_qq_plot(data.by_maf, data.ci);
+            } else {
+              create_qq_plot([{ maf_range: [0, 0.5], qq: data.overall.qq, count: data.overall.count }], data.ci);
+            }
+          });
+      });
+    {% endif %}
   </script>
 {% endblock %}
-
-{%  block content %}
-  <h1>Analysis summary</h1>
-  <h2>For: {{ object.analysis }}</h2>
-
-  <a href="{{ object.top_hit_view.get_absolute_url }}" class="btn btn-primary">LocusZoom Plot</a>
-
-  {#  TODO: Track variant name #}
-  <p>
-    <strong>Top hit</strong>: {{ object.top_hit_view.chrom }} : {{ object.top_hit_view.start}} - {{ object.top_hit_view.end }}
-  </p>
-
-  <div id="manhattan_plot_container"></div>
-{% endblock %}
-

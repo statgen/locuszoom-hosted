@@ -28,7 +28,7 @@ class CeleryAppConfig(AppConfig):
 
         if hasattr(settings, 'RAVEN_CONFIG'):
             # Celery signal registration
-# Since raven is required in production only,
+            # Since raven is required in production only,
             # imports might (most surely will) be wiped out
             # during PyCharm code clean up started
             # in other environments.

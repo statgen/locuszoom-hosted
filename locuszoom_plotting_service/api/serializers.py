@@ -1,14 +1,11 @@
+"""
+Serialize data representing GWAS studies
+"""
 import decimal
 
-from django.contrib.auth import get_user_model
-from rest_framework import exceptions as drf_exceptions
 from rest_framework import serializers as drf_serializers
-import pysam
 
 from locuszoom_plotting_service.gwas import models as lz_models
-
-
-User = get_user_model()
 
 
 class GwasSerializer(drf_serializers.ModelSerializer):
@@ -19,41 +16,24 @@ class GwasSerializer(drf_serializers.ModelSerializer):
         fields = ['id', 'analysis', 'build', 'imputed', 'url']
 
 
-class GwasFileSerializer(object):
-    """A customized serializer that extracts the underlying file data for an analysis"""
-    def __init__(self, instance=None, **kwargs):
-        self.instance = instance
-        self.chrom = kwargs['context']['chrom']
-        self.start = kwargs['context']['start']
-        self.end = kwargs['context']['end']
+class GwasFileSerializer(drf_serializers.Serializer):
+    """
+    This is a read-only serializer, and cannot be used with, eg, upload views
 
-    # TODO: to_representation on Serializer base class; define preset field serializers
-    @property
-    def data(self) -> dict:
-        fn = self.instance.normalized_fn
-        reader = pysam.TabixFile(fn)
-        if self.chrom not in reader.contigs:
-            raise drf_exceptions.ValidationError('Invalid chromosome region specified')
+    It expects a parsed row of data
+    """
+    # Field names selected to match original portaldev api server
+    chromosome = drf_serializers.CharField(read_only=True, source='chrom')
+    position = drf_serializers.IntegerField(source='pos', read_only=True)
+    ref_allele = drf_serializers.CharField(source='ref', read_only=True)
+    alt_allele = drf_serializers.CharField(source='alt', read_only=True)
+    log_pvalue = drf_serializers.SerializerMethodField(source='get_log_pvalue', read_only=True)
+    variant = drf_serializers.SerializerMethodField(source='get_variant', read_only=True)
 
-        # The very specific sample data file has data we want as follows:
-        #  chrom	pos	ref	alt	pval
-        #  1	869334	G	A	0.637
+    def get_variant(self, row):
+        return '{0}:{1}_{2}/{3}'.format(row.chrom, row.pos, row.ref, row.alt, row.pvalue)
 
-        # and lz api is expected to return rows with keys [chromosome, log_pvalue, ref_allele, variant
-        region = reader.fetch(self.chrom, self.start, self.end, parser=pysam.asTuple())
-        data = []
-        for r in region:
-            try:
-                parsed = {
-                        'chromosome': r[0],
-                        'position': int(r[1]),
-                        'ref_allele': r[2],
-                        'log_pvalue': -decimal.Decimal(r[4]).log10(),  # TODO: replace with locuszoom_db code - https://github.com/statgen/locuszoom-db/blob/master/locuszoom/db/loaders.py#L80
-                        'variant': f'{r[0]}:{r[1]}_{r[2]}/{r[3]}'  # TODO: Phasing marker?
-                    }
-                data.append(parsed)
-            except:
-                # FIXME: How do we handle extreme pvalues on a log plot? (yields domain errors on server unless we use decimal instead of float)
-                # FIXME: This is almost certainly not the ideal choice post-demo stage
-                print(r)
-        return {'data': data}
+    def get_log_pvalue(self, row):
+        # TODO: revisit whether to store pvalues or logpvalues internally
+        return -decimal.Decimal(row.pvalue).log10(),
+

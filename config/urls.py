@@ -7,7 +7,7 @@ from django.views import defaults as default_views
 urlpatterns = [
     path(
         "",
-         include("locuszoom_plotting_service.gwas.urls", namespace="gwas"),
+        include("locuszoom_plotting_service.gwas.urls", namespace="gwas"),
     ),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),

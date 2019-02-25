@@ -3,3 +3,5 @@
 !.coveragerc
 !.env
 !.pylintrc
+*.pyc
+__pycache__

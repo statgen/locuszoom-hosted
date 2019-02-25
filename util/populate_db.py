@@ -1,5 +1,5 @@
 """
-Populate a testing database with a few fake studies to enable UI testing.
+Command line script to populate a testing database with a few fake studies, to enable UI testing and local development.
 
 usage:
 
@@ -19,26 +19,26 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')
 sys.path.append(str(Path(__file__).parent.parent.resolve()))
 django.setup()
 
-from locuszoom_plotting_service.gwas.models import Gwas # NOQA
-from locuszoom_plotting_service.users.models import User # NOQA
+from locuszoom_plotting_service.gwas.models import Gwas  # NOQA
+from locuszoom_plotting_service.users.models import User  # NOQA
 
-from locuszoom_plotting_service.gwas.tests.factories import GwasFactory
-from locuszoom_plotting_service.users.tests.factories import UserFactory
+from locuszoom_plotting_service.gwas.tests.factories import GwasFactory  # NOQA
+from locuszoom_plotting_service.users.tests.factories import UserFactory  # NOQA
 
 
 def get_or_create_user(username: str) -> User:
     """If requested user does not exist in the DB, create it using a factory"""
     try:
         user = User.objects.get(username=username)
-    except:
+    except Exception:
         print(username)
         user = UserFactory(username=username)
         print(f'Created new user <${username}>')
     return user
 
 
-def create_analyses(num_analyses: int=10,
-                    user: User=None) \
+def create_analyses(num_analyses: int = 10,
+                    user: User = None) \
         -> typing.List[Gwas]:
 
     # FIXME: respect user argument

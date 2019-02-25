@@ -21,12 +21,11 @@ def get_study_folder(instance, *args, absolute_path=False):
 
 
 def get_gwas_raw_fn(instance, filename):
-    """Used only on initial upload; afterwards, all access to the raw file will be through `raw_gwas_file`"""
+    """Used only on initial upload; afterwards, all access to the raw file will be through a model field"""
+    # FIXME: Audit this for path issues, eg a gwas filename with relative path fields (`../../gwas.json`)
     _, ext = os.path.splitext(filename)
     out_fn = os.path.join(
         get_study_folder(instance),
         'raw_gwas' + ext
     )
-
-    print("will save to ", out_fn, instance, filename)
     return out_fn

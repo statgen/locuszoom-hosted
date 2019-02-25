@@ -4,7 +4,7 @@ Base settings to build other settings files upon.
 
 import environ
 
-ROOT_DIR = environ.Path(__file__) - 3  # (locuszoom_plotting_service/config/settings/base.py - 3 = locuszoom_plotting_service/)
+ROOT_DIR = environ.Path(__file__) - 3
 APPS_DIR = ROOT_DIR.path('locuszoom_plotting_service')
 
 env = environ.Env()
@@ -71,7 +71,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     'locuszoom_plotting_service.users.apps.UsersAppConfig',  # Auth, login, and user detail pages
     'locuszoom_plotting_service.gwas.apps.GwasConfig',  # Core pieces of the site: data ingestion and display
-    'locuszoom_plotting_service.api.apps.ApiConfig' # REST API
+    'locuszoom_plotting_service.api.apps.ApiConfig'  # REST API
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -250,7 +250,8 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-time-limit
 # TODO: set to whatever value is adequate in your circumstances
-# FIXME: This definitely won't be appropriate for our upload pipeline! Profile upload task to decide how much processing time is required
+# FIXME: This definitely won't be appropriate for our upload pipeline! Profile upload task to decide how much
+#  processing time is required
 CELERYD_TASK_TIME_LIMIT = 5 * 60
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-soft-time-limit
 # TODO: set to whatever value is adequate in your circumstances
@@ -288,3 +289,5 @@ REST_FRAMEWORK = {
     'DEFAULT_VERSION': 'v1',
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning'
 }
+
+LZ_MAX_REGION_SIZE = 500_000
