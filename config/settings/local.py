@@ -95,3 +95,5 @@ CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+WEBPACK_LOADER['DEFAULT']['CACHE'] = not DEBUG  # noqa F405

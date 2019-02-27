@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load render_bundle from webpack_loader %}
 {% block content %}
   <div class="row">
     <div class="col-md-6">
@@ -10,4 +11,8 @@
       </form>
     </div>
   </div>
+{% endblock %}
+
+{%  block javascript %}
+  {% render_bundle 'gwas_upload' %}
 {% endblock %}

@@ -1,0 +1,38 @@
+{
+  "name": "locuszoom-hosted",
+  "version": "1.0.0",
+  "description": "Upload and share GWAS results with LocusZoom.js",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "dev": "webpack --watch --config webpack.dev.js",
+    "prod": "webpack --config webpack.prod.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abought/locuszoom-hosted.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/abought/locuszoom-hosted/issues"
+  },
+  "homepage": "https://github.com/abought/locuszoom-hosted#readme",
+  "dependencies": {
+    "jszip": "^3.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "babel-loader": "^8.0.5",
+    "clean-webpack-plugin": "^1.0.1",
+    "eslint": "^5.14.1",
+    "webpack": "^4.29.5",
+    "webpack-bundle-tracker": "^0.4.2-beta",
+    "webpack-cli": "^3.2.3",
+    "webpack-merge": "^4.2.1"
+  }
+}

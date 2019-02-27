@@ -72,7 +72,9 @@ class Gwas(TimeStampedModel):
     pipeline_path = models.CharField(max_length=32,
                                      default=_pipeline_folder,
                                      help_text='Internal use only: path to folder of ingested data')
-    raw_gwas_file = models.FileField(upload_to=util.get_gwas_raw_fn)  # The original / raw file
+    raw_gwas_file = models.FileField(upload_to=util.get_gwas_raw_fn,
+                                     verbose_name='GWAS file',
+                                     help_text='The GWAS data to be uploaded. May be text-based, or (b)gzip compressed')
     file_sha256 = models.CharField(max_length=64,
                                    help_text='The hash of the original, raw uploaded file')
 

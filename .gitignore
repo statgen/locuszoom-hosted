@@ -55,6 +55,10 @@ coverage.xml
 # Django stuff:
 staticfiles/
 
+# Webpack built assets (and files that reference them)
+assets/webpack_bundles/
+webpack-stats.json
+
 # Sphinx documentation
 docs/_build/
 

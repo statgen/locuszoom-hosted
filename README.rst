@@ -1,7 +1,7 @@
 locuszoom_plotting_service
 ==========================
 
-Plot your own GWAS results using LocusZoom.js as a hosted web service.
+Upload and share GWAS results with LocusZoom.js
 
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
      :target: https://github.com/pydanny/cookiecutter-django/
@@ -21,16 +21,40 @@ Moved to settings_.
 Basic Commands
 --------------
 
+Quickstart
+^^^^^^^^^^^
+
+The following commands will start a development environment.
+
+
+* In one tab, build assets::
+
+    $ npm run dev
+
+or with live rebuilding, if you intend to be changing JS code as you work::
+
+    $ npm run prod
+
+
+* In a second open terminal::
+
+    $ docker-compose -f local.yml build
+    $ docker-compose -f local.yml up
+
+
 Setting Up Your Users
 ^^^^^^^^^^^^^^^^^^^^^
 
-* To create a **normal user account**, just go to Sign Up and fill out the form. Once you submit it, you'll see a "Verify Your E-mail Address" page. Go to your console to see a simulated email verification message. Copy the link into your browser. Now the user's email should be verified and ready to go.
+* To create a **normal user account**, just go to Sign Up and fill out the form. Once you submit it, you'll see a
+"Verify Your E-mail Address" page. Go to your console to see a simulated email verification message. Copy the link
+into your browser. Now the user's email should be verified and ready to go.
 
 * To create an **superuser account**, use this command::
 
     $ python manage.py createsuperuser
 
-For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
+For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox
+(or similar), so that you can see how the site behaves for both kinds of users.
 
 
 * To generate database migrations within the docker container, run::
@@ -95,8 +119,8 @@ To run a celery worker:
     cd locuszoom_plotting_service
     celery -A locuszoom_plotting_service.taskapp worker -l info
 
-Please note: For Celery's import magic to work, it is important *where* the celery commands are run. If you are in the same folder with *manage.py*, you should be right.
-
+Please note: For Celery's import magic to work, it is important *where* the celery commands are run. If you are in the
+same folder with *manage.py*, you should be right.
 
 
 
@@ -104,7 +128,8 @@ Please note: For Celery's import magic to work, it is important *where* the cele
 Sentry
 ^^^^^^
 
-Sentry is an error logging aggregator service. You can sign up for a free account at  https://sentry.io/signup/?code=cookiecutter  or download and host it yourself.
+Sentry is an error logging aggregator service. You can sign up for a free account at
+https://sentry.io/signup/?code=cookiecutter  or download and host it yourself.
 The system is setup with reasonable defaults, including 404 logging and integration with the WSGI application.
 
 You must set the DSN url in production.
