@@ -19,7 +19,7 @@ module.exports = {
 
     entry: {
         // List of individual per-page JS files to be included
-        gwas_upload: path.resolve(assetPath, 'gwas_upload.js')
+        gwas_upload: path.resolve(assetPath, 'pages/gwas_upload.js')
     },
     plugins: [
         new CleanWebpackPlugin([outputPath], { watch: true }),
