@@ -9,8 +9,12 @@
 import pako from 'pako';
 
 const PREVIEW_BYTES = 5000;  // enough for 50-100 lines
+const MAX_UPLOAD_SIZE = 1048576 * 500; // 500 MiB
 
 const MISSING_VALUES = ['', '.', 'NA', 'N/A', 'n/a', 'nan', '-nan', 'NaN', '-NaN', 'null', 'NULL'];
+
+// TODO: make the validation check smarter and more maintainable
+const EXPECTED_HEADERS = ['chrom', 'pos', 'ref', 'alt', 'pvalue'];
 
 class BaseReader {
     constructor(blob) {
@@ -116,9 +120,26 @@ function makeReader(filename, blob) {
 const fileField = document.getElementById('id_raw_gwas_file');
 
 fileField.addEventListener('change', function (e) {
+    // Custom validators for uploaded file
+    //  Ref: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation#Limiting_the_size_of_a_file_before_its_upload
+    fileField.setCustomValidity('');
+
     const file = event.target.files[0];
     const name = file.name;
+
+    if (file.size > MAX_UPLOAD_SIZE) {
+        fileField.setCustomValidity(`File exceeds the max upload size of ${MAX_UPLOAD_SIZE}`);
+        return;
+    }
+
     const reader = makeReader(name, file);
     reader.getColumnLabels()
-        .then(console.log);
+        .then(labels => {
+            for (let i = 0; i < EXPECTED_HEADERS.length; i++) {
+                if (labels[i] !== EXPECTED_HEADERS[i]) {
+                    fileField.setCustomValidity('File must have expected header fields.');
+                    return;
+                }
+            }
+        });
 });
