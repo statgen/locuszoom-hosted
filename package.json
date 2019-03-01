@@ -24,14 +24,21 @@
   "dependencies": {
     "gwas-credible-sets": "^0.1.0",
     "jszip": "^3.2.0",
-    "pako": "^1.0.8"
+    "pako": "^1.0.8",
+    "vue": "^2.6.7"
   },
   "devDependencies": {
     "@babel/core": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
     "babel-loader": "^8.0.5",
     "clean-webpack-plugin": "^1.0.1",
+    "css-loader": "^2.1.0",
     "eslint": "^5.14.1",
+    "friendly-errors-webpack-plugin": "^1.7.0",
+    "node-sass": "^4.11.0",
+    "sass-loader": "^7.1.0",
+    "vue-loader": "^15.7.0",
+    "vue-template-compiler": "^2.6.7",
     "webpack": "^4.29.5",
     "webpack-bundle-tracker": "^0.4.2-beta",
     "webpack-cli": "^3.2.3",

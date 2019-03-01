@@ -6,9 +6,10 @@
 //   https://owais.lone.pw/blog/webpack-plus-reactjs-and-django/
 
 const path = require('path');
-var BundleTracker = require('webpack-bundle-tracker');
+const BundleTracker = require('webpack-bundle-tracker');
+const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 const assetPath = path.resolve(__dirname, 'assets/js');
 const outputPath = path.resolve(__dirname, 'assets/webpack_bundles');
@@ -22,7 +23,9 @@ module.exports = {
         gwas_upload: path.resolve(assetPath, 'pages/gwas_upload.js')
     },
     plugins: [
+        new FriendlyErrorsWebpackPlugin(),
         new CleanWebpackPlugin([outputPath], { watch: true }),
+        new VueLoaderPlugin(),
         new BundleTracker({ filename: './webpack-stats.json' }),
     ],
     resolve: {
@@ -37,8 +40,19 @@ module.exports = {
         rules: [
             {
                 test: /\.m?js$/,
-                exclude: /(node_modules|bower_components)/,
+                exclude: file => (/node_modules/.test(file) && !/\.vue\.js/.test(file)),
                 use: { loader: 'babel-loader', options: { presets: ['@babel/preset-env'] } }
+            },
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader',
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'vue-style-loader',
+                    'css-loader',
+                ]
             }
         ]
     },
