@@ -73,6 +73,16 @@ Generating sample data for testing
     $ docker-compose -f local.yml run --rm django python3 util/populate_db.py -n 10
 
 
+
+Opening a terminal for debugging
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Because all development happens inside a docker container, it is sometimes useful to open a terminal for debugging
+purposes. This can be done as follows::
+
+    $ docker-compose -f local.yml exec django sh
+
+
+
 Type checks
 ^^^^^^^^^^^
 
