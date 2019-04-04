@@ -6,7 +6,7 @@ import LocusZoom from 'locuszoom';
 
 LocusZoom.KnownDataSources.extend('AssociationLZ', 'AssociationApi', {
     getURL: function(state, chain,fields) {
-        return `${this.url}/?chrom=${state.chr}&start=${state.start}&end=${state.end}`;
+        return `${this.url}?chrom=${state.chr}&start=${state.start}&end=${state.end}`;
     }
 });
 
@@ -14,16 +14,17 @@ LocusZoom.KnownDataSources.extend('AssociationLZ', 'AssociationApi', {
 /**
  * Define sources used to add a study to the plot. Having this as a separate method is useful when dynamically
  * adding new panels.
+ * @param label A dataset label
  * @param url
  * @returns {Array} Array with configuration options for each datasource required
  */
-function createStudyAssocSources(url) {
+function createStudyAssocSources(label, url) {
     return [
-        ['assoc', ['AssociationApi', { url, params: { id_field: 'variant' } }]],
+        [`assoc_${label}`, ['AssociationApi', { url, params: { id_field: 'variant' } }]],
         [
             'credset_assoc', [
                 'CredibleSetLZ',
-                { params: { fields: { log_pvalue: 'assoc:log_pvalue' }, threshold: 0.95 } },
+                { params: { fields: { log_pvalue: `assoc_${label}:log_pvalue` }, threshold: 0.95 } },
             ],
         ],
     ];

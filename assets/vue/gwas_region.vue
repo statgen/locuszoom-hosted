@@ -21,7 +21,7 @@
                     :dynamic_urls="true"
                     :assoc_layout="lz_layout" :assoc_sources="lz_sources"
                     :study_names="study_names" :has_credible_sets="true"
-                    :chr="chr" :start="start" :end="end" />
+                    :chr="c_chr" :start="c_start" :end="c_end" />
       </div>
     </div>
   </div>
@@ -36,14 +36,20 @@
         props: [
             'build', 'chr', 'start', 'end',
             'lz_layout',
-            'lz_sources'
+            'lz_sources',
+            'study_names',
         ],
         data() {
             return {
                 message: '',
                 message_class: '',
 
-                study_names: ['assoc'], // TODO: make the export data page work
+                // Allow initial state to be passed in, but then mutated as user navigates
+                c_chr: this.chr,
+                c_start: this.start,
+                c_end: this.end
+
+
             };
         },
         methods: {
@@ -53,9 +59,9 @@
             },
             updateRegion(region) {
                 // Receive new region config from toolbar
-                this.chr = region.chr;
-                this.start = region.start;
-                this.end = region.end;
+                this.c_chr = region.chr;
+                this.c_start = region.start;
+                this.c_end = region.end;
             },
         },
         components: { PlotPanes, RegionPicker }
