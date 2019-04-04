@@ -3,7 +3,9 @@
 import os
 import typing as ty
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse
 from django.views.generic import DetailView
 from django.views.generic.base import View
 from django.views.generic.detail import SingleObjectMixin
@@ -40,6 +42,7 @@ class BaseFileView(View, SingleObjectMixin):
         return response
 
 
+@login_required()
 def home(request):
     return render(request,  'gwas/home.html')
 
@@ -96,4 +99,19 @@ class GwasLocus(LoginRequiredMixin, lz_permissions.GwasAccessPermission, DetailV
     for bare URLs (TODO)
     """
     template_name = 'gwas/gwas_region.html'
-    queryset = lz_models.Gwas.objects.all()  # TODO: Is this the right queryset? Do any filters apply?
+    queryset = lz_models.Gwas.objects.all()  # TODO: Consider filtering queryset (eg eliminate deleted etc)
+
+    def get_context_data(self, **kwargs):
+        """Additional template context"""
+        context = super().get_context_data(**kwargs)
+        gwas = self.get_object()
+
+        import json # TODO: proper template handling
+        context['js_vars'] = json.dumps({
+            'assoc_base_url': reverse('apiv1:gwas-region', kwargs={'pk': gwas.id}),
+            'label': gwas.analysis,
+            'build': gwas.build,
+            # TODO- future: provide sane default values for chr, start, and end position (if user hits url without a region selected)
+
+        })
+        return context

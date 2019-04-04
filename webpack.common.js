@@ -17,10 +17,10 @@ const outputPath = path.resolve(__dirname, 'assets/webpack_bundles');
 
 module.exports = {
     context: __dirname,
-
     entry: {
         // List of individual per-page JS files to be included
-        gwas_upload: path.resolve(assetPath, 'pages/gwas_upload.js')
+        gwas_upload: path.resolve(assetPath, 'pages/gwas_upload.js'),
+        gwas_region: path.resolve(assetPath, 'pages/gwas_region.js')
     },
     plugins: [
         new FriendlyErrorsWebpackPlugin(),
@@ -42,6 +42,11 @@ module.exports = {
                 test: /\.m?js$/,
                 exclude: file => (/node_modules/.test(file) && !/\.vue\.js/.test(file)),
                 use: { loader: 'babel-loader', options: { presets: ['@babel/preset-env'] } }
+            },
+            {
+                test: /\.js$/,
+                use: ['source-map-loader'],
+                enforce: 'pre',
             },
             {
                 test: /\.vue$/,

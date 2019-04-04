@@ -16,14 +16,15 @@
     "url": "git+https://github.com/abought/locuszoom-hosted.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/abought/locuszoom-hosted/issues"
   },
   "homepage": "https://github.com/abought/locuszoom-hosted#readme",
   "dependencies": {
     "gwas-credible-sets": "^0.1.0",
-    "jszip": "^3.2.0",
+    "locuszoom": "statgen/locuszoom#develop",
+    "locuszoom-tabix": "abought/locuszoom-tabix",
     "pako": "^1.0.8",
     "vue": "^2.6.7"
   },
@@ -37,6 +38,7 @@
     "friendly-errors-webpack-plugin": "^1.7.0",
     "node-sass": "^4.11.0",
     "sass-loader": "^7.1.0",
+    "source-map-loader": "^0.2.4",
     "vue-loader": "^15.7.0",
     "vue-template-compiler": "^2.6.7",
     "webpack": "^4.29.5",
