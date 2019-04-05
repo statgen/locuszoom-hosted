@@ -34,5 +34,5 @@ class GwasFileSerializer(drf_serializers.Serializer):
         return '{0}:{1}_{2}/{3}'.format(row.chrom, row.pos, row.ref, row.alt, row.pvalue)
 
     def get_log_pvalue(self, row):
-        # TODO: revisit whether to store pvalues or logpvalues internally
-        return -decimal.Decimal(row.pvalue).log10(),
+        # TODO: Incorporate Ryan's improved log converter
+        return -float(decimal.Decimal(row.pvalue).log10())
