@@ -7,8 +7,11 @@ import magic
 
 from pheweb.utils import chrom_order
 
-from .loaders import make_reader
-from util.zorp.readers import BaseReader
+from zorp import (
+    parsers,
+    sniffers
+)
+from zorp.readers import BaseReader, standard_gwas_reader
 
 from . import (
     exceptions, helpers
@@ -19,17 +22,19 @@ logger = logging.getLogger(__name__)
 
 
 class _GwasValidator:
-    """Validate a raw GWAS file as initially uploaded"""
+    """Validate a raw GWAS file as initially uploaded (given filename and instructions on how to parse it)"""
     def __init__(self, headers=None, delimiter='\t'):
         self._delimiter = delimiter
         self._headers = headers
 
     @helpers.capture_errors
-    def validate(self, filename: str) -> bool:
+    def validate(self, filename: str, parser_options: dict) -> bool:
         """Perform all checks for a stored file"""
-        # TODO: should we run all tests, or fail on first? (currently the latter)
         encoding = self._get_encoding(filename)
-        reader = make_reader(filename, mimetype=encoding)
+
+        # Create a reader than can handle the filetype and header format of whatever the user uploads
+        parser = parsers.GenericGwasLineParser(**parser_options)
+        reader = sniffers.guess_gwas(filename, parser=parser)
         return all([
             self._validate_mimetype(encoding),
             self._validate_contents(reader),
@@ -45,21 +50,6 @@ class _GwasValidator:
             return True
         else:
             raise exceptions.ValidationException('Only plaintext or gzipped files are accepted')
-
-    @helpers.capture_errors
-    def _validate_headers(self, reader) -> bool:
-        n_head, content = reader.get_headers()
-        # First version: match headers to an expected string + row count
-        # TODO: replace with a sniffer class that simply says "has all columns required"
-
-        res = all([
-            n_head == 1,
-            tuple(content.lower().strip().split(self._delimiter)) == self._headers
-        ])
-        if res:
-            return True
-        else:
-            raise exceptions.ValidationException('Header row must match the expected format; see docs for details')
 
     @helpers.capture_errors
     def _validate_data_rows(self, reader) -> bool:
@@ -98,11 +88,7 @@ class _GwasValidator:
     @helpers.capture_errors
     def _validate_contents(self, reader: BaseReader) -> bool:
         """Validate file contents; useful for unit testing"""
-        return all([
-            self._validate_headers(reader),
-            self._validate_data_rows(reader),
-        ])
+        return self._validate_data_rows(reader)
 
 
-# TODO: Better header detection/ sniffers?
-standard_gwas_validator = _GwasValidator(delimiter='\t', headers=("#chrom", "pos", "ref", "alt", "pvalue"))
+standard_gwas_validator = _GwasValidator(delimiter='\t')

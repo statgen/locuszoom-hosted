@@ -1,23 +1,23 @@
 pytz==2018.9  # https://github.com/stub42/pytz
-python-slugify==2.0.1  # https://github.com/un33k/python-slugify
-Pillow==5.4.1  # https://github.com/python-pillow/Pillow
+python-slugify==3.0.2  # https://github.com/un33k/python-slugify
+Pillow==6.0.0 # https://github.com/python-pillow/Pillow
 argon2-cffi==19.1.0  # https://github.com/hynek/argon2_cffi
-redis>=2.10.6, < 3  # pyup: < 3 # https://github.com/antirez/redis
-celery==4.2.1  # pyup: < 5.0  # https://github.com/celery/celery
+redis==3.2.1 # https://github.com/antirez/redis
+celery==4.3.0  # pyup: < 5.0  # https://github.com/celery/celery
 flower==0.9.3  # https://github.com/mher/flower
 
 # Django
 # ------------------------------------------------------------------------------
-django==2.0.10  # pyup: < 2.1  # https://www.djangoproject.com/
+django==2.0.13  # pyup: < 2.1  # https://www.djangoproject.com/
 django-environ==0.4.5  # https://github.com/joke2k/django-environ
 django-model-utils==3.1.2  # https://github.com/jazzband/django-model-utils
-django-allauth==0.38.0  # https://github.com/pennersr/django-allauth
+django-allauth==0.39.1  # https://github.com/pennersr/django-allauth
 django-crispy-forms==1.7.2  # https://github.com/django-crispy-forms/django-crispy-forms
 django-redis==4.10.0  # https://github.com/niwinz/django-redis
 django-webpack-loader==0.6.0
 
 # Django REST Framework
-djangorestframework==3.9.0  # https://github.com/encode/django-rest-framework
+djangorestframework==3.9.2  # https://github.com/encode/django-rest-framework
 coreapi==2.3.3  # https://github.com/core-api/python-client
 djangorestframework-jsonapi==2.7.0
 pyyaml  # Required for OpenAPI rendering
@@ -26,3 +26,4 @@ pyyaml  # Required for OpenAPI rendering
 git+git://github.com/statgen/pheweb.git@d3f6b1df826ae9548e3778eb7569915ee4ca5b6a
 boltons~=18.0  # pinned by pheweb
 python-magic==0.4.15
+git+git://github.com/abought/zorp.git@41a35f86c876c55bd78b5cdca385de63ff692432

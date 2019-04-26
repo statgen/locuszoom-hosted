@@ -26,6 +26,8 @@ services:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
     image: locuszoom_plotting_service_production_postgres
+    ports:
+      - "5432:5432"
     volumes:
       - local_postgres_data:/var/lib/postgresql/data
       - local_postgres_data_backups:/backups
@@ -41,7 +43,7 @@ services:
     depends_on:
       - redis
       - postgres
-      
+
     ports: []
     command: /start-celeryworker
 
@@ -51,7 +53,7 @@ services:
     depends_on:
       - redis
       - postgres
-      
+
     ports: []
     command: /start-celerybeat
 

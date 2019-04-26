@@ -8,8 +8,13 @@ import { getBasicSources, createStudyLayout, getBasicLayout } from 'locuszoom-ta
 import { createStudyAssocSources } from '../util/lz-helpers';
 
 function makePlot(template_vars) {
-    const state = paramsFromUrl(stateUrlMapping);
+    let state = paramsFromUrl(stateUrlMapping);
+    // Fill in default params for any values not provided by the url
     state.genome_build = template_vars.build;
+    state = Object.assign(
+        { chr: template_vars.chr, start: template_vars.start, end: template_vars.end },
+        state,
+    );
     const assoc_sources = createStudyAssocSources(template_vars.label, template_vars.assoc_base_url);
     const panels = createStudyLayout(template_vars.label, {
         credible_sets: true,

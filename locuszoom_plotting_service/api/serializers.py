@@ -20,19 +20,13 @@ class GwasFileSerializer(drf_serializers.Serializer):
     """
     This is a read-only serializer, and cannot be used with, eg, upload views
 
-    It expects a parsed row of data
+    It expects a parsed row of data (namedtuple as output by zorp)
     """
     # Field names selected to match original portaldev api server
-    chromosome = drf_serializers.CharField(read_only=True, source='chrom')
+    chromosome = drf_serializers.CharField(source='chrom', read_only=True)
     position = drf_serializers.IntegerField(source='pos', read_only=True)
     ref_allele = drf_serializers.CharField(source='ref', read_only=True)
     alt_allele = drf_serializers.CharField(source='alt', read_only=True)
-    log_pvalue = drf_serializers.SerializerMethodField(source='get_log_pvalue', read_only=True)
-    variant = drf_serializers.SerializerMethodField(source='get_variant', read_only=True)
+    log_pvalue = drf_serializers.FloatField(source='neg_log_pvalue', read_only=True)
+    variant = drf_serializers.CharField(source='marker', read_only=True)
 
-    def get_variant(self, row):
-        return '{0}:{1}_{2}/{3}'.format(row.chrom, row.pos, row.ref, row.alt, row.pvalue)
-
-    def get_log_pvalue(self, row):
-        # TODO: Incorporate Ryan's improved log converter
-        return -float(decimal.Decimal(row.pvalue).log10())

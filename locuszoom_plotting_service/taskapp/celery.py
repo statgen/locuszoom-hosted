@@ -1,6 +1,7 @@
-
 import os
 from celery import Celery
+
+
 from django.apps import apps, AppConfig
 from django.conf import settings
 
@@ -41,8 +42,3 @@ class CeleryAppConfig(AppConfig):
             raven_client = RavenClient(dsn=settings.RAVEN_CONFIG['dsn'])
             raven_register_logger_signal(raven_client)
             raven_register_signal(raven_client)
-
-
-@app.task(bind=True)
-def debug_task(self):
-    print(f'Request: {self.request!r}')  # pragma: no cover

@@ -7,7 +7,6 @@ from .factories import (
 )
 
 
-# TODO: Add permissions tests for all views
 class TestOverviewPermissions(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -39,5 +38,5 @@ class TestOverviewPermissions(TestCase):
 
     def test_viewing_require_authentication(self):
         response = self.client.get(reverse('gwas:overview', args=[self.study_public.pk]))
-        # TODO: should this return a 403?
+        # TODO: should this return a 401?
         self.assertEqual(response.status_code, 403)

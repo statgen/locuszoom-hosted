@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load render_bundle from webpack_loader %}
+
+{% block css %}
+  <style> {# Hack: hide this field because we will set parser options via vue modal #}
+    #div_id_parser_options {
+      display: none;
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
   <div class="row">
     <div class="col-md-6">
@@ -11,6 +20,9 @@
       </form>
     </div>
   </div>
+
+  {#  For options modal and future features #}
+  <div id="vue-app"></div>
 {% endblock %}
 
 {%  block javascript %}

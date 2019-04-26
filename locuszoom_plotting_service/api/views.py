@@ -9,8 +9,8 @@ from rest_framework import renderers as drf_renderers
 
 from locuszoom_plotting_service.gwas import models as lz_models
 
-from util.zorp.readers import TabixReader
-from util.zorp.parsers import standard_gwas_parser
+from zorp.readers import TabixReader
+from zorp.parsers import standard_gwas_parser
 
 from . import (
     permissions,
@@ -25,7 +25,7 @@ class GwasListView(generics.ListAPIView):
 
         TODO: Consider moving upload support into this endpoint in the future
     """
-    queryset = lz_models.Gwas.objects.all()
+    queryset = lz_models.Gwas.objects.filter(ingest_status=2)
     serializer_class = serializers.GwasSerializer
     permission_classes = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
     ordering = ('id',)
@@ -33,7 +33,6 @@ class GwasListView(generics.ListAPIView):
     def get_queryset(self):
         queryset = super(GwasListView, self).get_queryset()
         modified = queryset.filter(is_public=True)
-        # TODO: Simplify clause (is whole thing necessary?)
         if self.request.user.is_authenticated:
             modified |= queryset.filter(owner=self.request.user)
         return modified

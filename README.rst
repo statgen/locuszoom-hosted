@@ -77,10 +77,20 @@ Generating sample data for testing
 Opening a terminal for debugging
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Because all development happens inside a docker container, it is sometimes useful to open a terminal for debugging
-purposes. This can be done as follows::
+purposes. This can be done as follows.
 
-    $ docker-compose -f local.yml exec django sh
+On a running container::
 
+    $ docker-compose -f local.yml exec django bash
+
+Create a container just to run a command::
+
+    $ docker-compose -f local.yml run --rm django bash
+
+
+Similarly, the django app can be probed interactively (eg, to experiment with the ORM) via an enhanced python shell::
+
+    $ docker-compose -f local.yml run --rm django ./manage.py shell_plus
 
 
 Type checks

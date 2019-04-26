@@ -6,6 +6,8 @@ from .base import env
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
+# This is a value that is only used to create consistent development environments. The production keys should never
+#   be saved or tracked in git.
 SECRET_KEY = env('DJANGO_SECRET_KEY', default='nX8YMlI00UFov8qYbgtS3KmQmBCeEYPCrKP13C6oH8HQiPjdFmeZkWk1w2TostBB')
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = [
@@ -88,9 +90,8 @@ if env('USE_DOCKER') == 'yes':
 INSTALLED_APPS += ['django_extensions']  # noqa F405
 # Celery
 # ------------------------------------------------------------------------------
-# FIXME: Revisit whether this is a good development choice (probably not for our long running tasks)
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-always-eager
-CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_ALWAYS_EAGER = False
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-eager-propagates
 CELERY_TASK_EAGER_PROPAGATES = True
 # Your stuff...

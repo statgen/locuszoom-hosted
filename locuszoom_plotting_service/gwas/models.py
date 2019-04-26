@@ -1,15 +1,10 @@
-import hashlib
 import logging
 import os
 import uuid
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import JSONField
 from django.db import models
-from django.db.models import signals
-from django.dispatch import receiver
-from django.utils import timezone
 from django.utils.http import urlencode
 from django.urls import reverse
 from model_utils.models import TimeStampedModel
@@ -17,11 +12,7 @@ from model_utils.models import TimeStampedModel
 from . import constants
 from . import util
 
-from util.ingest import pipeline
-
-
 logger = logging.getLogger(__name__)
-
 
 User = get_user_model()
 
@@ -46,6 +37,11 @@ class Gwas(TimeStampedModel):
     is_public = models.BooleanField(default=False, help_text='Is this study visible to everyone?')
 
     # Metadata that the user must fill in when uploading
+    pmid = models.CharField(max_length=20,
+                            blank=True,
+                            null=True,
+                            help_text='The PubMed ID associated with a published GWAS')
+
     build = models.CharField(max_length=10, choices=constants.GENOME_BUILDS)
     imputed = models.CharField(max_length=25, blank=True,
                                # TODO: This may be too restrictive?
@@ -55,12 +51,11 @@ class Gwas(TimeStampedModel):
     n_cases = models.PositiveIntegerField(blank=True, null=True, help_text='Number of phenotype cases in sample')
     n_controls = models.PositiveIntegerField(blank=True, null=True, help_text='Number of phenotype controls in sample')
 
-    # TODO: Change default when we make the upload pipeline generic. Maybe move to different model.
-    is_log_pvalue = models.BooleanField(default=True)
+    parser_options = JSONField(null=False, blank=False, default={},  # Uploads must tell us how to parse
+                               help_text='Parser options (zorp-compatible parser kwarg names)')
 
-    # Data to be filled in by upload/ post processing steps # TODO: Add mechanism to track success/failure status
-    # TODO: Get top hit view
-    top_hit_view = models.OneToOneField('gwas.RegionView', on_delete=models.SET_NULL, null=True, related_name='+')
+    # Data to be filled in by upload/ post processing steps
+    top_hit_view = models.OneToOneField('gwas.RegionView', on_delete=models.SET_NULL, null=True)
 
     ingest_status = models.IntegerField(choices=constants.INGEST_STATES, default=0,
                                         help_text='Track progress of data ingestion')  # All-or-nothing!
@@ -75,8 +70,8 @@ class Gwas(TimeStampedModel):
     raw_gwas_file = models.FileField(upload_to=util.get_gwas_raw_fn,
                                      verbose_name='GWAS file',
                                      help_text='The GWAS data to be uploaded. May be text-based, or (b)gzip compressed')
-    file_sha256 = models.CharField(max_length=64,
-                                   help_text='The hash of the original, raw uploaded file')
+    file_sha256 = models.BinaryField(max_length=32,
+                                     help_text='The hash of the original, raw uploaded file')
 
     def get_absolute_url(self):
         return reverse('gwas:overview', kwargs={'pk': self.id})
@@ -128,7 +123,6 @@ class RegionView(TimeStampedModel):
     """
     # What is this view associated with? Allows users to save views for someone else's (public) datasets
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True)  # Null for views created by system
-    gwas = models.ForeignKey(Gwas, on_delete=models.DO_NOTHING)
 
     label = models.CharField(max_length=100)
 
@@ -137,11 +131,12 @@ class RegionView(TimeStampedModel):
     start = models.PositiveIntegerField()
     end = models.PositiveIntegerField()
 
-    # Additional arbitrary params associated with the page- URL query params
-    options = JSONField(null=True, blank=True)  # TODO: Decouple front and backend as requirements emerge
+    options = JSONField(null=True, blank=True,  # TODO: decouple front and back end as requirements evolve
+                        help_text="Additional arbitrary params associated with the page- URL query params. (eg plot features or options)")
 
     def can_view(self, current_user):
         """View permissions are solely determined by the underlying study"""
+        # TODO: Fix backrefs here; sort out relationships.
         return self.gwas.can_view(current_user)
 
     def get_absolute_url(self):
@@ -157,52 +152,3 @@ class RegionView(TimeStampedModel):
         extended = self.options or {}
         return {**extended, **basic}
 
-
-@receiver(signals.post_save, sender=Gwas)
-def analysis_upload_pipeline(sender, instance: Gwas = None, created=None, **kwargs):
-    """
-    Specify a series of operations to be run on a newly uploaded file, such as integrity verification and
-        "interesting region" detection
-
-    - Compute SHA for the initially uploaded GWAS
-    - Write data for a pheweb-style manhattan plot
-    :return:
-    """
-    # TODO: Move this to a celery task
-    # Only run once when model first created.
-    # This is a safeguard to prevent infinite recursion from re-saves
-    if not created or not instance:
-        return
-
-    # Track the SHA of what was uploaded, so user can validate later.
-    with instance.raw_gwas_file.open('rb') as f:
-        shasum_256 = hashlib.sha256()
-        if f.multiple_chunks():
-            for chunk in f.chunks():
-                shasum_256.update(chunk)
-        else:
-            shasum_256.update(f.read())
-
-    instance.file_sha256 = shasum_256.hexdigest()
-    instance.save()
-
-    try:
-        pipeline.standard_gwas_pipeline(
-            os.path.join(settings.MEDIA_ROOT, instance.raw_gwas_file.name),
-            instance.normalized_gwas_path,
-            instance.normalized_gwas_log_path,
-            instance.manhattan_path,
-            instance.qq_path,
-        )
-    except Exception as e:
-        logger.exception('Ingestion pipeline failed for gwas id: {}'.format(instance.pk))
-        instance.ingest_status = 1
-        raise e
-    else:
-        # Mark analysis pipeline as having completed successfully
-        instance.ingest_status = 2  # TODO: Use enum
-    finally:
-        instance.ingest_complete = timezone.now()
-        instance.save()
-
-    # TODO: Send a notification email to the user with final pipeline status (succeeded or failed)

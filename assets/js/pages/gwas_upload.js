@@ -1,20 +1,17 @@
 /**
  * Upload your own GWAS page: custom validations (and eventually nicer upload interface)
- * TODO: Incorporate some elements of LocalZoom (eg modals)
  */
 
 
 // 1. Custom validations for upload form
-
+import Vue from 'vue';
 import pako from 'pako';
+
+import App from '../../vue/gwas_upload.vue';
 
 const PREVIEW_BYTES = 5000;  // enough for 50-100 lines
 const MAX_UPLOAD_SIZE = 1048576 * 500; // 500 MiB
 
-const MISSING_VALUES = ['', '.', 'NA', 'N/A', 'n/a', 'nan', '-nan', 'NaN', '-NaN', 'null', 'NULL'];
-
-// TODO: make the validation check smarter and more maintainable
-const EXPECTED_HEADERS = ['chrom', 'pos', 'ref', 'alt', 'pvalue'];
 
 class BaseReader {
     constructor(blob) {
@@ -23,45 +20,24 @@ class BaseReader {
 
         this._data_promise = null;
     }
-    _getFields(line) {
-        // Assumes file tab delimited (for now)
-        return line.trim().split(/\t/);
-    }
+
     getRows() {
         // Limited subset up to a defined PREVIEW_BYTES
-        this._data_promise = this._getPreviewText(this.source)
-            .then(rows => rows.map(this._getFields));
+        this._data_promise = this._getPreviewText(this.source);
         return this._data_promise;
     }
 
-    /**
-     * Return the last item that qualifies as a header row.
-     * @returns {null|*}
-     */
-    getColumnLabels() {
-        return (this._data_promise || this.getRows())
-            .then(rows => {
-                for (let i = 0; i < rows.length; i++) {
-                    const fields = rows[i];
-                    const is_header = fields[0].startsWith('#') ||
-                        (fields.every(isNaN) && !fields.some(v => MISSING_VALUES.includes(v)));
-                    if (!is_header) {
-                        return rows[i - 1] || [];
-                    }
-                }
-                return [];
-            });
-    }
     /**
      * Wrapper for dalliance reader compatibility
      * @param callback
      * @param nLines
      * @returns String[] Raw unprocessed lines of data
      */
-    fetchHeaders(callback, { nLines = 30 }) {
+    fetchHeader(callback, { nLines = 30 }) {
         // Wrapper for dalliance reader compatibility. metaOnly argument not really supported,
         return this.getRows(nLines).then(callback);
     }
+
     /**
      * Handle fetching and parsing of data
      * @param blob
@@ -82,8 +58,10 @@ class BaseReader {
                         buffer = pako.inflate(new Uint8Array(buffer));
                     }
                     // Assumption: external files will usually be something like UTF8 & common english letters.
+                    // Since we're grabbing an arbitrary byte length, odds are the last row will be incomplete- drop it
                     text = String.fromCharCode.apply(null, new Uint8Array(buffer));
-                    resolve(text.split(/[\r\n]+/g));
+                    const rows = text.split(/[\r\n]+/g);
+                    resolve(rows.slice(0, rows.length - 1));
                 } catch (e) {
                     reject(e);
                 }
@@ -108,7 +86,6 @@ class GzipReader extends BaseReader {
 
 function makeReader(filename, blob) {
     // Delegate based solely on file extension. No single extension for text file formats, or way to detect, eg savvy
-
     const ext = filename.split('.').pop();
     if (['gz', 'bgz'].includes(ext)) {
         return new GzipReader(blob);
@@ -117,7 +94,38 @@ function makeReader(filename, blob) {
     }
 }
 
+// Mount interactive functionality
+const modal = new Vue({
+    data() {
+        // This is a slightly ugly hack to render an SFC that responds to data changed from outside the Vue
+        // root instance. Bad code happens when you fight the framework....
+        return {
+            file_reader: null,
+            show_modal: false,
+        };
+    },
+    render(h) {
+        return h(App, {
+            props: { file_reader: this.file_reader, show_modal: this.show_modal },
+        });
+    }}).$mount('#vue-app');
+
+window.modal = modal;
 const fileField = document.getElementById('id_raw_gwas_file');
+modal.$on('has_options', function (parser_options) { // Close with options selected
+    document.getElementById('id_parser_options').value = JSON.stringify(parser_options);
+    // Once options are received, mark form as valid
+    fileField.setCustomValidity('');
+});
+
+modal.$on('close', function() {
+    modal.show_modal = false;  // Legacy of half-in, half-out vue usage
+});
+
+fileField.addEventListener('click', function(e) {
+    // Force change event to fire even when the user selects the same file
+    e.target.value = null;
+});
 
 fileField.addEventListener('change', function (e) {
     // Custom validators for uploaded file
@@ -126,20 +134,16 @@ fileField.addEventListener('change', function (e) {
 
     const file = event.target.files[0];
     const name = file.name;
+    document.getElementById('id_parser_options').value = '';
 
     if (file.size > MAX_UPLOAD_SIZE) {
         fileField.setCustomValidity(`File exceeds the max upload size of ${MAX_UPLOAD_SIZE}`);
         return;
     }
 
-    const reader = makeReader(name, file);
-    reader.getColumnLabels()
-        .then(labels => {
-            for (let i = 0; i < EXPECTED_HEADERS.length; i++) {
-                if (labels[i] !== EXPECTED_HEADERS[i]) {
-                    fileField.setCustomValidity('File must have expected header fields.');
-                    return;
-                }
-            }
-        });
+    // Assume invalid until options are affirmatively received
+    fileField.setCustomValidity('Must specify how to parse the file');
+    // Show the modal and begin the process of selecting parser config options
+    modal.file_reader = makeReader(name, file);
+    modal.show_modal = true;
 });

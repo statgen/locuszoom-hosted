@@ -20,7 +20,8 @@ module.exports = {
     entry: {
         // List of individual per-page JS files to be included
         gwas_upload: path.resolve(assetPath, 'pages/gwas_upload.js'),
-        gwas_region: path.resolve(assetPath, 'pages/gwas_region.js')
+        gwas_summary: path.resolve(assetPath, 'pages/gwas_summary.js'),
+        gwas_region: path.resolve(assetPath, 'pages/gwas_region.js'),
     },
     plugins: [
         new FriendlyErrorsWebpackPlugin(),

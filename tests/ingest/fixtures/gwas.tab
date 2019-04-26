@@ -1,4 +1,4 @@
-#chrom	pos	ref	alt	pvalue
+#chrom	pos	ref	alt	neg_log_pvalue
 1	869334	G	A	0.637
 1	30085939	C	T	0.0794
 1	63504147	G	C	0.712

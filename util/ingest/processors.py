@@ -1,31 +1,53 @@
 """
 Steps used to process a GWAS file for future use
 """
+import hashlib
 import json
 import logging
+import math
 import typing as ty
 
 from pheweb.load import (
     manhattan,
     qq,
 )
-
-from util.zorp import exceptions as z_exc
+from zorp import (
+    exceptions as z_exc,
+    parsers,
+    readers,
+    sniffers
+)
 # from .exceptions import ManhattanExeption, QQPlotException, UnexpectedIngestException
-from . loaders import make_reader
+from . exceptions import TopHitException
 from . import helpers
+
+from locuszoom_plotting_service.gwas import models
 
 logger = logging.getLogger(__name__)
 
 
 @helpers.capture_errors
-def normalize_contents(src_path: str, dest_path: str, log_path: str) -> bool:
+def get_file_sha256(src_path, block_size=2 ** 20) -> bytes:
+    # https://stackoverflow.com/a/1131255/1422268
+    with open(src_path, 'rb') as f:
+        shasum_256 = hashlib.sha256()
+
+        while True:
+            data = f.read(block_size)
+            if not data:
+                break
+            shasum_256.update(data)
+        return shasum_256.digest()
+
+@helpers.capture_errors
+def normalize_contents(src_path: str, parser_options: dict, dest_path: str, log_path: str) -> bool:
     """
     Initial content ingestion: load the file and write variants in a standardized format
 
     This routine will deliberately exclude lines that could not be handled in a reliable fashion, such as pval=NA
     """
-    reader = make_reader(src_path)
+    parser = parsers.GenericGwasLineParser(**parser_options)
+    reader = sniffers.guess_gwas(src_path, parser=parser)
 
     success = False
     try:
@@ -46,6 +68,8 @@ def normalize_contents(src_path: str, dest_path: str, log_path: str) -> bool:
                 return True
             else:
                 f.write('[failure] Could not create normalized GWAS file for: {}'.format(src_path))
+    # In reality a failing task will usually raise an exception rather than returning False
+    return False
 
 
 @helpers.capture_errors
@@ -58,7 +82,12 @@ def _pheweb_adapter(reader) -> ty.Iterator[dict]:
 @helpers.capture_errors
 def generate_manhattan(in_filename: str, out_filename: str) -> bool:
     """Generate manhattan plot data for the processed file"""
-    reader = make_reader(in_filename).add_filter("pvalue", lambda v, row: v is not None)
+    # FIXME: Pheweb loader code does not handle infinity values; exclude these from manhattan plots
+    #   This is almost assuredly not the final desired behavior
+    reader = readers.standard_gwas_reader(in_filename)\
+        .add_filter('neg_log_pvalue', lambda v, row: v is not None)\
+        .add_filter('neg_log_pvalue', lambda v, row: not math.isinf(v))
+
     reader_adapter = _pheweb_adapter(reader)
 
     binner = manhattan.Binner()
@@ -79,7 +108,12 @@ def generate_qq(in_filename: str, out_filename) -> bool:
     # TODO: Currently the ingest pipeline never stores "af"/"maf" at all, which could affect this calculation
     # TODO: This step appears to load ALL data into memory (list on generator). This could be a memory hog; not sure if
     #   there is a way around it as it seems to rely on sorting values
-    reader = make_reader(in_filename).add_filter("pvalue", lambda v, row: v is not None)
+
+    # FIXME: See note above: we will exclude "infinity" values for now, but this is not the desired behavior because it
+    #   hides the hits of greatest interest
+    reader = readers.standard_gwas_reader(in_filename)\
+        .add_filter("neg_log_pvalue", lambda v, row: v is not None)\
+        .add_filter('neg_log_pvalue', lambda v, row: not math.isinf(v))
     reader_adapter = _pheweb_adapter(reader)
 
     # TODO: Pheweb QQ code benefits from being passed { num_samples: n }, from metadata stored outside the
@@ -102,3 +136,23 @@ def generate_qq(in_filename: str, out_filename) -> bool:
         json.dump(rv, f)
 
     return True
+
+@helpers.capture_errors
+def get_top_hit(in_filename: str):
+    """
+    Find the very top hit in the study
+
+    Although most of the tasks in our pipeline are written to be ORM-agnostic, this one modifies the database.
+    """
+    reader = readers.standard_gwas_reader(in_filename).add_filter("neg_log_pvalue", lambda v, row: v is not None)
+    best_pval = 1
+    best_row = None
+    for row in reader:
+        if row.pval < best_pval:
+            best_pval = row.pval
+            best_row = row
+
+    if best_row is None:
+        raise TopHitException('No usable top hit could be identified. Check that the file has valid p-values.')
+
+    return best_row

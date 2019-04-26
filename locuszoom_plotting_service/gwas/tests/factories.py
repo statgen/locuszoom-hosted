@@ -3,6 +3,7 @@ import random
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import signals
+from django.utils import timezone
 import factory
 
 from locuszoom_plotting_service.users.tests.factories import UserFactory
@@ -27,10 +28,18 @@ class GwasFactory(factory.DjangoModelFactory):
 
     build = factory.LazyFunction(choose_genome_build)
     imputed = factory.LazyFunction(choose_imputation_panel)
-    is_log_pvalue = False
+    parser_options = factory.Dict({  # Parser options for standard gwas format
+        'chr_col': 1,
+        'pos_col': 2,
+        'ref_col': 3,
+        'alt_col': 4,
+        'pval_col': 5,
+        'is_log_pval': False
+    })
 
     is_public = False
 
+    ingest_status = 0  # pending (most tests don't run celery tasks, and therefore are "pending" processing)
     ingest_complete = None
 
     raw_gwas_file = factory.django.FileField(from_func=lambda: SimpleUploadedFile('fictional.txt', content=''))
@@ -43,4 +52,9 @@ class GwasFactory(factory.DjangoModelFactory):
         has_data = factory.Trait(
             raw_gwas_file=factory.django.FileField(
                 from_path=os.path.join(os.path.dirname(__file__), 'fixtures/placeholder.txt'))
+        )
+
+        has_completed = factory.Trait(  # Marks pipeline complete (without actually running it)
+            ingest_complete = timezone.now(),
+            ingest_status = 2
         )
