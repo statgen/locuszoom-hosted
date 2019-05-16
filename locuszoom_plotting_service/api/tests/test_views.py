@@ -38,3 +38,11 @@ class TestListviewPermissions(APITestCase):
         response = self.client.get(reverse('apiv1:gwas-list'))
         # TODO: should this return a 401?
         self.assertEqual(response.status_code, 403)
+
+    def test_filter_special_me(self):
+        # Special filter syntax excludes studies by any other user, even if they are public and otherwise visible
+        self.client.force_login(self.user_owner)
+        response = self.client.get(reverse('apiv1:gwas-list'), {'filter[me]': True})
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(len(payload['data']), 1)

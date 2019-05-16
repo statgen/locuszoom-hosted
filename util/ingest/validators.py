@@ -5,8 +5,6 @@ import logging
 
 import magic
 
-from pheweb.utils import chrom_order
-
 from zorp import (
     parsers,
     sniffers
@@ -57,25 +55,17 @@ class _GwasValidator:
         # Horked from PheWeb's `load.read_input_file.PhenoReader` class
         cp_groups = itertools.groupby(reader, key=lambda v: (v.chrom, v.pos))
 
-        def _get_chrom_index(chrom):
-            try:
-                return chrom_order[chrom]
-            except KeyError:
-                raise exceptions.ValidationException('File contains an unexpected chromosome: {}'.format(chrom))
-
-        prev_chrom_index = -1
+        prev_chrom = None
         prev_pos = -1
         for cp, tied_variants in cp_groups:
-            chrom_index = _get_chrom_index(cp[0])
-            if chrom_index < prev_chrom_index:
-                # Chroms in wrong order for PheWeb- TODO is this relevant to the parts we use?
-                raise exceptions.ValidationException('Chromosomes should be sorted lexically')
+            cur_chrom = cp[0]
+            # TODO: Add back "chromosomes are grouped/ordered" validation
 
-            if chrom_index == prev_chrom_index and cp[1] < prev_pos:
+            if cur_chrom == prev_chrom and cp[1] < prev_pos:
                 # Positions not in correct order for Pheweb to use
                 raise exceptions.ValidationException('Positions must be sorted prior to uploading')
 
-            prev_chrom_index = chrom_index
+            prev_chrom = cur_chrom
             prev_pos = cp[1]
 
         # Must make it through the entire file without parsing errors, with all chroms in order, and find at least

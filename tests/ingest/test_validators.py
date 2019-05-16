@@ -43,6 +43,7 @@ class TestStandardGwasValidator:
         with pytest.raises(val_exc.ValidationException):
             validators.standard_gwas_validator._validate_contents(reader)
 
+    @pytest.mark.skip
     def test_chroms_not_sorted(self):
         reader = readers.IterableReader([
             "#chrom\tpos\tref\talt\tpvalue",

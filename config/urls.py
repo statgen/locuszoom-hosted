@@ -4,6 +4,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views import defaults as default_views
 
+from rest_framework.documentation import include_docs_urls
+
 urlpatterns = [
     path(
         "",
@@ -14,6 +16,10 @@ urlpatterns = [
     path(
         "api/v1/",
         include("locuszoom_plotting_service.api.urls", namespace="apiv1"),
+    ),
+    path(
+        "api-docs/",
+         include_docs_urls(title='GWAS API Docs')
     ),
     # User management
     path(

@@ -1,7 +1,7 @@
 """
 Serialize data representing GWAS studies
 """
-import decimal
+import math
 
 from rest_framework import serializers as drf_serializers
 
@@ -27,6 +27,19 @@ class GwasFileSerializer(drf_serializers.Serializer):
     position = drf_serializers.IntegerField(source='pos', read_only=True)
     ref_allele = drf_serializers.CharField(source='ref', read_only=True)
     alt_allele = drf_serializers.CharField(source='alt', read_only=True)
-    log_pvalue = drf_serializers.FloatField(source='neg_log_pvalue', read_only=True)
+    log_pvalue = drf_serializers.SerializerMethodField(method_name='get_neg_log_pvalue', read_only=True)
     variant = drf_serializers.CharField(source='marker', read_only=True)
+
+    def get_neg_log_pvalue(self, row):
+        """
+        Many GWAS programs suffer from underflow and represent small p=0/-logp=inf
+
+        Infinity cannot be represented as JSON, but the string 'Infinity' can be type-coerced by JS, eg +value
+        Therefore we serialize this as a special case so it can be used in the frontend
+        """
+        value = row.neg_log_pvalue
+        if math.isinf(value):
+            return 'Infinity'
+        else:
+            return value
 

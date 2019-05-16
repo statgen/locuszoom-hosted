@@ -2,6 +2,7 @@ import os
 import typing as ty
 
 from django.conf import settings
+from django_filters import rest_framework as filters
 from rest_framework import exceptions as drf_exceptions
 from rest_framework import permissions as drf_permissions
 from rest_framework import generics
@@ -18,17 +19,33 @@ from . import (
 )
 
 
+class GwasFilter(filters.FilterSet):
+    """Filters used for GWAS endpoints, including a special "only my studies" alias"""
+    me = filters.BooleanFilter(method='filter_by_user')
+
+    class Meta:
+        fields = {
+            'pmid': ('isnull', 'iexact')
+        }
+
+    def filter_by_user(self, queryset, name, value):
+        if value and self.request.user.is_authenticated:
+            return queryset.filter(owner=self.request.user)
+        return queryset
+
+
 class GwasListView(generics.ListAPIView):
     """
     List all known uploaded GWAS analyses
         (public data sets, plus any private to just this user)
-
-        TODO: Consider moving upload support into this endpoint in the future
     """
     queryset = lz_models.Gwas.objects.filter(ingest_status=2)
     serializer_class = serializers.GwasSerializer
     permission_classes = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
     ordering = ('id',)
+
+    filterset_class = GwasFilter
+    search_fields = ('analysis', 'pmid')  # TODO: Allow search by author in future
 
     def get_queryset(self):
         queryset = super(GwasListView, self).get_queryset()
@@ -36,7 +53,6 @@ class GwasListView(generics.ListAPIView):
         if self.request.user.is_authenticated:
             modified |= queryset.filter(owner=self.request.user)
         return modified
-
 
 class GwasDetailView(generics.RetrieveAPIView):
     """Metadata describing one particular uploaded GWAS"""

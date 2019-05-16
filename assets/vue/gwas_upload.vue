@@ -1,13 +1,6 @@
-<template>
-  <div>
-    <adder-wizard v-if="show_modal"
-                  :file_reader="file_reader"
-                  @ready="sendConfig"
-                  @close="closeModal"></adder-wizard>
-  </div>
-</template>
-
 <script>
+    // Custom interactivity associated with the "Upload your own GWAS" page.
+    // This enhances just one part of the upload form.
     import AdderWizard from 'locuszoom-tabix/src/components/AdderWizard.vue';
 
     export default {
@@ -28,6 +21,14 @@
     }
 </script>
 
-<style scoped>
+<template>
+  <div>
+    <adder-wizard v-if="show_modal"
+                  :file_reader="file_reader"
+                  @ready="sendConfig"
+                  @close="closeModal"></adder-wizard>
+  </div>
+</template>
 
+<style scoped>
 </style>
