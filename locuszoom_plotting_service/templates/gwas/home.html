@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
 
 {%  block css %}
   <link href="https://unpkg.com/tabulator-tables@4.2.2/dist/css/bootstrap/tabulator_bootstrap4.min.css" rel="stylesheet">
@@ -8,27 +9,10 @@
   <p>
     <a href="{% url 'gwas:upload' %}" class="btn btn-success">Upload a file</a>
   </p>
-  <div id="datasets-table"></div>
+  <div id="app"></div>
 {% endblock %}
 
 
-{% block javascript %}
-  {#  TODO: Unnecessary use of table widget here; revisit; #}
-  <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.2.2/dist/js/tabulator.min.js"></script>
-  <script type="application/javascript">
-    new Tabulator('#datasets-table', {
-      placeholder: 'No data available',
-      layout: "fitColumns",
-      ajaxURL: '/api/v1/gwas/',
-      ajaxConfig: { method: 'get', headers: { Accept: 'application/vnd.api+json' } },  // HACK: wrong header is auto-added by library
-      ajaxResponse: function(url, params, response) {
-        return response.data.map(item => item.attributes);
-      },
-      columns: [
-        {title: 'Study name', field: 'analysis', sorter: 'string', formatter: 'link', formatterParams: { labelField: 'analysis', urlField: 'url' }},
-        {title: 'Genome build', field: 'build'},
-      ],
-    });
-  </script>
-
+{%  block javascript %}
+  {% render_bundle 'home_search' %}
 {% endblock %}

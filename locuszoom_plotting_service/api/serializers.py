@@ -13,7 +13,7 @@ class GwasSerializer(drf_serializers.ModelSerializer):
 
     class Meta:
         model = lz_models.Gwas
-        fields = ['id', 'analysis', 'build', 'imputed', 'url']
+        fields = ['id', 'created', 'analysis', 'build', 'imputed', 'url']
 
 
 class GwasFileSerializer(drf_serializers.Serializer):

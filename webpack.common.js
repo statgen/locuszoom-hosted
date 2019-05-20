@@ -19,6 +19,7 @@ module.exports = {
     context: __dirname,
     entry: {
         // List of individual per-page JS files to be included
+        home_search: path.resolve(assetPath, 'pages/home_search.js'),
         gwas_upload: path.resolve(assetPath, 'pages/gwas_upload.js'),
         gwas_summary: path.resolve(assetPath, 'pages/gwas_summary.js'),
         gwas_region: path.resolve(assetPath, 'pages/gwas_region.js'),

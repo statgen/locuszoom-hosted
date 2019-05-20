@@ -18,12 +18,15 @@ from . import (
     serializers
 )
 
+from locuszoom_plotting_service.gwas import models
+
 
 class GwasFilter(filters.FilterSet):
     """Filters used for GWAS endpoints, including a special "only my studies" alias"""
     me = filters.BooleanFilter(method='filter_by_user')
 
     class Meta:
+        model = models.Gwas
         fields = {
             'pmid': ('isnull', 'iexact')
         }
