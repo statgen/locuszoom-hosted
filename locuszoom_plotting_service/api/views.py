@@ -23,7 +23,7 @@ from locuszoom_plotting_service.gwas import models
 
 class GwasFilter(filters.FilterSet):
     """Filters used for GWAS endpoints, including a special "only my studies" alias"""
-    me = filters.BooleanFilter(method='filter_by_user')
+    me = filters.BooleanFilter(method='filter_by_user', label='Show only records owned by the current logged-in user, as filter[me]')
 
     class Meta:
         model = models.Gwas
@@ -42,10 +42,10 @@ class GwasListView(generics.ListAPIView):
     List all known uploaded GWAS analyses
         (public data sets, plus any private to just this user)
     """
-    queryset = lz_models.Gwas.objects.filter(ingest_status=2)
+    queryset = lz_models.Gwas.objects.filter(ingest_status=2).select_related('owner')
     serializer_class = serializers.GwasSerializer
     permission_classes = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
-    ordering = ('id',)
+    ordering = ('-created',)
 
     filterset_class = GwasFilter
     search_fields = ('analysis', 'pmid')  # TODO: Allow search by author in future

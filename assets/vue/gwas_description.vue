@@ -14,7 +14,12 @@
                 return pmid ? `https://www.ncbi.nlm.nih.gov/pubmed/${pmid}/` : null;
             }
         },
-        components: { bsCard }
+        components: { bsCard },
+        filters: {
+            date(value) {
+                return value? new Date(value).toLocaleDateString() : '';
+            }
+        }
     }
 </script>
 
@@ -22,7 +27,8 @@
 <template>
 <bs-card>
   <a :href="study_data.url" class="study-title">{{ study_data.analysis }}</a><br>
-  <em class="text-muted">Created: {{ study_data.created }}</em><br>
+  <em class="text-muted">Uploaded by: {{ study_data.owner_name }}</em><br>
+  <em class="text-muted">Created: {{ study_data.created | date }}</em><br>
   <span v-if="pmid_link">
     <a :href="pmid_link">{{ study_data.pmid }}</a>
   </span>

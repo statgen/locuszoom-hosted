@@ -1,17 +1,9 @@
 {% extends 'base.html' %}
 {% load render_bundle from webpack_loader %}
 
-{%  block css %}
-  <link href="https://unpkg.com/tabulator-tables@4.2.2/dist/css/bootstrap/tabulator_bootstrap4.min.css" rel="stylesheet">
-{% endblock %}
-
 {% block content %}
-  <p>
-    <a href="{% url 'gwas:upload' %}" class="btn btn-success">Upload a file</a>
-  </p>
   <div id="app"></div>
 {% endblock %}
-
 
 {%  block javascript %}
   {% render_bundle 'home_search' %}

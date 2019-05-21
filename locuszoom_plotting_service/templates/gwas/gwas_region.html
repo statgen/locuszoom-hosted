@@ -6,22 +6,24 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locuszoom@0.9.0/dist/locuszoom.css" type="text/css"/>
 {% endblock %}
 
-{%  block content %}
-  {% if gwas.is_public %}<span class="badge badge-primary">Public</span>{% endif %}
-  <div class="row">
-    <div class="col-md-12">
-      <div id="app"></div>
+{% block content %}
+  <div class="container-fluid">
+    {% if gwas.is_public %}<span class="badge badge-primary">Public</span>{% endif %}
+    <div class="row">
+      <div class="col-md-12">
+        <div id="app"></div>
+      </div>
     </div>
   </div>
 {% endblock %}
 
-{%  block javascript %}
+{% block javascript %}
   <script type="application/javascript">
     {#var template_args = JSON.parse(document.getElementById('js-vars').textContent);#}
     window.template_args = {{ js_vars |safe }};
 
   </script>
-{#  {{ js_vars | json_script: 'js-vars' }}#}
+  {#  {{ js_vars | json_script: 'js-vars' }}#}
   {#  Define the LocusZoom plot #}
   {% render_bundle 'gwas_region' %}
 {% endblock %}

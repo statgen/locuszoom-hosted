@@ -21,9 +21,8 @@
   </head>
 
   <body>
-
     <div class="mb-1">
-      <nav class="navbar navbar-expand-md navbar-light bg-light">
+      <nav class="navbar navbar-expand-md navbar-dark bg-info">
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -39,6 +38,9 @@
               <li class="nav-item">
                 {# URL provided by django-allauth/account/urls.py #}
                 <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'gwas:upload' %}" class="nav-link">Upload...</a>
               </li>
               <li class="nav-item">
                 {# URL provided by django-allauth/account/urls.py #}
@@ -60,21 +62,21 @@
 
     </div>
 
-    <div class="container">
+    {% if messages %}
+      <div class="container-fluid">
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
 
-      {% if messages %}
-          {% for message in messages %}
-              <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
-          {% endfor %}
-      {% endif %}
-
-      {% block content %}
+    {% block content %}
+      <div class="container-fluid">
         <p>Use this document as a way to quick start any new project.</p>
-      {% endblock content %}
+      </div>
+    {% endblock content %}
 
-    </div> <!-- /container -->
-
-    {% block modal %}{% endblock modal %}
+    {% block modal %}{% endblock modal %} <!-- todo: can this be removed? -->
 
     {# Javascript: global template code, plus custom items per page #}
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
