@@ -30,10 +30,6 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
-            {# TODO: Customize active item per page #}
-            <li class="nav-item active">
-              <a class="nav-link" href="{% url 'gwas:home' %}">Home <span class="sr-only">(current)</span></a>
-            </li>
             {% if request.user.is_authenticated %}
               <li class="nav-item">
                 {# URL provided by django-allauth/account/urls.py #}
