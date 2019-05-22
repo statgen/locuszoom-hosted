@@ -5,8 +5,7 @@ ENV PYTHONUNBUFFERED 1
 # libmagic: file format detection
 RUN apt-get update && apt-get install -y libmagic-dev
 
-RUN addgroup -S django \
-    && adduser -S -G django django
+RUN adduser --gecos "User for running app as non-root" --shell /bin/bash --disabled-password django
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
