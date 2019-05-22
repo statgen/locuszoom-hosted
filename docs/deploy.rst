@@ -9,6 +9,13 @@ Make sure to build the UI code (`yarn install && yarn run prod`) before creating
 Build the docker container in production (or download an apropriate premade image):
 `sudo docker-compose -f production.yml build`
 
+Start the container:
+`sudo docker-compose -f production.yml up -d`
+
+Apply migrations to create an initial working version of the app:
+`sudo docker-compose -f production.yml run --rm django python manage.py migrate`
+
+This demo app runs collectstatic and uses whitenoise to serve automatically without a further build/deploy step.
 
 The service will be deployed initially as an apache reverse proxy to a docker container. Mod proxy must be enabled:
 `sudo a2enmod proxy_http`

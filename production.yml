@@ -38,11 +38,13 @@ services:
     <<: *django
     image: locuszoom_plotting_service_production_celeryworker
     command: /start-celeryworker
+    ports: []
 
   celerybeat:
     <<: *django
     image: locuszoom_plotting_service_production_celerybeat
     command: /start-celerybeat
+    ports: []
 
   flower:
     <<: *django
