@@ -5,6 +5,7 @@ from celery import shared_task
 from django.conf import settings
 from django.core.mail import mail_admins, send_mail
 from django.db.models import signals
+from django.db import transaction
 from django.dispatch import receiver
 from django.utils import timezone
 
@@ -125,4 +126,6 @@ def gwas_upload_signal(sender, instance: models.Gwas = None, created=None, **kwa
     if not created or not instance:
         return
 
-    total_pipeline(instance.pk).apply_async()
+    # Avoid atomic request race condition by only running task once record created
+    transaction.on_commit(lambda: total_pipeline(instance.pk).apply_async())
+

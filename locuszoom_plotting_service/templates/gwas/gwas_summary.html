@@ -69,7 +69,14 @@
 {% block content %}
   <div class="container-fluid">
     <h1>Analysis summary for: <em>{{ gwas.analysis }}</em></h1>
-    {% if gwas.is_public %}<span class="badge badge-primary">Public</span>{% endif %}
+    <div class="row">
+      <div class="col-md-12">
+        <span class="text-muted">Created by: {{ gwas.owner.name }}, {{ gwas.created | date }}</span>
+        {% if gwas.is_public %}<span class="badge badge-primary">Public</span>{% endif %}
+      </div>
+    </div>
+
+
     {% if gwas.ingest_status == 2 %}
       <div class="row">
         <div class="col-md-8"></div>
@@ -125,7 +132,7 @@
       urlprefix: '{% url 'gwas:region' gwas.id %}',
       tooltip_underscoretemplate: '<b><%= d.chrom %>:<%= d.pos.toLocaleString() %></b><br>'
     };
-    window.pheno = '';  // FIXME: Pheno.js hardcodes a specific link structure that will be wrong for this site
+    window.pheno = '';
   </script>
 
   {% render_bundle 'gwas_summary' %}

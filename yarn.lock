@@ -3142,9 +3142,9 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
-locuszoom-tabix@abought/locuszoom-tabix#c39296c50d673f4d15621d93d7b161e1b74613df:
+locuszoom-tabix@abought/locuszoom-tabix#9e4734624c5cb3c3195a8406ecf35f79065d04c1:
   version "0.2.1"
-  resolved "https://codeload.github.com/abought/locuszoom-tabix/tar.gz/c39296c50d673f4d15621d93d7b161e1b74613df"
+  resolved "https://codeload.github.com/abought/locuszoom-tabix/tar.gz/9e4734624c5cb3c3195a8406ecf35f79065d04c1"
   dependencies:
     "@sentry/browser" "^4.5.2"
     bootstrap "^4.1.3"

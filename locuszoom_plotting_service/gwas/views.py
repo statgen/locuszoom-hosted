@@ -52,7 +52,7 @@ class GwasCreate(LoginRequiredMixin, CreateView):
     """Render a simple HTML form"""
     model = lz_models.Gwas
     fields = ['analysis',
-              # 'pmid', 'is_public',
+              'pmid', 'is_public',
               'build',
               # 'imputed', 'n_cases', 'n_controls',
               'parser_options', 'raw_gwas_file']
