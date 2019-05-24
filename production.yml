@@ -22,7 +22,7 @@ services:
       - postgres
       - redis
     volumes:
-      - user_uploads:/media
+      - user_uploads:/lz-uploads
     # Bind mounting requires a user whose group ID matches the ID in the host container. (maybe; is there a better way?)
     user: "lzupload:x"  # change this to match the host system; fragile! Sorry.
     env_file:

@@ -56,7 +56,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = env.bool('DJANGO_SECURE_CONTENT_TYPE_NOSNIFF', def
 # Storages
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-MEDIA_ROOT = '/media'
+MEDIA_ROOT = '/lz-uploads'
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ LOGGING = {
     'disable_existing_loggers': True,
     'root': {
         'level': 'WARNING',
-        'handlers': ['sentry'],
+        'handlers': ['console', 'sentry'],
     },
     'formatters': {
         'verbose': {
