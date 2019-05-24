@@ -1,8 +1,10 @@
-version: '3'
+version: '3.7'
 
 volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
+  user_uploads: # Bind to a local directory on the host system
+    - /var/lz-uploads/
 
 services:
   django: &django
@@ -13,6 +15,8 @@ services:
     depends_on:
       - postgres
       - redis
+    volumes:
+      - user_uploads : /media
     env_file:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
