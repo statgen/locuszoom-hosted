@@ -3,14 +3,7 @@ version: '3.7'
 volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
-  user_uploads: # Bind to a local directory on the host system
-    # Ref: https://github.com/docker/compose/issues/2957#issuecomment-403175803
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device:
-        /var/lz-uploads/
+  user_uploads: {} # temporary workaround- use docker volume; switch storage to bind mount later?
 
 services:
   django: &django
@@ -22,9 +15,7 @@ services:
       - postgres
       - redis
     volumes:
-      - user_uploads:/lz-uploads:z
-    # Bind mounting requires a user whose group ID matches the ID in the host container. (maybe; is there a better way?)
-    user: "lzupload:x"  # change this to match the host system; fragile! Sorry.
+      - user_uploads:/lz-uploads
     env_file:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
