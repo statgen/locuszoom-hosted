@@ -15,7 +15,7 @@ services:
       - postgres
       - redis
     volumes:
-      - user_uploads:/lz-uploads
+      - user_uploads:/lz-uploads:z
     env_file:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres

@@ -44,6 +44,8 @@ COPY . /app
 RUN chown -R lzupload /app
 
 USER lzupload
+RUN mkdir /lz-uploads
+RUN chown lzupload /lz-uploads
 
 WORKDIR /app
 
