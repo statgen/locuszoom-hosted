@@ -4,7 +4,13 @@ volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
   user_uploads: # Bind to a local directory on the host system
-    - /var/lz-uploads/
+    # Ref: https://github.com/docker/compose/issues/2957#issuecomment-403175803
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device:
+        /var/lz-uploads/
 
 services:
   django: &django
@@ -16,7 +22,7 @@ services:
       - postgres
       - redis
     volumes:
-      - user_uploads : /media
+      - user_uploads:/media
     env_file:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
