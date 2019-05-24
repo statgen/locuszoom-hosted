@@ -4,10 +4,20 @@ Create two config files describing the production environment and populate secre
 `.envs/.production`
 
 
-Make sure to build the UI code (`yarn install && yarn run prod`) before creating the docker container. (in the future this step should be automated!!)
+Make sure to build the UI code (`yarn install && yarn run prod`) before creating the docker container. (in the future
+this step should be automated!!)
 
 On the host system, create a folder `/var/lz-uploads`. This will be mounted as a volume where all user-uploaded GWAS
 files will be stored.
+
+That folder should be owned by a specific group (keep a note of the group ID; it will be used later for the django
+service user in production.yml!)
+`sudo groupadd lzupload`
+`sudo chgrp lzupload lz-uploads/`
+`sudo chmod g+s lz-uploads/`
+
+Check the group ID and update production.yml to match:
+`getent group lzupload`
 
 Build the docker container in production (or download an apropriate premade image):
 `sudo docker-compose -f production.yml build`
