@@ -89,10 +89,11 @@ EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[locuszoom.or
 ADMIN_URL = env('DJANGO_ADMIN_URL')
 
 # TODO: Add SMTP credentials for a UM service account (not production)
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# FIXME: Temporary: we should be sending these via real SMTP (encountered oserror when trying to use host postfix, outside of docker)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_SSL = True
+EMAIL_HOST = env('DJANGO_EMAIL_HOST')
+EMAIL_HOST_USER = env('DJANGO_EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('DJANGO_EMAIL_HOST_PASSWORD')
 
 
 # Gunicorn
