@@ -57,6 +57,7 @@ class GwasListView(generics.ListAPIView):
             modified |= queryset.filter(owner=self.request.user)
         return modified
 
+
 class GwasDetailView(generics.RetrieveAPIView):
     """Metadata describing one particular uploaded GWAS"""
     permission_classes = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
@@ -89,7 +90,7 @@ class GwasRegionView(generics.RetrieveAPIView):
         reader = TabixReader(gwas.normalized_gwas_path, parser=standard_gwas_parser)
         return list(reader.fetch(chrom, start, end))
 
-    def _query_params(self)-> ty.Tuple[str, int, int]:
+    def _query_params(self) -> ty.Tuple[str, int, int]:
         """
         Specific rules for GWAS retrieval
         # TODO: Write tests!

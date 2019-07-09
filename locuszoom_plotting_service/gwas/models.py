@@ -40,7 +40,8 @@ class Gwas(TimeStampedModel):
     pmid = models.CharField(max_length=20,
                             blank=True,
                             null=True,
-                            help_text='The PubMed ID associated with a published GWAS')
+                            help_text='The PubMed ID associated with a published GWAS',
+                            verbose_name='PMID')
 
     build = models.CharField(max_length=10, choices=constants.GENOME_BUILDS)
     imputed = models.CharField(max_length=25, blank=True,

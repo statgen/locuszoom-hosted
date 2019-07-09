@@ -12,3 +12,7 @@ class User(AbstractUser):
 
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})
+
+    @property
+    def display_name(self):
+        return self.name or f'{self.first_name} {self.last_name}'

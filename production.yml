@@ -28,6 +28,8 @@ services:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
     image: locuszoom_plotting_service_production_postgres
+    ports:
+      - "5432:5432"
     volumes:
       - production_postgres_data:/var/lib/postgresql/data
       - production_postgres_data_backups:/backups

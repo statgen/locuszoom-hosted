@@ -88,9 +88,8 @@ EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[locuszoom.or
 # Django Admin URL regex.
 ADMIN_URL = env('DJANGO_ADMIN_URL')
 
-# TODO: Add SMTP credentials for a UM service account (not production)
+# TODO: Add SMTP credentials for a UM service account (not production) FIXME: Problems connecting to prod!
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_SSL = True
 EMAIL_HOST = env('DJANGO_EMAIL_HOST')
 EMAIL_HOST_USER = env('DJANGO_EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('DJANGO_EMAIL_HOST_PASSWORD')
