@@ -115,6 +115,24 @@ class Gwas(TimeStampedModel):
         return os.path.join(util.get_study_folder(self, absolute_path=True), 'tophits.gz')
 
 
+class OntologyTerm(models.Model):
+    """Available classification schemes that can be used to tag studies- eg SNOMED CT, PheCode, or ICD10"""
+    code = models.CharField(unique=True,
+                            max_length=20,
+                            db_index=True,
+                            help_text="The unique identifier used by the nomenclature system")
+    label = models.TextField(help_text="A human-readable description of the code")
+    scheme = models.SmallIntegerField(
+        choices=(
+            (1, 'SNOMED CT'),
+        ),
+        help_text="The classification scheme (SNOMED, ICDx, etc)"
+    )
+
+    class Meta:
+        unique_together = ('code', 'scheme')
+
+
 class RegionView(TimeStampedModel):
     """
     Represents an interesting locus region, with optional config parameters

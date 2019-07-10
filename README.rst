@@ -170,4 +170,25 @@ See detailed `cookiecutter-django Docker documentation`_.
 .. _`cookiecutter-django Docker documentation`: https://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
 
 
+Initializing the app with default data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Certain app features, such as "tagging datasets", require loading initial data into the database.
+
+These datasets may be large or restricted by licensing rules; as such, they are not distributed with the code and must
+be downloaded/reprocessed separately for loading.
+
+- _`SNOMED CT (Core) / May 2019`
+.. _:https://www.nlm.nih.gov/research/umls/Snomed/core_subset.html
+
+
+These files must be downloaded separately due to license issues (they cannot be distributed with this repo).
+Run the appropriate scripts in `data-loaders/` to transform them into a format suitable for django usage.
+
+After creating the app, run the following command (once) to load them in (using the appropriate docker-compose file)::
+
+    $ docker-compose -f local.yml run --rm django python3 manage.py loaddata data-loaders/sources/snomed.json
+
+
+
+(TODO: additional/modified commands may be required to do this in production)
