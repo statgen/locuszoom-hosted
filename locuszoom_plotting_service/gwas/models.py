@@ -28,15 +28,17 @@ def _pipeline_folder():
     return uuid.uuid1().hex
 
 
-class Gwas(TimeStampedModel):
-    """A single analysis (GWAS results) that may be part of a larger group"""
+class AnalysisInfo(TimeStampedModel):
+    """
+    Metadata describing a single analysis (GWAS results). Typically associated with an `AnalysisFile`
+    """
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    analysis = models.CharField(max_length=100,
-                                help_text='A human-readable description, eg DIAGRAM Height GWAS')
+    label = models.CharField(max_length=100,
+                             help_text='A human-readable description, eg DIAGRAM Height GWAS')
 
     is_public = models.BooleanField(default=False, help_text='Is this study visible to everyone?')
 
-    # Metadata that the user must fill in when uploading
+    # User-provided study metadata
     pmid = models.CharField(max_length=20,
                             blank=True,
                             null=True,
@@ -45,7 +47,7 @@ class Gwas(TimeStampedModel):
 
     build = models.CharField(max_length=10, choices=constants.GENOME_BUILDS)
     imputed = models.CharField(max_length=25, blank=True,
-                               # TODO: This may be too restrictive?
+                               # TODO Too restrictive; provide an "other" option?
                                choices=constants.IMPUTATION_PANELS,
                                help_text='If your data was imputed, please specify the reference panel used')
 
@@ -78,7 +80,7 @@ class Gwas(TimeStampedModel):
         return reverse('gwas:overview', kwargs={'pk': self.id})
 
     def __str__(self):
-        return self.analysis
+        return self.label
 
     def can_view(self, current_user):
         """

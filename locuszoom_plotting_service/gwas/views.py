@@ -24,7 +24,7 @@ class BaseFileView(View, SingleObjectMixin):
     Base class that serves up a file associated with a GWAS. This centralizes the logic in one place in case we
     change the storage location in the future. Supports serving as JSON (like an API) or as download/attachment.
     """
-    queryset = lz_models.Gwas.objects.all()
+    queryset = lz_models.AnalysisInfo.objects.all()
 
     path_arg: str
     content_type: ty.Union[str, None] = None
@@ -50,8 +50,8 @@ def home(request):
 
 class GwasCreate(LoginRequiredMixin, CreateView):
     """Render a simple HTML form"""
-    model = lz_models.Gwas
-    fields = ['analysis',
+    model = lz_models.AnalysisInfo
+    fields = ['label',
               'pmid', 'is_public',
               'build',
               # 'imputed', 'n_cases', 'n_controls',
@@ -93,7 +93,7 @@ class GwasSummary(LoginRequiredMixin, lz_permissions.GwasAccessPermission, Detai
     Basic GWAS overview. Shows manhattan plot and other summary info for a dataset.
     """
     template_name = 'gwas/gwas_summary.html'
-    queryset = lz_models.Gwas.objects.all()
+    queryset = lz_models.AnalysisInfo.objects.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -113,7 +113,7 @@ class GwasLocus(LoginRequiredMixin, lz_permissions.GwasAccessPermission, DetailV
     The region is actually specified as query params; if none are provided, it defaults to the top hit in the study
     """
     template_name = 'gwas/gwas_region.html'
-    queryset = lz_models.Gwas.objects.filter(ingest_status=2)  # Filter to uploads that processed successfully
+    queryset = lz_models.AnalysisInfo.objects.filter(ingest_status=2)  # Filter to uploads that processed successfully
 
     def get_context_data(self, **kwargs):
         """Additional template context"""
@@ -122,7 +122,7 @@ class GwasLocus(LoginRequiredMixin, lz_permissions.GwasAccessPermission, DetailV
 
         context['js_vars'] = json.dumps({
             'assoc_base_url': reverse('apiv1:gwas-region', kwargs={'pk': gwas.id}),
-            'label': gwas.analysis,
+            'label': gwas.label,
             'build': gwas.build,
             # Default region for bare URLs is the top hit in the study
             'chr': gwas.top_hit_view.chrom,

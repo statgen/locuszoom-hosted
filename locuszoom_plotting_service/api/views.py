@@ -26,7 +26,7 @@ class GwasFilter(filters.FilterSet):
     me = filters.BooleanFilter(method='filter_by_user', label='Show only records owned by the current logged-in user, as filter[me]')
 
     class Meta:
-        model = models.Gwas
+        model = models.AnalysisInfo
         fields = {
             'pmid': ('isnull', 'iexact')
         }
@@ -42,13 +42,13 @@ class GwasListView(generics.ListAPIView):
     List all known uploaded GWAS analyses
         (public data sets, plus any private to just this user)
     """
-    queryset = lz_models.Gwas.objects.filter(ingest_status=2).select_related('owner')
+    queryset = lz_models.AnalysisInfo.objects.filter(ingest_status=2).select_related('owner')
     serializer_class = serializers.GwasSerializer
     permission_classes = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
     ordering = ('-created',)
 
     filterset_class = GwasFilter
-    search_fields = ('analysis', 'pmid')  # TODO: Allow search by author in future
+    search_fields = ('label', 'pmid')  # TODO: Allow search by author in future
 
     def get_queryset(self):
         queryset = super(GwasListView, self).get_queryset()
@@ -61,7 +61,7 @@ class GwasListView(generics.ListAPIView):
 class GwasDetailView(generics.RetrieveAPIView):
     """Metadata describing one particular uploaded GWAS"""
     permission_classes = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
-    queryset = lz_models.Gwas.objects.filter(ingest_complete__isnull=False).all()
+    queryset = lz_models.AnalysisInfo.objects.filter(ingest_complete__isnull=False).all()
     serializer_class = serializers.GwasSerializer
 
 
@@ -72,7 +72,7 @@ class GwasRegionView(generics.RetrieveAPIView):
     """
     renderer_classes = [drf_renderers.JSONRenderer]
     filter_backends: list = []
-    queryset = lz_models.Gwas.objects.all()
+    queryset = lz_models.AnalysisInfo.objects.all()
     serializer_class = serializers.GwasFileSerializer
     permission_classes = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
 

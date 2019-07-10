@@ -23,7 +23,7 @@ logger = get_task_logger(__name__)
 @shared_task(bind=True)
 def hash_contents(self, gwas_id: int):
     """Store a unique hash of the file contents"""
-    instance = models.Gwas.objects.get(pk=gwas_id)
+    instance = models.AnalysisInfo.objects.get(pk=gwas_id)
     sha256 = processors.get_file_sha256(os.path.join(settings.MEDIA_ROOT, instance.raw_gwas_file.name))
     instance.file_sha256 = sha256
     instance.save()
@@ -31,7 +31,7 @@ def hash_contents(self, gwas_id: int):
 
 @shared_task(bind=True)
 def normalize_gwas(self, gwas_id: int):
-    instance = models.Gwas.objects.get(pk=gwas_id)
+    instance = models.AnalysisInfo.objects.get(pk=gwas_id)
 
     src_path = os.path.join(settings.MEDIA_ROOT, instance.raw_gwas_file.name)
     dest_path = instance.normalized_gwas_path
@@ -51,7 +51,7 @@ def normalize_gwas(self, gwas_id: int):
 @shared_task(bind=True)
 def summarize_gwas(self, gwas_id: int):
     """Generate "summary" files based on the overall study contents; uses PheWeb loader code"""
-    instance = models.Gwas.objects.get(pk=gwas_id)
+    instance = models.AnalysisInfo.objects.get(pk=gwas_id)
     normalized_path = instance.normalized_gwas_path
     manhattan_path = instance.manhattan_path
     qq_path = instance.qq_path
@@ -75,7 +75,7 @@ def summarize_gwas(self, gwas_id: int):
 @shared_task(bind=True)
 def mark_success(self, gwas_id):
     """Notify the owner of a gwas that ingestion has successfully completed"""
-    instance = models.Gwas.objects.get(pk=gwas_id)
+    instance = models.AnalysisInfo.objects.get(pk=gwas_id)
 
     instance.ingest_status = 2
     instance.ingest_complete = timezone.now()
@@ -90,7 +90,7 @@ def mark_success(self, gwas_id):
 @shared_task(bind=True)
 def mark_failure(self, gwas_id):
     """Mark a task as failed, and email site admins. Eventually, we can dial back the error emails a bit."""
-    instance = models.Gwas.objects.get(pk=gwas_id)
+    instance = models.AnalysisInfo.objects.get(pk=gwas_id)
 
     logger.exception(f'Ingestion pipeline failed for gwas id: {gwas_id}')
     instance.ingest_status = 1
@@ -104,7 +104,7 @@ def mark_failure(self, gwas_id):
 
 def total_pipeline(gwas_id: int):
     """Combine discrete tasks into a total pipeline"""
-    instance = models.Gwas.objects.get(pk=gwas_id)
+    instance = models.AnalysisInfo.objects.get(pk=gwas_id)
 
     return (
         hash_contents.si(gwas_id) |
@@ -114,8 +114,8 @@ def total_pipeline(gwas_id: int):
     ).on_error(mark_failure.si(gwas_id))
 
 
-@receiver(signals.post_save, sender=models.Gwas)
-def gwas_upload_signal(sender, instance: models.Gwas = None, created=None, **kwargs):
+@receiver(signals.post_save, sender=models.AnalysisInfo)
+def gwas_upload_signal(sender, instance: models.AnalysisInfo = None, created=None, **kwargs):
     """
     Run the ingest pipeline whenever a new record is created in the database
 

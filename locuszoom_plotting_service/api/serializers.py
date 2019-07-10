@@ -17,8 +17,8 @@ class GwasSerializer(drf_serializers.ModelSerializer):
         return owner.name or f'{owner.first_name} {owner.last_name}'
 
     class Meta:
-        model = lz_models.Gwas
-        fields = ['id', 'created', 'analysis', 'build', 'imputed', 'url', 'owner_name']
+        model = lz_models.AnalysisInfo
+        fields = ['id', 'created', 'label', 'build', 'imputed', 'url', 'owner_name']
 
 
 class GwasFileSerializer(drf_serializers.Serializer):

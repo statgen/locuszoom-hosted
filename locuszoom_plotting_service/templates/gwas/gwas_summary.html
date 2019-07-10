@@ -2,7 +2,7 @@
 {% load render_bundle from webpack_loader %}
 
 
-{% block title %}Study- {{ gwas.analysis }}{% endblock %}
+{% block title %}Study- {{ gwas.label }}{% endblock %}
 
 
 {% block css %}
@@ -68,7 +68,7 @@
 
 {% block content %}
   <div class="container-fluid">
-    <h1>Analysis summary for: <em>{{ gwas.analysis }}</em></h1>
+    <h1>Analysis summary for: <em>{{ gwas.label }}</em></h1>
     <div class="row">
       <div class="col-md-12">
         <span class="text-muted">Created by: {{ gwas.owner.name }}, {{ gwas.created | date }}</span>

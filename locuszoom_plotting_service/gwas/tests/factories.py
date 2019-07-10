@@ -8,7 +8,7 @@ import factory
 
 from locuszoom_plotting_service.users.tests.factories import UserFactory
 from .. import constants as lz_constants
-from ..models import Gwas
+from ..models import AnalysisInfo
 
 
 def choose_genome_build() -> str:
@@ -24,7 +24,7 @@ def choose_imputation_panel() -> str:
 @factory.django.mute_signals(signals.post_save)
 class GwasFactory(factory.DjangoModelFactory):
     owner = factory.SubFactory(UserFactory)
-    analysis = factory.Faker('words', nb=2)
+    label = factory.Faker('words', nb=2)
 
     build = factory.LazyFunction(choose_genome_build)
     imputed = factory.LazyFunction(choose_imputation_panel)
@@ -45,7 +45,7 @@ class GwasFactory(factory.DjangoModelFactory):
     raw_gwas_file = factory.django.FileField(from_func=lambda: SimpleUploadedFile('fictional.txt', content=''))
 
     class Meta:
-        model = Gwas
+        model = AnalysisInfo
 
     class Params:
         # Most samples will be fine with a 0B file. Only provide actual data if explicitly requested.

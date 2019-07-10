@@ -19,7 +19,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')
 sys.path.append(str(Path(__file__).parent.parent.resolve()))
 django.setup()
 
-from locuszoom_plotting_service.gwas.models import Gwas  # NOQA
+from locuszoom_plotting_service.gwas.models import AnalysisInfo  # NOQA
 from locuszoom_plotting_service.users.models import User  # NOQA
 
 from locuszoom_plotting_service.gwas.tests.factories import GwasFactory  # NOQA
@@ -39,7 +39,7 @@ def get_or_create_user(username: str) -> User:
 
 def create_analyses(num_analyses: int = 10,
                     user: User = None) \
-        -> typing.List[Gwas]:
+        -> typing.List[AnalysisInfo]:
 
     # FIXME: respect user argument
     analyses = [GwasFactory() for i in range(num_analyses)]

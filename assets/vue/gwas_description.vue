@@ -26,7 +26,7 @@
 
 <template>
 <bs-card border-variant="light">
-  <a :href="study_data.url" class="study-title">{{ study_data.analysis }}</a><br>
+  <a :href="study_data.url" class="study-title">{{ study_data.label }}</a><br>
   <em class="text-muted">Uploaded by: {{ study_data.owner_name }}</em><br>
   <em class="text-muted">Created: {{ study_data.created | date }}</em><br>
   <span v-if="pmid_link">
