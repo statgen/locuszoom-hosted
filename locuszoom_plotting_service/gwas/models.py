@@ -16,23 +16,17 @@ logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
-# class Phenotypes(models.Model):
-#     """Pre-defined lists of phenotypes: ICD9, ICD10, EFO, or Vanderbilt phecodes"""
-#     short_desc = models.CharField()
-#     long_desc = models.CharField()
-#     classification = None  # TODO: Create enum or other system
-
 
 def _pipeline_folder():
-    # Get pipeline folder name; must be a standalone function for migrations to work
+    """Get pipeline folder name; must be a standalone function for migrations to work"""
     return uuid.uuid1().hex
 
 
 class AnalysisInfo(TimeStampedModel):
     """
-    Metadata describing a single analysis (GWAS results). Typically associated with an `AnalysisFile`
+    Metadata describing a single analysis (GWAS results). Typically associated with an `AnalysisFileset`
     """
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  # One user, many gwas
     label = models.CharField(max_length=100,
                              help_text='A human-readable description, eg DIAGRAM Height GWAS')
 
@@ -46,27 +40,64 @@ class AnalysisInfo(TimeStampedModel):
                             verbose_name='PMID')
 
     build = models.CharField(max_length=10, choices=constants.GENOME_BUILDS)
-    imputed = models.CharField(max_length=25, blank=True,
-                               # TODO Too restrictive; provide an "other" option?
-                               choices=constants.IMPUTATION_PANELS,
-                               help_text='If your data was imputed, please specify the reference panel used')
 
     n_cases = models.PositiveIntegerField(blank=True, null=True, help_text='Number of phenotype cases in sample')
     n_controls = models.PositiveIntegerField(blank=True, null=True, help_text='Number of phenotype controls in sample')
 
-    parser_options = JSONField(null=False, blank=False, default={},  # Uploads must tell us how to parse
-                               help_text='Parser options (zorp-compatible parser kwarg names)')
-
     # Data to be filled in by upload/ post processing steps
-    top_hit_view = models.OneToOneField('gwas.RegionView', on_delete=models.SET_NULL, null=True)
+    files = models.OneToOneField(  # Only one set of files is "current" at any time
+        'gwas.AnalysisFileset',
+        on_delete=models.SET_NULL,
+        null=True,
+        help_text='Where to find the processed, ingested data file for this analysis (most recently finished version)'
+    )
+    top_hit_view = models.OneToOneField('gwas.RegionView',
+                                        related_name='+',
+                                        on_delete=models.SET_NULL,
+                                        null=True)
 
-    ingest_status = models.IntegerField(choices=constants.INGEST_STATES, default=0,
-                                        help_text='Track progress of data ingestion')  # All-or-nothing!
-    ingest_complete = models.DateTimeField(null=True,
-                                           help_text='When the ingestion pipeline completed (success or failure)')
+    def get_absolute_url(self):
+        return reverse('gwas:overview', kwargs={'pk': self.pk})
 
-    ########
-    # Below this line: Track info needed to serve data from local files
+    def can_view(self, current_user):
+        """
+        # FIXME: This is a simplest-possible permissions model; revise as app grows in complexity.
+        :param User current_user: An object representing the current user (logged in or anon)
+        :return:
+        """
+        return self.is_public or (current_user == self.owner)
+
+    # Useful calculated properties
+    @property
+    def ingest_status(self) -> int:
+        """
+        Get ingest status: if view does not point to a specific version, then default to whatever was uploaded recently
+        """
+
+        if self.files:
+            return self.files.ingest_status
+
+        most_recent_upload = self.analysisfileset_set.order_by('-created').first()
+        if not most_recent_upload:  # Somehow we have metadata without any corresponding file!!
+            return 1
+
+        return most_recent_upload.ingest_status
+
+    def __str__(self):
+        return self.label
+
+
+class AnalysisFileset(TimeStampedModel):
+    """
+    This represents the data associated with a particular `AnalysisInfo` model. We use a separate model so that a study
+    can be updated or reprocessed cleanly if needed (it simplifies things like versioning).
+
+    It contains a direct reference to one file (the uploaded one), but also refers to local paths for several others
+    output by the ingest step
+    """
+    metadata = models.ForeignKey(AnalysisInfo, on_delete=models.SET_NULL, null=True)
+
+    # Basic file data
     pipeline_path = models.CharField(max_length=32,
                                      default=_pipeline_folder,
                                      help_text='Internal use only: path to folder of ingested data')
@@ -76,19 +107,16 @@ class AnalysisInfo(TimeStampedModel):
     file_sha256 = models.BinaryField(max_length=32,
                                      help_text='The hash of the original, raw uploaded file')
 
-    def get_absolute_url(self):
-        return reverse('gwas:overview', kwargs={'pk': self.id})
+    # Options related to the ingestion pipeline
+    parser_options = JSONField(null=False,
+                               blank=False,
+                               default={},  # Uploads must tell us how to they are parsed
+                               help_text='Parser options (zorp-compatible parser kwarg names)')
 
-    def __str__(self):
-        return self.label
-
-    def can_view(self, current_user):
-        """
-        # FIXME: This is a simplest-possible permissions model; revise as app grows in complexity.
-        :param request:
-        :return:
-        """
-        return self.is_public or (current_user == self.owner)
+    ingest_status = models.IntegerField(choices=constants.INGEST_STATES, default=0,
+                                        help_text='Track progress of data ingestion')  # All-or-nothing!
+    ingest_complete = models.DateTimeField(null=True,
+                                           help_text='When the file finished processing (success OR failure)')
 
     #######
     # Helpers defining where to find/ store each asset
@@ -125,9 +153,7 @@ class OntologyTerm(models.Model):
                             help_text="The unique identifier used by the nomenclature system")
     label = models.TextField(help_text="A human-readable description of the code")
     scheme = models.SmallIntegerField(
-        choices=(
-            (1, 'SNOMED CT'),
-        ),
+        choices=constants.PHENO_CLASSIFICATIONS,
         help_text="The classification scheme (SNOMED, ICDx, etc)"
     )
 
@@ -142,18 +168,20 @@ class RegionView(TimeStampedModel):
     The upload pipeline will define a few suggested views (eg top hits), and users can save their own views on any
         public dataset
     """
-    # What is this view associated with? Allows users to save views for someone else's (public) datasets
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True)  # Null for views created by system
+    gwas = models.ForeignKey(AnalysisInfo,
+                             on_delete=models.SET_NULL,
+                             null=True,
+                             help_text='The study associated with this view')
 
-    label = models.CharField(max_length=100)
+    label = models.CharField(max_length=100, help_text='A human-readable description of this view')
 
     # What region to view?
     chrom = models.CharField(max_length=5, blank=False)  # Standardize with PheWeb chroms list?
     start = models.PositiveIntegerField()
     end = models.PositiveIntegerField()
 
-    options = JSONField(null=True, blank=True,  # TODO: decouple front and back end as requirements evolve
-                        help_text="Additional arbitrary params associated with the page- URL query params. (eg plot features or options)")
+    # options = JSONField(null=True, blank=True,  # TODO: not used now, may be useful in the future
+    #                     help_text="Additional URL query params to be sent to the front end. (eg for plot features)")
 
     def can_view(self, current_user):
         """View permissions are solely determined by the underlying study"""
@@ -162,7 +190,8 @@ class RegionView(TimeStampedModel):
 
     def get_absolute_url(self):
         """A region view is just a LocusZoom plot with some specific options"""
-        base_url = reverse('gwas:region', kwargs={'pk': self.gwas.id})
+        # This references the backref for top hit view but this should be extended to allow many-to-many rels.
+        base_url = reverse('gwas:region', kwargs={'pk': self.gwas.pk})
         params = urlencode(self.get_url_params())
         return f'{base_url}?{params}'
 
@@ -170,6 +199,6 @@ class RegionView(TimeStampedModel):
     def get_url_params(self):
         # The standalone fields are source of truth and override any values stored in the "extra" params blob
         basic = {'chrom': self.chrom, 'start': self.start, 'end': self.end}
-        extended = self.options or {}
-        return {**extended, **basic}
-
+        # extended = self.options or {}
+        # return {**extended, **basic}
+        return basic

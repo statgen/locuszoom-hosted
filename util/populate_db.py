@@ -22,7 +22,7 @@ django.setup()
 from locuszoom_plotting_service.gwas.models import AnalysisInfo  # NOQA
 from locuszoom_plotting_service.users.models import User  # NOQA
 
-from locuszoom_plotting_service.gwas.tests.factories import GwasFactory  # NOQA
+from locuszoom_plotting_service.gwas.tests.factories import AnalysisInfoFactory  # NOQA
 from locuszoom_plotting_service.users.tests.factories import UserFactory  # NOQA
 
 
@@ -42,7 +42,7 @@ def create_analyses(num_analyses: int = 10,
         -> typing.List[AnalysisInfo]:
 
     # FIXME: respect user argument
-    analyses = [GwasFactory() for i in range(num_analyses)]
+    analyses = [AnalysisInfoFactory() for i in range(num_analyses)]
     return analyses
 
 

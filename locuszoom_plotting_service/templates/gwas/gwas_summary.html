@@ -71,11 +71,10 @@
     <h1>Analysis summary for: <em>{{ gwas.label }}</em></h1>
     <div class="row">
       <div class="col-md-12">
-        <span class="text-muted">Created by: {{ gwas.owner.name }}, {{ gwas.created | date }}</span>
+        <span class="text-muted">Created by: {{ gwas.owner.display_name }}, {{ gwas.created | date }}</span>
         {% if gwas.is_public %}<span class="badge badge-primary">Public</span>{% endif %}
       </div>
     </div>
-
 
     {% if gwas.ingest_status == 2 %}
       <div class="row">
@@ -129,7 +128,7 @@
     // Required as hardcoded global reference in PheWeb pheno.js
     window.model = {
       // TODO: make sure more variants have ref/alt information
-      urlprefix: '{% url 'gwas:region' gwas.id %}',
+      urlprefix: '{% url 'gwas:region' gwas.pk %}',
       tooltip_underscoretemplate: '<b><%= d.chrom %>:<%= d.pos.toLocaleString() %></b><br>'
     };
     window.pheno = '';

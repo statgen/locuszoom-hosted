@@ -21,17 +21,17 @@ logger = get_task_logger(__name__)
 
 
 @shared_task(bind=True)
-def hash_contents(self, gwas_id: int):
+def hash_contents(self, fileset_id: int):
     """Store a unique hash of the file contents"""
-    instance = models.AnalysisInfo.objects.get(pk=gwas_id)
-    sha256 = processors.get_file_sha256(os.path.join(settings.MEDIA_ROOT, instance.raw_gwas_file.name))
+    instance = models.AnalysisFileset.objects.get(pk=fileset_id)
+    sha256 = processors.get_file_sha256(os.path.join(settings.MEDIA_ROOT, instance.files.raw_gwas_file.name))
     instance.file_sha256 = sha256
     instance.save()
 
 
 @shared_task(bind=True)
-def normalize_gwas(self, gwas_id: int):
-    instance = models.AnalysisInfo.objects.get(pk=gwas_id)
+def normalize_gwas(self, fileset_id: int):
+    instance = models.AnalysisFileset.objects.get(pk=fileset_id)
 
     src_path = os.path.join(settings.MEDIA_ROOT, instance.raw_gwas_file.name)
     dest_path = instance.normalized_gwas_path
@@ -41,7 +41,7 @@ def normalize_gwas(self, gwas_id: int):
 
     if not validators.standard_gwas_validator.validate(src_path, instance.parser_options):
         logger.info(f"Could not load GWAS '{src_path}' because contents failed to validate")
-        raise exceptions.ValidationException(f'Validation failed for study ID {gwas_id}')
+        raise exceptions.ValidationException(f'Validation failed for study ID {fileset_id}')
 
     # For now the writer expects a temp file name, and it creates the .gz version internally
     tmp_normalized_path = dest_path.replace('.txt.gz', '.txt')
@@ -49,9 +49,9 @@ def normalize_gwas(self, gwas_id: int):
 
 
 @shared_task(bind=True)
-def summarize_gwas(self, gwas_id: int):
+def summarize_gwas(self, fileset_id: int):
     """Generate "summary" files based on the overall study contents; uses PheWeb loader code"""
-    instance = models.AnalysisInfo.objects.get(pk=gwas_id)
+    instance = models.AnalysisFileset.objects.get(pk=fileset_id)
     normalized_path = instance.normalized_gwas_path
     manhattan_path = instance.manhattan_path
     qq_path = instance.qq_path
@@ -59,13 +59,14 @@ def summarize_gwas(self, gwas_id: int):
     # Find top hit
     best_row = processors.get_top_hit(normalized_path)
     top_hit = models.RegionView.objects.create(
+        gwas=instance.metadata,
         label='Top hit',
         chrom=best_row.chrom,
         start=best_row.pos - 250_000,
         end=best_row.pos + 250_000
     )
-    instance.top_hit_view = top_hit
-    instance.save()
+    instance.metadata.top_hit_view = top_hit
+    instance.metadata.save()
 
     # Generate files
     processors.generate_manhattan(normalized_path, manhattan_path)
@@ -73,49 +74,55 @@ def summarize_gwas(self, gwas_id: int):
 
 
 @shared_task(bind=True)
-def mark_success(self, gwas_id):
+def mark_success(self, fileset_id):
     """Notify the owner of a gwas that ingestion has successfully completed"""
-    instance = models.AnalysisInfo.objects.get(pk=gwas_id)
+    instance = models.AnalysisInfo.objects.get(pk=fileset_id)
 
     instance.ingest_status = 2
     instance.ingest_complete = timezone.now()
     instance.save()
 
+    # The parent object needs to know which instance is the current newest / best one to display
+    metadata = instance.metadata
+    metadata.files = instance
+    metadata.save()
+
     send_mail('Results done processing',
-              f'Your results are done processing. Please visit {instance.get_absolute_url()} to see the Manhattan plot.',
+              f'Your results are done processing. Please visit {instance.metadata.get_absolute_url()} to see the Manhattan plot.',
               'noreply@umich.edu',
               [instance.owner.email])
 
 
 @shared_task(bind=True)
-def mark_failure(self, gwas_id):
-    """Mark a task as failed, and email site admins. Eventually, we can dial back the error emails a bit."""
-    instance = models.AnalysisInfo.objects.get(pk=gwas_id)
+def mark_failure(self, fileset_id):
+    """
+    Mark a task as failed, and email site admins (for every failure).
+    Eventually, we can dial back the error emails a bit.
+    """
+    instance = models.AnalysisFileset.objects.get(pk=fileset_id)
 
-    logger.exception(f'Ingestion pipeline failed for gwas id: {gwas_id}')
+    logger.exception(f'Ingestion pipeline failed for gwas id: {fileset_id}')
     instance.ingest_status = 1
     instance.ingest_complete = timezone.now()
     instance.save()
 
     mail_admins('Results done processing',
-                f'Data ingestion failed for gwas id: {gwas_id}. Please see logs for details.'
+                f'Data ingestion failed for gwas id: {fileset_id}. Please see logs for details.'
     )
 
 
-def total_pipeline(gwas_id: int):
+def total_pipeline(fileset_id: int):
     """Combine discrete tasks into a total pipeline"""
-    instance = models.AnalysisInfo.objects.get(pk=gwas_id)
-
     return (
-        hash_contents.si(gwas_id) |
-        normalize_gwas.si(gwas_id) |
-        summarize_gwas.si(gwas_id) |
-        mark_success.si(gwas_id)
-    ).on_error(mark_failure.si(gwas_id))
+        hash_contents.si(fileset_id) |
+        normalize_gwas.si(fileset_id) |
+        summarize_gwas.si(fileset_id) |
+        mark_success.si(fileset_id)
+    ).on_error(mark_failure.si(fileset_id))
 
 
-@receiver(signals.post_save, sender=models.AnalysisInfo)
-def gwas_upload_signal(sender, instance: models.AnalysisInfo = None, created=None, **kwargs):
+@receiver(signals.post_save, sender=models.AnalysisFileset)
+def gwas_upload_signal(sender, instance: models.AnalysisFileset = None, created=None, **kwargs):
     """
     Run the ingest pipeline whenever a new record is created in the database
 

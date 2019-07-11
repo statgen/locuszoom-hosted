@@ -1,33 +1,27 @@
 import os
 import random
 
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import signals
 from django.utils import timezone
 import factory
 
 from locuszoom_plotting_service.users.tests.factories import UserFactory
 from .. import constants as lz_constants
-from ..models import AnalysisInfo
+from ..models import AnalysisInfo, AnalysisFileset
 
 
 def choose_genome_build() -> str:
     return random.choice(lz_constants.GENOME_BUILDS)[0]
 
 
-def choose_imputation_panel() -> str:
-    return random.choice(lz_constants.IMPUTATION_PANELS)[0]
-
 # TODO: find a way to keep test runs from cluttering FS with 0B files; temp folder maybe?
-
-
 @factory.django.mute_signals(signals.post_save)
-class GwasFactory(factory.DjangoModelFactory):
-    owner = factory.SubFactory(UserFactory)
-    label = factory.Faker('words', nb=2)
+class AnalysisFilesetFactory(factory.DjangoModelFactory):
+    raw_gwas_file = None  # Only create temp files if has_data trait is True
 
-    build = factory.LazyFunction(choose_genome_build)
-    imputed = factory.LazyFunction(choose_imputation_panel)
+    ingest_status = 0  # pending (most tests don't run celery tasks, and therefore are "pending" processing)
+    ingest_complete = None
+
     parser_options = factory.Dict({  # Parser options for standard gwas format
         'chr_col': 1,
         'pos_col': 2,
@@ -37,15 +31,8 @@ class GwasFactory(factory.DjangoModelFactory):
         'is_log_pval': False
     })
 
-    is_public = False
-
-    ingest_status = 0  # pending (most tests don't run celery tasks, and therefore are "pending" processing)
-    ingest_complete = None
-
-    raw_gwas_file = factory.django.FileField(from_func=lambda: SimpleUploadedFile('fictional.txt', content=''))
-
     class Meta:
-        model = AnalysisInfo
+        model = AnalysisFileset
 
     class Params:
         # Most samples will be fine with a 0B file. Only provide actual data if explicitly requested.
@@ -56,5 +43,19 @@ class GwasFactory(factory.DjangoModelFactory):
 
         has_completed = factory.Trait(  # Marks pipeline complete (without actually running it)
             ingest_complete = timezone.now(),
-            ingest_status = 2
+            ingest_status=2
         )
+
+
+class AnalysisInfoFactory(factory.DjangoModelFactory):
+    owner = factory.SubFactory(UserFactory)
+    label = factory.Faker('words', nb=2)
+
+    files = factory.SubFactory(AnalysisFilesetFactory)
+
+    build = factory.LazyFunction(choose_genome_build)
+
+    is_public = False
+
+    class Meta:
+        model = AnalysisInfo

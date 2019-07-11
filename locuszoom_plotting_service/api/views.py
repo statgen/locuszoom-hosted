@@ -23,7 +23,8 @@ from locuszoom_plotting_service.gwas import models
 
 class GwasFilter(filters.FilterSet):
     """Filters used for GWAS endpoints, including a special "only my studies" alias"""
-    me = filters.BooleanFilter(method='filter_by_user', label='Show only records owned by the current logged-in user, as filter[me]')
+    me = filters.BooleanFilter(method='filter_by_user',
+                               label='Show only records owned by the current logged-in user, as filter[me]')
 
     class Meta:
         model = models.AnalysisInfo
@@ -42,13 +43,13 @@ class GwasListView(generics.ListAPIView):
     List all known uploaded GWAS analyses
         (public data sets, plus any private to just this user)
     """
-    queryset = lz_models.AnalysisInfo.objects.filter(ingest_status=2).select_related('owner')
+    queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False).select_related('owner')
     serializer_class = serializers.GwasSerializer
     permission_classes = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
     ordering = ('-created',)
 
     filterset_class = GwasFilter
-    search_fields = ('label', 'pmid')  # TODO: Allow search by author in future
+    search_fields = ('label', 'pmid')  # TODO: Future search fields: author, phenotype name, snomed code
 
     def get_queryset(self):
         queryset = super(GwasListView, self).get_queryset()
@@ -61,18 +62,18 @@ class GwasListView(generics.ListAPIView):
 class GwasDetailView(generics.RetrieveAPIView):
     """Metadata describing one particular uploaded GWAS"""
     permission_classes = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
-    queryset = lz_models.AnalysisInfo.objects.filter(ingest_complete__isnull=False).all()
+    queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False)
     serializer_class = serializers.GwasSerializer
 
 
 class GwasRegionView(generics.RetrieveAPIView):
     """
-    Fetch the GWAS data (such as from a file) for a specific region
-    # TODO: Improve serialization, error handling, etc. (in errors section, not detail)
+    Fetch the parsed GWAS data (such as from a file) for a specific region
+    # TODO: Improve serialization, error handling, etc. (better follow JSONAPI spec for errors)
     """
     renderer_classes = [drf_renderers.JSONRenderer]
     filter_backends: list = []
-    queryset = lz_models.AnalysisInfo.objects.all()
+    queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False)
     serializer_class = serializers.GwasFileSerializer
     permission_classes = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
 
@@ -81,19 +82,18 @@ class GwasRegionView(generics.RetrieveAPIView):
         return super(GwasRegionView, self).get_serializer(*args, many=True, **kwargs)
 
     def get_object(self):
-        gwas = super(GwasRegionView, self).get_object()
+        gwas = super(GwasRegionView, self).get_object()  # GWAS id given as pk in url
         chrom, start, end = self._query_params()
 
-        if not os.path.isfile(gwas.normalized_gwas_path):
+        if not os.path.isfile(gwas.files.normalized_gwas_path):
             raise drf_exceptions.NotFound
 
-        reader = TabixReader(gwas.normalized_gwas_path, parser=standard_gwas_parser)
+        reader = TabixReader(gwas.files.normalized_gwas_path, parser=standard_gwas_parser)
         return list(reader.fetch(chrom, start, end))
 
     def _query_params(self) -> ty.Tuple[str, int, int]:
         """
         Specific rules for GWAS retrieval
-        # TODO: Write tests!
         - Must specify chrom, start, and end as query params
         - start and end must be integers
         - end > start

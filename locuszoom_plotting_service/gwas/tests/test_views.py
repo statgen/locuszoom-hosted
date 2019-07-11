@@ -3,7 +3,7 @@ from django.urls import reverse
 
 
 from .factories import (
-    UserFactory, GwasFactory
+    UserFactory, AnalysisInfoFactory
 )
 
 
@@ -14,14 +14,15 @@ class TestOverviewPermissions(TestCase):
         cls.user_other = user2 = UserFactory()
 
         # Create fake studies with no data, that will render anyway
-        cls.study_private = GwasFactory(owner=user1, is_public=False)
-        cls.study_public = GwasFactory(owner=user2, is_public=True)
+        cls.study_private = AnalysisInfoFactory(owner=user1, is_public=False)
+        cls.study_public = AnalysisInfoFactory(owner=user2, is_public=True)
 
     def tearDown(self):
         self.client.logout()
 
     def test_owner_can_see_private_study(self):
         self.client.force_login(self.user_owner)
+
         response = self.client.get(reverse('gwas:overview', args=[self.study_private.pk]))
         self.assertContains(response, 'still being processed', status_code=200,
                             msg_prefix='User should be able to see their own study')
