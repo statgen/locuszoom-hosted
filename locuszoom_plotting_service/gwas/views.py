@@ -102,8 +102,7 @@ class GwasSummary(LoginRequiredMixin, lz_permissions.GwasAccessPermission, Detai
         context = super().get_context_data(**kwargs)
         gwas = self.get_object()
         context['js_vars'] = json.dumps({
-            # FIXME: This breaks the template: files is only present on success, but there may be failed states
-            'ingest_status': gwas.files.ingest_status if gwas.files else 0,
+            'ingest_status': gwas.ingest_status,
             'manhattan_url': reverse('gwas:manhattan-json', kwargs={'pk': gwas.pk}) if gwas.files else None,
             'qq_url': reverse('gwas:qq-json', kwargs={'pk': gwas.pk}) if gwas.files else None,
         })
