@@ -6,15 +6,18 @@ import typing as ty
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.urls import reverse
-from django.views.generic import DetailView
+from django.views.generic import CreateView, DetailView
 from django.views.generic.base import View
 from django.views.generic.detail import SingleObjectMixin
-from django.views.generic.edit import CreateView
 
-from django.shortcuts import render
-from django.http import FileResponse, HttpResponseBadRequest
+from django.shortcuts import redirect, render
+from django.http import FileResponse, HttpResponseBadRequest, HttpResponseRedirect
 
+from locuszoom_plotting_service.taskapp import tasks
+
+from . import forms as lz_forms
 from . import models as lz_models
 from . import permissions as lz_permissions
 
@@ -48,20 +51,70 @@ def home(request):
     return render(request,  'gwas/home.html')
 
 
+@login_required()
+def rerun_analysis(request, pk):
+    """
+    FIXME: TEMPORARY debugging view
+    Replace this later with something smarter, eg "rerun, and possibly replace the options in some of the fields"
+    """
+    metadata = lz_models.AnalysisInfo.objects.get(pk=pk)
+    files = metadata.analysisfileset_set.order_by('-created').first()
+    files.ingest_status = 0
+    files.save()
+
+    if request.user != metadata.owner:
+        raise HttpResponseBadRequest
+    transaction.on_commit(lambda: tasks.total_pipeline(files.pk).apply_async())
+
+    return redirect(metadata)
+
+
 class GwasCreate(LoginRequiredMixin, CreateView):
-    """Render a simple HTML form"""
-    # FIXME: Fix the form
+    """
+    Upload a GWAS file.
+
+    Note there is a bit of trickery here to accommodate creating two models (file + metadata) instead of one.
+    """
     model = lz_models.AnalysisInfo
-    fields = [
-        # These fields go to AnalysisInfo
-        'label', 'pmid', 'is_public', 'build', # 'n_cases', 'n_controls',
-        # These fields go to AnalysisFileset
-        'parser_options', 'raw_gwas_file']
+    fields = ['label', 'pmid', 'is_public', 'build']
     template_name = 'gwas/upload.html'
 
+    def get_form_kwargs(self):
+        base = super(GwasCreate, self).get_form_kwargs()
+        base.pop('prefix')  # Remove a single field that doesn't play nice with this dual-form
+        return base
+
+    def get_form(self, form_class=None):
+        """The template 'form' variable will contain two, count 'em two, forms"""
+        base_kwargs = self.get_form_kwargs()
+        return {
+            'metadata': self.get_form_class()(prefix='metadata', **base_kwargs),
+            'fileset': lz_forms.AnalysisFilesetForm(prefix='fileset', **base_kwargs)
+        }
+
     def form_valid(self, form):
-        form.instance.owner = self.request.user
-        return super(GwasCreate, self).form_valid(form)
+        """Followup action to take after verifying the form is valid"""
+        metadata = form['metadata']
+        fileset = form['fileset']
+
+        metadata.instance.owner = self.request.user
+        self.object = metadata.save()  # used by get_success_url
+
+        fileset.instance.metadata = metadata.instance
+        fileset.save()
+
+        # Deliberately skip the super call, which assumes the view has only one form
+        return HttpResponseRedirect(self.get_success_url())
+
+    def post(self, request, *args, **kwargs):
+        """Override parent create view, which relies on a single form.is_valid"""
+        self.object = None
+
+        form = self.get_form()
+        if form['metadata'].is_valid() and form['fileset'].is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 
 #######
@@ -117,6 +170,7 @@ class GwasLocus(LoginRequiredMixin, lz_permissions.GwasAccessPermission, DetailV
     """
     template_name = 'gwas/gwas_region.html'
     queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False)
+    context_object_name = 'gwas'
 
     def get_context_data(self, **kwargs):
         """Additional template context"""

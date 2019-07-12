@@ -24,7 +24,8 @@ logger = get_task_logger(__name__)
 def hash_contents(self, fileset_id: int):
     """Store a unique hash of the file contents"""
     instance = models.AnalysisFileset.objects.get(pk=fileset_id)
-    sha256 = processors.get_file_sha256(os.path.join(settings.MEDIA_ROOT, instance.files.raw_gwas_file.name))
+
+    sha256 = processors.get_file_sha256(os.path.join(settings.MEDIA_ROOT, instance.raw_gwas_file.name))
     instance.file_sha256 = sha256
     instance.save()
 
@@ -76,7 +77,7 @@ def summarize_gwas(self, fileset_id: int):
 @shared_task(bind=True)
 def mark_success(self, fileset_id):
     """Notify the owner of a gwas that ingestion has successfully completed"""
-    instance = models.AnalysisInfo.objects.get(pk=fileset_id)
+    instance = models.AnalysisFileset.objects.get(pk=fileset_id)
 
     instance.ingest_status = 2
     instance.ingest_complete = timezone.now()
@@ -88,9 +89,9 @@ def mark_success(self, fileset_id):
     metadata.save()
 
     send_mail('Results done processing',
-              f'Your results are done processing. Please visit {instance.metadata.get_absolute_url()} to see the Manhattan plot.',
+              f'Your results are done processing. Please visit {metadata.get_absolute_url()} to see the Manhattan plot.',
               'noreply@umich.edu',
-              [instance.owner.email])
+              [metadata.owner.email])
 
 
 @shared_task(bind=True)

@@ -100,7 +100,7 @@ class AnalysisFileset(TimeStampedModel):
     # Basic file data
     pipeline_path = models.CharField(max_length=32,
                                      default=_pipeline_folder,
-                                     help_text='Internal use only: path to folder of ingested data')
+                                     help_text='Internal use only: path to folder of ingested data. Value set automatically.')
     raw_gwas_file = models.FileField(upload_to=util.get_gwas_raw_fn,
                                      verbose_name='GWAS file',
                                      help_text='The GWAS data to be uploaded. May be text-based, or (b)gzip compressed')

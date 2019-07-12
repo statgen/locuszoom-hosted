@@ -13,6 +13,10 @@ urlpatterns = [
     # Dataset-specific views
     path('gwas/', RedirectView.as_view(pattern_name='home')),
     path('gwas/<pk>/', views.GwasSummary.as_view(), name='overview'),
+    path('gwas/<pk>/region/', views.GwasLocus.as_view(), name='region'),
+
+    # Temporary debugging views
+    path('gwas/<pk>/rerun/', views.rerun_analysis, name='rerun'),
 
     # Some views that serve up raw data from server
     path('gwas/<pk>/data/', views.GwasSummaryStats.as_view(), name='gwas-download'),
@@ -20,6 +24,4 @@ urlpatterns = [
     path('gwas/<pk>/data/manhattan/', views.GwasManhattanJson.as_view(), name='manhattan-json'),
     path('gwas/<pk>/data/qq/', views.GwasQQJson.as_view(), name='qq-json'),
 
-
-    path('gwas/<pk>/region/', views.GwasLocus.as_view(), name='region'),
 ]

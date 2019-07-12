@@ -107,10 +107,10 @@
         </div>
       </div>
     {% elif gwas.ingest_status == 0 %}
-      {#  TODO: This page has success/pending states. Add a third state to model for "failed to upload"  #}
       Your file is still being processed. A notification email will be sent when it is ready.
     {% else %}
-      An error occurred while processing your GWAS file. Please contact us if the problem persists.
+      <p>An error occurred while processing your GWAS file. Please contact us if the problem persists.</p>
+      <p><a class="btn btn-warning" href="{% url 'gwas:rerun' gwas.pk %}">Re-run ingest step</a></p>
     {% endif %}
   </div>
 {% endblock %}

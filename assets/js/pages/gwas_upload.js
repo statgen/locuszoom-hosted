@@ -111,9 +111,9 @@ const modal = new Vue({
     }}).$mount('#vue-app');
 
 window.modal = modal;
-const fileField = document.getElementById('id_raw_gwas_file');
+const fileField = document.getElementById('id_fileset-raw_gwas_file');
 modal.$on('has_options', function (parser_options) { // Close with options selected
-    document.getElementById('id_parser_options').value = JSON.stringify(parser_options);
+    document.getElementById('id_fileset-parser_options').value = JSON.stringify(parser_options);
     // Once options are received, mark form as valid
     fileField.setCustomValidity('');
 });
@@ -134,7 +134,7 @@ fileField.addEventListener('change', function (e) {
 
     const file = event.target.files[0];
     const name = file.name;
-    document.getElementById('id_parser_options').value = '';
+    document.getElementById('id_fileset-parser_options').value = '';
 
     if (file.size > MAX_UPLOAD_SIZE) {
         fileField.setCustomValidity(`File exceeds the max upload size of ${MAX_UPLOAD_SIZE}`);

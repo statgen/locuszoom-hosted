@@ -4,7 +4,7 @@
 
 {% block css %}
   <style> {# Hack: hide this field because we will set parser options via vue modal #}
-    #div_id_parser_options {
+    #div_id_fileset-parser_options {
       display: none;
     }
   </style>
@@ -16,7 +16,8 @@
       <div class="col-md-6">
         <form action="{% url 'gwas:upload' %}" enctype="multipart/form-data" method="POST">
           {% csrf_token %}
-          {{ form | crispy }}
+          {{ form.metadata | crispy }}
+          {{ form.fileset | crispy }}
           <input class="btn btn-success" type="submit" value="Submit" />
         </form>
       </div>
