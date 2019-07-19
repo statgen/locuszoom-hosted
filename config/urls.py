@@ -22,10 +22,6 @@ urlpatterns = [
          include_docs_urls(title='GWAS API Docs')
     ),
     # User management
-    path(
-        "users/",
-        include("locuszoom_plotting_service.users.urls", namespace="users"),
-    ),
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
 ] + static(

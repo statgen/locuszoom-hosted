@@ -23,5 +23,4 @@ urlpatterns = [
     path('gwas/<pk>/data/ingest_log/', views.GwasIngestLog.as_view(), name='gwas-ingest-log'),
     path('gwas/<pk>/data/manhattan/', views.GwasManhattanJson.as_view(), name='manhattan-json'),
     path('gwas/<pk>/data/qq/', views.GwasQQJson.as_view(), name='qq-json'),
-
 ]
