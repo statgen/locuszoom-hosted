@@ -97,7 +97,7 @@ AUTHENTICATION_BACKENDS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = 'users.User'
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = 'users:redirect'
+LOGIN_REDIRECT_URL = 'home'
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
 LOGIN_URL = 'account_login'
 
@@ -273,6 +273,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_USER_DISPLAY = lambda user: user.display_name
 # Boilerplate to control details how users log in
 ACCOUNT_ADAPTER = 'locuszoom_plotting_service.users.adapters.AccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'locuszoom_plotting_service.users.adapters.SocialAccountAdapter'
@@ -309,7 +310,9 @@ REST_FRAMEWORK = {
 
 # The maximum region size (bp) for a single Locuszoom plot. This is used to prevent ginormous API calls.
 LZ_MAX_REGION_SIZE = 500_000
-
+# The "official" domain name. This is set in a .env file, and it must exactly match the base url registered as part of
+#   your OAuth provider configuration (eg callback urls). It should be a domain, not an IP.
+LZ_OFFICIAL_DOMAIN = env('LZ_OFFICIAL_DOMAIN', default='my.locuszoom.org')
 
 # This is used to find the interactive parts of pages, which are written and built using Vue.js + Webpack
 WEBPACK_LOADER = {

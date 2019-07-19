@@ -3,13 +3,15 @@ from django.urls import include, path
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views import defaults as default_views
+from django.views.generic import TemplateView
 
 from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
+    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path(
-        "",
-        include("locuszoom_plotting_service.gwas.urls", namespace="gwas"),
+        "gwas/",
+        include("locuszoom_plotting_service.gwas.urls", namespace="gwas")
     ),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),

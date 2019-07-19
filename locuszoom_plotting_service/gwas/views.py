@@ -47,11 +47,6 @@ class BaseFileView(View, SingleObjectMixin):
 
 
 @login_required()
-def home(request):
-    return render(request,  'gwas/home.html')
-
-
-@login_required()
 def rerun_analysis(request, pk):
     """
     FIXME: TEMPORARY debugging view

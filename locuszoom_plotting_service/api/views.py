@@ -45,7 +45,7 @@ class GwasListView(generics.ListAPIView):
     """
     queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False).select_related('owner')
     serializer_class = serializers.GwasSerializer
-    permission_classes = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
+    permission_classes = (permissions.GwasPermission,)
     ordering = ('-created',)
 
     filterset_class = GwasFilter

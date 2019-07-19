@@ -1,1 +1,10 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block content %}
+  <div id="app"></div>
+{% endblock %}
+
+{%  block javascript %}
+  {% render_bundle 'home_search' %}
+{% endblock %}

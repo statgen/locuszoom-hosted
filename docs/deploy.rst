@@ -68,3 +68,15 @@ Include /etc/letsencrypt/options-ssl-apache.conf
 </IfModule>
 ```
 
+OAuth settings
+================
+This site uses social OAuth login via Django-allauth.
+Follow the installation instructions to register OAuth credentials (client ID and secret) for your local app. The site
+    URL must match the callback registered with the OAuth provider.
+https://django-allauth.readthedocs.io/en/latest/installation.html
+
+You do not need to create a `Site` in Django admin, as the app will do this automatically for you on first startup
+(based on the `LZ_OFFICIAL_URL` registered in your .env file)
+
+A sample callback URL for OAuth registration would be:
+    http://localhost:8000/accounts/google/login/callback/

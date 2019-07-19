@@ -94,7 +94,8 @@ INSTALLED_APPS += ['django_extensions']  # noqa F405
 CELERY_TASK_ALWAYS_EAGER = False
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-eager-propagates
 CELERY_TASK_EAGER_PROPAGATES = True
-# Your stuff...
-# ------------------------------------------------------------------------------
 
+# Misc other configuration
+# ------------------------------------------------------------------------------
+LZ_OFFICIAL_DOMAIN = 'localhost:8000'
 WEBPACK_LOADER['DEFAULT']['CACHE'] = not DEBUG  # noqa F405
