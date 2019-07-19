@@ -1,6 +1,5 @@
-from rest_framework.test import APITestCase
 from django.urls import reverse
-
+from rest_framework.test import APITestCase
 
 from locuszoom_plotting_service.gwas.tests.factories import (
     UserFactory, AnalysisInfoFactory, AnalysisFilesetFactory
@@ -36,10 +35,11 @@ class TestListviewPermissions(APITestCase):
         payload = response.json()
         self.assertEqual(len(payload['data']), 1)
 
-    def test_api_requires_authentication(self):
+    def test_without_auth_shows_only_public(self):
         response = self.client.get(reverse('apiv1:gwas-list'))
-        # TODO: should this return a 401?
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(len(payload['data']), 1)
 
     def test_filter_special_me(self):
         # Special filter syntax excludes studies by any other user, even if they are public and otherwise visible

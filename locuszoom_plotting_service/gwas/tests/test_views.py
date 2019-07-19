@@ -37,7 +37,14 @@ class TestOverviewPermissions(TestCase):
         self.assertNotContains(response, 'still being processed', status_code=403,
                                msg_prefix='Private study should not be visible')
 
-    def test_viewing_require_authentication(self):
+    def test_public_study_no_auth_required(self):
         response = self.client.get(reverse('gwas:overview', args=[self.study_public.pk]))
-        # TODO: should this return a 401?
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
+
+    def test_private_study_requires_auth(self):
+        response = self.client.get(reverse('gwas:overview', args=[self.study_private.pk]))
+        self.assertEqual(response.status_code, 403, 'User must be logged in')
+
+        self.client.force_login(self.user_other)
+        response = self.client.get(reverse('gwas:overview', args=[self.study_private.pk]))
+        self.assertEqual(response.status_code, 403, 'Only owner can see a private study')

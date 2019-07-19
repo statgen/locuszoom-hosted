@@ -114,30 +114,30 @@ class GwasCreate(LoginRequiredMixin, CreateView):
 
 #######
 # Data/download views, including raw JSON files that don't match the API design.
-class GwasSummaryStats(LoginRequiredMixin, lz_permissions.GwasAccessPermission, BaseFileView):
+class GwasSummaryStats(lz_permissions.GwasAccessPermission, BaseFileView):
     path_arg = 'normalized_gwas_path'
     content_type = 'application/gzip'
     download_name = 'summary_stats.gz'
 
 
-class GwasIngestLog(LoginRequiredMixin, lz_permissions.GwasAccessPermission, BaseFileView):
+class GwasIngestLog(lz_permissions.GwasAccessPermission, BaseFileView):
     path_arg = 'normalized_gwas_log_path'
     download_name = 'ingest_log.log'
 
 
-class GwasManhattanJson(LoginRequiredMixin, lz_permissions.GwasAccessPermission, BaseFileView):
+class GwasManhattanJson(lz_permissions.GwasAccessPermission, BaseFileView):
     path_arg = 'manhattan_path'
     content_type = 'application/json'
 
 
-class GwasQQJson(LoginRequiredMixin, lz_permissions.GwasAccessPermission, BaseFileView):
+class GwasQQJson(lz_permissions.GwasAccessPermission, BaseFileView):
     path_arg = 'qq_path'
     content_type = 'application/json'
 
 
 #######
 # HTML views
-class GwasSummary(LoginRequiredMixin, lz_permissions.GwasAccessPermission, DetailView):
+class GwasSummary(lz_permissions.GwasAccessPermission, DetailView):
     """
     Basic GWAS overview. Shows manhattan plot and other summary info for a dataset.
     """
@@ -157,7 +157,7 @@ class GwasSummary(LoginRequiredMixin, lz_permissions.GwasAccessPermission, Detai
         return context
 
 
-class GwasLocus(LoginRequiredMixin, lz_permissions.GwasAccessPermission, DetailView):
+class GwasLocus(lz_permissions.GwasAccessPermission, DetailView):
     """
     A LocusZoom plot associated with one specific GWAS region
 
