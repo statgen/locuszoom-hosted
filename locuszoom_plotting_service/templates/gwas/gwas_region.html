@@ -10,8 +10,11 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        <a href="{% url 'gwas:overview' gwas.id %}">< Overview/Manhattan plot</a><br>
-        <span class="text-muted">Created by: {{ gwas.owner.name }}, {{ gwas.created | date }}</span>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'gwas:overview' gwas.id %}">Study</a></li>
+          <li class="breadcrumb-item active">Manhattan Plot</li>
+        </ol>
+        <span class="text-muted">Created by: {{ gwas.owner.display_name }}, {{ gwas.created | date }}</span>
         {% if gwas.is_public %}<span class="badge badge-primary">(Public)</span>{% endif %}
       </div>
     </div>

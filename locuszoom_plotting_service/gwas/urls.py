@@ -12,6 +12,7 @@ urlpatterns = [
     # Dataset-specific views
     path('', RedirectView.as_view(pattern_name='home')),
     path('<pk>/', views.GwasSummary.as_view(), name='overview'),
+    path('<pk>/edit/', views.GwasEdit.as_view(), name='edit'),
     path('<pk>/region/', views.GwasLocus.as_view(), name='region'),
 
     # Temporary debugging views

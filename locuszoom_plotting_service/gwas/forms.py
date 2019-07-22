@@ -4,8 +4,9 @@ from . import models
 
 
 class AnalysisInfoForm(forms.ModelForm):
-    model = models.AnalysisInfo
-    fields = ['label', 'pmid', 'is_public', 'build', ]
+    class Meta:
+        model = models.AnalysisInfo
+        fields = ['label', 'pmid', 'is_public', 'build', ]
 
 
 class AnalysisFilesetForm(forms.ModelForm):

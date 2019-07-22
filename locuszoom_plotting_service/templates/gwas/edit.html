@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Study Info{% endblock %}
+
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'gwas:overview' gwas.id %}">Study</a></li>
+          <li class="breadcrumb-item active">Edit</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <form method="POST">
+          {% csrf_token %}
+          {{ form | crispy }}
+          <input class="btn btn-success" type="submit" value="Submit"/>
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

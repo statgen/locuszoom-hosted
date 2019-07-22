@@ -8,11 +8,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.urls import reverse
-from django.views.generic import CreateView, DetailView
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    UpdateView,
+)
 from django.views.generic.base import View
 from django.views.generic.detail import SingleObjectMixin
 
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.http import FileResponse, HttpResponseBadRequest, HttpResponseRedirect
 
 from locuszoom_plotting_service.taskapp import tasks
@@ -112,32 +116,41 @@ class GwasCreate(LoginRequiredMixin, CreateView):
             return self.form_invalid(form)
 
 
+class GwasEdit(lz_permissions.GwasOwner, UpdateView):
+    """Metadata editing UI. In the future, this may also incorporate a button to change analysis parameters
+        and/or rerun data ingestion. (eg, to get new code/features)"""
+    model = lz_models.AnalysisInfo
+    context_object_name = "gwas"
+    form_class = lz_forms.AnalysisInfoForm
+    template_name = "gwas/edit.html"
+
+
 #######
 # Data/download views, including raw JSON files that don't match the API design.
-class GwasSummaryStats(lz_permissions.GwasAccessPermission, BaseFileView):
+class GwasSummaryStats(lz_permissions.GwasViewPermission, BaseFileView):
     path_arg = 'normalized_gwas_path'
     content_type = 'application/gzip'
     download_name = 'summary_stats.gz'
 
 
-class GwasIngestLog(lz_permissions.GwasAccessPermission, BaseFileView):
+class GwasIngestLog(lz_permissions.GwasViewPermission, BaseFileView):
     path_arg = 'normalized_gwas_log_path'
     download_name = 'ingest_log.log'
 
 
-class GwasManhattanJson(lz_permissions.GwasAccessPermission, BaseFileView):
+class GwasManhattanJson(lz_permissions.GwasViewPermission, BaseFileView):
     path_arg = 'manhattan_path'
     content_type = 'application/json'
 
 
-class GwasQQJson(lz_permissions.GwasAccessPermission, BaseFileView):
+class GwasQQJson(lz_permissions.GwasViewPermission, BaseFileView):
     path_arg = 'qq_path'
     content_type = 'application/json'
 
 
 #######
 # HTML views
-class GwasSummary(lz_permissions.GwasAccessPermission, DetailView):
+class GwasSummary(lz_permissions.GwasViewPermission, DetailView):
     """
     Basic GWAS overview. Shows manhattan plot and other summary info for a dataset.
     """
@@ -157,7 +170,7 @@ class GwasSummary(lz_permissions.GwasAccessPermission, DetailView):
         return context
 
 
-class GwasLocus(lz_permissions.GwasAccessPermission, DetailView):
+class GwasLocus(lz_permissions.GwasViewPermission, DetailView):
     """
     A LocusZoom plot associated with one specific GWAS region
 
