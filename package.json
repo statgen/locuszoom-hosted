@@ -31,7 +31,8 @@
     "locuszoom-tabix": "abought/locuszoom-tabix#9e4734624c5cb3c3195a8406ecf35f79065d04c1",
     "pako": "^1.0.8",
     "underscore": "1.8.3",
-    "vue": "^2.6.10"
+    "vue": "^2.6.10",
+    "vuejs-paginator": "^2.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.3.4",
