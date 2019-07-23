@@ -11,16 +11,16 @@ urlpatterns = [
 
     # Dataset-specific views
     path('', RedirectView.as_view(pattern_name='home')),
-    path('<pk>/', views.GwasSummary.as_view(), name='overview'),
-    path('<pk>/edit/', views.GwasEdit.as_view(), name='edit'),
-    path('<pk>/region/', views.GwasLocus.as_view(), name='region'),
+    path('<slug>/', views.GwasSummary.as_view(), name='overview'),
+    path('<slug>/edit/', views.GwasEdit.as_view(), name='edit'),
+    path('<slug>/region/', views.GwasLocus.as_view(), name='region'),
 
     # Temporary debugging views
-    path('<pk>/rerun/', views.rerun_analysis, name='rerun'),
+    path('<slug>/rerun/', views.rerun_analysis, name='rerun'),
 
     # Some views that serve up raw data from server
-    path('<pk>/data/', views.GwasSummaryStats.as_view(), name='gwas-download'),
-    path('<pk>/data/ingest_log/', views.GwasIngestLog.as_view(), name='gwas-ingest-log'),
-    path('<pk>/data/manhattan/', views.GwasManhattanJson.as_view(), name='manhattan-json'),
-    path('<pk>/data/qq/', views.GwasQQJson.as_view(), name='qq-json'),
+    path('<slug>/data/', views.GwasSummaryStats.as_view(), name='gwas-download'),
+    path('<slug>/data/ingest_log/', views.GwasIngestLog.as_view(), name='gwas-ingest-log'),
+    path('<slug>/data/manhattan/', views.GwasManhattanJson.as_view(), name='manhattan-json'),
+    path('<slug>/data/qq/', views.GwasQQJson.as_view(), name='qq-json'),
 ]

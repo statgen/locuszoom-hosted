@@ -9,6 +9,7 @@ from locuszoom_plotting_service.gwas import models as lz_models
 
 
 class GwasSerializer(drf_serializers.ModelSerializer):
+    id = drf_serializers.IntegerField(source='slug')
     owner_name = drf_serializers.SerializerMethodField(source='get_owner_name', read_only=True)
     url = drf_serializers.CharField(source='get_absolute_url', read_only=True)
 
@@ -17,7 +18,7 @@ class GwasSerializer(drf_serializers.ModelSerializer):
 
     class Meta:
         model = lz_models.AnalysisInfo
-        fields = ['id', 'created', 'label', 'build', 'url', 'owner_name']
+        fields = ['created', 'label', 'build', 'url', 'owner_name']
 
 
 class GwasFileSerializer(drf_serializers.Serializer):

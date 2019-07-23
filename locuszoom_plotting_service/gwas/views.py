@@ -51,12 +51,12 @@ class BaseFileView(View, SingleObjectMixin):
 
 
 @login_required()
-def rerun_analysis(request, pk):
+def rerun_analysis(request, slug):
     """
     FIXME: TEMPORARY debugging view
     Replace this later with something smarter, eg "rerun, and possibly replace the options in some of the fields"
     """
-    metadata = lz_models.AnalysisInfo.objects.get(pk=pk)
+    metadata = lz_models.AnalysisInfo.objects.get(slug=slug)
     files = metadata.analysisfileset_set.order_by('-created').first()
     files.ingest_status = 0
     files.save()
@@ -164,8 +164,8 @@ class GwasSummary(lz_permissions.GwasViewPermission, DetailView):
         gwas = self.get_object()
         context['js_vars'] = json.dumps({
             'ingest_status': gwas.ingest_status,
-            'manhattan_url': reverse('gwas:manhattan-json', kwargs={'pk': gwas.pk}) if gwas.files else None,
-            'qq_url': reverse('gwas:qq-json', kwargs={'pk': gwas.pk}) if gwas.files else None,
+            'manhattan_url': reverse('gwas:manhattan-json', kwargs={'slug': gwas.slug}) if gwas.files else None,
+            'qq_url': reverse('gwas:qq-json', kwargs={'slug': gwas.slug}) if gwas.files else None,
         })
         return context
 
@@ -186,7 +186,7 @@ class GwasLocus(lz_permissions.GwasViewPermission, DetailView):
         gwas = self.get_object()
 
         context['js_vars'] = json.dumps({
-            'assoc_base_url': reverse('apiv1:gwas-region', kwargs={'pk': gwas.pk}),
+            'assoc_base_url': reverse('apiv1:gwas-region', kwargs={'slug': gwas.slug}),
             'label': gwas.label,
             'build': gwas.build,
             # Default region for bare URLs is the top hit in the study

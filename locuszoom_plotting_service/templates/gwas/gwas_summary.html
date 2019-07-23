@@ -73,7 +73,7 @@
       <div class="col-md-12">
         <span class="text-muted">Created by: {{ gwas.owner.display_name }}, {{ gwas.created | date }}</span>
         {% if gwas.is_public %}<span class="badge badge-primary">Public</span>{% endif %}
-        {% if gwas.owner == request.user %}(<a href="{% url 'gwas:edit' gwas.id %}">edit</a>){% endif %}
+        {% if gwas.owner == request.user %}(<a href="{% url 'gwas:edit' gwas.slug %}">edit</a>){% endif %}
       </div>
     </div>
 
@@ -81,7 +81,7 @@
       <div class="row">
         <div class="col-md-8"></div>
         <div class="col-md-4">
-          <a class="btn btn-outline-secondary float-right" href="{% url 'gwas:gwas-download' gwas.id %}">Download summary statistics</a>
+          <a class="btn btn-outline-secondary float-right" href="{% url 'gwas:gwas-download' gwas.slug %}">Download summary statistics</a>
         </div>
       </div>
 
@@ -111,7 +111,7 @@
       Your file is still being processed. A notification email will be sent when it is ready.
     {% else %}
       <p>An error occurred while processing your GWAS file. Please contact us if the problem persists.</p>
-      <p><a class="btn btn-warning" href="{% url 'gwas:rerun' gwas.pk %}">Re-run ingest step</a></p>
+      <p><a class="btn btn-warning" href="{% url 'gwas:rerun' gwas.slug %}">Re-run ingest step</a></p>
     {% endif %}
   </div>
 {% endblock %}
@@ -129,7 +129,7 @@
     // Required as hardcoded global reference in PheWeb pheno.js
     window.model = {
       // TODO: make sure more variants have ref/alt information
-      urlprefix: '{% url 'gwas:region' gwas.pk %}',
+      urlprefix: '{% url 'gwas:region' gwas.slug %}',
       tooltip_underscoretemplate: '<b><%= d.chrom %>:<%= d.pos.toLocaleString() %></b><br>'
     };
     window.pheno = '';

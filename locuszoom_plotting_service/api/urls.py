@@ -13,8 +13,8 @@ schema_view = get_schema_view(title='LocusZoom API', renderer_classes=[OpenAPIRe
 app_name = "api"
 urlpatterns = [
     path('gwas/', views.GwasListView.as_view(), name='gwas-list'),
-    path('gwas/<pk>/', views.GwasDetailView.as_view(), name='gwas-metadata'),
-    path('gwas/<pk>/data/', views.GwasRegionView.as_view(), name='gwas-region'),
+    path('gwas/<slug>/', views.GwasDetailView.as_view(), name='gwas-metadata'),
+    path('gwas/<slug>/data/', views.GwasRegionView.as_view(), name='gwas-region'),
     # "Standardized" api schema; can be used to auto-create api clients.
     path('schema/', schema_view)
 ]

@@ -9,8 +9,10 @@ from django.utils.http import urlencode
 from django.urls import reverse
 from model_utils.models import TimeStampedModel
 
+from ..base.util import _generate_slug
 from . import constants
 from . import util
+
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +28,9 @@ class AnalysisInfo(TimeStampedModel):
     """
     Metadata describing a single analysis (GWAS results). Typically associated with an `AnalysisFileset`
     """
+    slug = models.SlugField(max_length=6, unique=True, editable=False, default=_generate_slug,
+                            help_text="The external facing identifier for this record")
+
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  # One user, many gwas
     label = models.CharField(max_length=100,
                              help_text='A human-readable description, eg DIAGRAM Height GWAS')
@@ -57,7 +62,7 @@ class AnalysisInfo(TimeStampedModel):
                                         null=True)
 
     def get_absolute_url(self):
-        return reverse('gwas:overview', kwargs={'pk': self.pk})
+        return reverse('gwas:overview', kwargs={'slug': self.slug})
 
     def can_view(self, current_user):
         """
@@ -86,6 +91,19 @@ class AnalysisInfo(TimeStampedModel):
     def __str__(self):
         return self.label
 
+    def save(self, *args, **kwargs):
+        """Generate a slug and ensure it is unique"""
+        while True:  # Ensure creation of a random, unique slug
+            if self.pk:  # ...but only if the record is new
+                break
+
+            slug = _generate_slug()
+            if not AnalysisInfo.objects.filter(slug=slug).first():
+                self.slug = slug
+                break
+
+        super().save(*args, **kwargs)
+
 
 class AnalysisFileset(TimeStampedModel):
     """
@@ -100,7 +118,7 @@ class AnalysisFileset(TimeStampedModel):
     # Basic file data
     pipeline_path = models.CharField(max_length=32,
                                      default=_pipeline_folder,
-                                     help_text='Internal use only: path to folder of ingested data. Value set automatically.')
+                                     help_text='Internal use only: path to folder of ingested data. Value auto-set.')
     raw_gwas_file = models.FileField(upload_to=util.get_gwas_raw_fn,
                                      verbose_name='GWAS file',
                                      help_text='The GWAS data to be uploaded. May be text-based, or (b)gzip compressed')
@@ -191,7 +209,7 @@ class RegionView(TimeStampedModel):
     def get_absolute_url(self):
         """A region view is just a LocusZoom plot with some specific options"""
         # This references the backref for top hit view but this should be extended to allow many-to-many rels.
-        base_url = reverse('gwas:region', kwargs={'pk': self.gwas.pk})
+        base_url = reverse('gwas:region', kwargs={'slug': self.gwas.slug})
         params = urlencode(self.get_url_params())
         return f'{base_url}?{params}'
 

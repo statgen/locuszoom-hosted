@@ -77,12 +77,14 @@ class GwasRegionView(generics.RetrieveAPIView):
     serializer_class = serializers.GwasFileSerializer
     permission_classes = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
 
+    lookup_field = 'slug'
+
     def get_serializer(self, *args, **kwargs):
         """Unique scenario: a single model that returns a list of records"""
         return super(GwasRegionView, self).get_serializer(*args, many=True, **kwargs)
 
     def get_object(self):
-        gwas = super(GwasRegionView, self).get_object()  # GWAS id given as pk in url
+        gwas = super(GwasRegionView, self).get_object()  # External-facing GWAS id given as slug in url
         chrom, start, end = self._query_params()
 
         if not os.path.isfile(gwas.files.normalized_gwas_path):
