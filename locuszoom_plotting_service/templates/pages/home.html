@@ -6,5 +6,8 @@
 {% endblock %}
 
 {%  block javascript %}
+  <script type="application/javascript">
+    window.template_args = {{ js_vars | safe }};
+  </script>
   {% render_bundle 'home_search' %}
 {% endblock %}

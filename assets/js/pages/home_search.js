@@ -6,9 +6,11 @@ import Vue from 'vue';
 
 import App from '../../vue/gwas_search.vue';
 
-function makeWidget() {
-    return new Vue({ render: h => h(App)})
-        .$mount('#app');
+function makeWidget(is_authenticated) {
+    const app_params = { is_authenticated };
+    return new Vue({ render: h => h(App, {
+        props: app_params,
+    })}).$mount('#app');
 }
 
-window.widget = makeWidget();
+window.widget = makeWidget(window.template_args.is_authenticated);

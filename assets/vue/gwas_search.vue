@@ -14,6 +14,7 @@
 
     export default {
         name: "gwas_search",
+        props: {'is_authenticated': {type: Boolean, default: false}},
         data() {
             return {
                 search_status: 0, // 0 none, 1 pending, 2 finished, 3 failed
@@ -86,9 +87,10 @@
             <bs-form-checkbox id="filter-published" inline
                               v-model="filter_published">Published
             </bs-form-checkbox>
-            <bs-form-checkbox id="filter-mine" inline
+            <bs-form-checkbox v-if="is_authenticated"
+                              id="filter-mine" inline
                               v-model="filter_mine">Mine
-            </bs-form-checkbox>  <!-- TODO: Only if user is logged in? -->
+            </bs-form-checkbox>
           </bs-form-group>
 
         </bs-jumbotron>
