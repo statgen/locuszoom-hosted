@@ -82,6 +82,7 @@
         <div class="col-md-8"></div>
         <div class="col-md-4">
           <a class="btn btn-outline-secondary float-right" href="{% url 'gwas:gwas-download' gwas.slug %}">Download summary statistics</a>
+          {%  if request.user == gwas.owner %}<a class="btn btn-outline-secondary float-right" href="{% url 'gwas:gwas-ingest-log' gwas.slug %}">Ingest Logs</a>{% endif %}
         </div>
       </div>
 

@@ -35,6 +35,7 @@ def get_file_sha256(src_path, block_size=2 ** 20) -> bytes:
             shasum_256.update(data)
         return shasum_256.digest()
 
+
 @helpers.capture_errors
 def normalize_contents(src_path: str, parser_options: dict, dest_path: str, log_path: str) -> bool:
     """
@@ -55,7 +56,8 @@ def normalize_contents(src_path: str, parser_options: dict, dest_path: str, log_
         logger.info('Conversion succeeded! Results written to: {}'.format(dest_fn))
     finally:
         # Always write a log entry, no matter what
-        with open(log_path, 'w') as f:
+        with open(log_path, 'a+') as f:
+            f.write('\n')
             for n, reason, _ in reader.errors:
                 f.write('Excluded row {} from output due to parse error: {}\n'.format(n, reason))
 
@@ -63,7 +65,7 @@ def normalize_contents(src_path: str, parser_options: dict, dest_path: str, log_
                 f.write('[success] GWAS file has been converted.\n')
                 return True
             else:
-                f.write('[failure] Could not create normalized GWAS file for: {}'.format(src_path))
+                f.write('[failure] Could not create normalized GWAS file for: {}\n'.format(src_path))
     # In reality a failing task will usually raise an exception rather than returning False
     return False
 
@@ -118,6 +120,7 @@ def generate_qq(in_filename: str, out_filename) -> bool:
         json.dump(rv, f)
 
     return True
+
 
 @helpers.capture_errors
 def get_top_hit(in_filename: str):

@@ -1,3 +1,4 @@
+import functools
 import os
 
 from celery.utils.log import get_task_logger
@@ -20,10 +21,35 @@ from util.ingest import (
 logger = get_task_logger(__name__)
 
 
+def lz_file_prep(step_name):
+    """Prepare a task that operates on files, and logs success/ failure.
+    The tasks we define here ACTUALLY receive IDs, which are magically converted into a DB instance before being run
+    """
+    def decorator(func):
+        @functools.wraps(func)
+        def inner(self, fileset_id: int):
+            instance = models.AnalysisFileset.objects.get(pk=fileset_id)
+            log_path = instance.normalized_gwas_log_path
+            message = '[ingest] Performing upload step: {}\n'.format(step_name)
+            try:
+                func(self, instance)
+                message += '[success] Completed\n'
+            except Exception as e:
+                message += '[failure] An error prevented this step from completing\n'
+                message += str(e) + '\n'
+                raise e
+            finally:
+                with open(log_path, 'a+') as f:
+                    f.write(message)
+        return inner
+    return decorator
+
+
 @shared_task(bind=True)
-def hash_contents(self, fileset_id: int):
+@lz_file_prep("Calculate SHA256")
+def hash_contents(self, instance: models.AnalysisFileset):
     """Store a unique hash of the file contents"""
-    instance = models.AnalysisFileset.objects.get(pk=fileset_id)
+    # instance = models.AnalysisFileset.objects.get(pk=fileset_id)
 
     sha256 = processors.get_file_sha256(os.path.join(settings.MEDIA_ROOT, instance.raw_gwas_file.name))
     instance.file_sha256 = sha256
@@ -31,9 +57,8 @@ def hash_contents(self, fileset_id: int):
 
 
 @shared_task(bind=True)
-def normalize_gwas(self, fileset_id: int):
-    instance = models.AnalysisFileset.objects.get(pk=fileset_id)
-
+@lz_file_prep("Normalize GWAS file format")
+def normalize_gwas(self, instance: models.AnalysisFileset):
     src_path = os.path.join(settings.MEDIA_ROOT, instance.raw_gwas_file.name)
     dest_path = instance.normalized_gwas_path
     parser_options = instance.parser_options
@@ -50,9 +75,9 @@ def normalize_gwas(self, fileset_id: int):
 
 
 @shared_task(bind=True)
-def summarize_gwas(self, fileset_id: int):
+@lz_file_prep("Manhattan, QQ, and top hit detection")
+def summarize_gwas(self, instance: models.AnalysisFileset):
     """Generate "summary" files based on the overall study contents; uses PheWeb loader code"""
-    instance = models.AnalysisFileset.objects.get(pk=fileset_id)
     normalized_path = instance.normalized_gwas_path
     manhattan_path = instance.manhattan_path
     qq_path = instance.qq_path

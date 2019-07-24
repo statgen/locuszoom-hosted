@@ -19,7 +19,8 @@ class User(AbstractUser):
 
     @property
     def display_name(self):
-        return self.name or self.get_full_name()
+        """If no name is available, default to the public user ID (slug)"""
+        return self.name or self.get_full_name() or self.slug
 
     def save(self, *args, **kwargs):
         """Generate a slug and ensure it is unique"""
