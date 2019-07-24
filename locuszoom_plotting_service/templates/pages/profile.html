@@ -4,19 +4,17 @@
 {% block title %}Your Profile{% endblock %}
 
 {% block content %}
-  <div class="row">
-    <div class="col-md-6 col-xs-12">
-      <h2>Info</h2>
-      <strong>Name</strong>: {{ user.display_name }}
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12 col-xs-12">
+        <h2>Your studies</h2>
+        <div id="app"></div>
+      </div>
     </div>
-    <div class="col-md-6 col-xs-12">
-      <h2>Your studies</h2>
-      <div id="app"></div>
-    </div>
-
   </div>
+
 {% endblock %}
 
-{%  block javascript %}
+{% block javascript %}
   {% render_bundle 'profile' %}
 {% endblock %}

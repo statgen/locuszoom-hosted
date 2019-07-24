@@ -13,10 +13,10 @@
             return {
                 items: [], // fetched by paginator widget
                 page_options: {
-                   remote_current_page: "meta.pagination.page",
-                   remote_prev_page_url: "links.prev",
-                   remote_next_page_url: "links.next",
-                   remote_last_page: "meta.pagination.pages",
+                    remote_current_page: "meta.pagination.page",
+                    remote_prev_page_url: "links.prev",
+                    remote_next_page_url: "links.next",
+                    remote_last_page: "meta.pagination.pages",
                 }
             };
         },
@@ -32,10 +32,16 @@
 
 <template>
   <div>
-    <div class="row" v-for="item in items">
-      <div class="col-md-12">
-        <gwas-description :study_data="item"></gwas-description>
+    <div v-if="items.length">
+      <div class="row" v-for="item in items">
+        <div class="col-md-12">
+          <gwas-description :study_data="item"></gwas-description>
+        </div>
       </div>
+    </div>
+    <div v-else>
+      <!-- TODO : Add a pending/not yet processed view (for things that are waiting, or failed, ingestion) -->
+      No studies ready. <a href="/gwas/upload/">Upload your data.</a>
     </div>
     <vue-paginator resource_url="/api/v1/gwas/?filter[me]=true"
                    @update="updateResource"
