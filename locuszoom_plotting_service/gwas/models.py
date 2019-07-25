@@ -83,7 +83,7 @@ class AnalysisInfo(TimeStampedModel):
             return self.files.ingest_status
 
         most_recent_upload = self.analysisfileset_set.order_by('-created').first()
-        if not most_recent_upload:  # Somehow we have metadata without any corresponding file!!
+        if not most_recent_upload:  # Somehow we have metadata without any corresponding file!! Mark as an error.
             return 1
 
         return most_recent_upload.ingest_status

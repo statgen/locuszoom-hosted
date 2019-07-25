@@ -1,6 +1,6 @@
 <script>
     /**
-     * Show a list of studies on the profile page
+     * Show a paginated list of GWAS studies from a defined query
      */
     import VuePaginator from 'vuejs-paginator/src/VPaginator.vue'
 
@@ -8,7 +8,7 @@
 
     export default {
         name: "profile_studies",
-        props: ['data_url', 'page_size'],
+        props: ['data_url'],
         data() {
             return {
                 items: [], // fetched by paginator widget
@@ -40,10 +40,9 @@
       </div>
     </div>
     <div v-else>
-      <!-- TODO : Add a pending/not yet processed view (for things that are waiting, or failed, ingestion) -->
-      No studies ready. <a href="/gwas/upload/">Upload your data.</a>
+      No results found. <a href="/gwas/upload/">Upload your data.</a>
     </div>
-    <vue-paginator resource_url="/api/v1/gwas/?filter[me]=true"
+    <vue-paginator :resource_url="data_url"
                    @update="updateResource"
                    :options="page_options"
     ></vue-paginator>

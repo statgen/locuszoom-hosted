@@ -5,7 +5,7 @@
 import {create_qq_plot, create_gwas_plot} from '../util/pheweb_plots';
 
 import Tabulator from 'tabulator-tables';
-import 'tabulator-tables/dist/css/tabulator.min.css';
+import 'tabulator-tables/dist/css/bootstrap/tabulator_bootstrap4.css';
 import _ from 'underscore';
 
 function createTopHitsTable(selector, data) {
@@ -26,8 +26,8 @@ function createTopHitsTable(selector, data) {
         layout: 'fitColumns',
         placeholder: 'No peaks found in GWAS',
         columns: [
-            {title: 'marker', field: 'marker'},
-            {title: 'pval', field: 'pval', formatter: cell => cell.getValue().toExponential(1)},
+            {title: 'Marker', field: 'marker'},
+            {title: 'p value', field: 'pval', formatter: cell => cell.getValue().toExponential(1)},
         ],
         initialSort: [
             {column: 'pval', dir: 'asc'}

@@ -9,6 +9,7 @@ from locuszoom_plotting_service.gwas import models as lz_models
 
 
 class GwasSerializer(drf_serializers.ModelSerializer):
+    """Represent metadata for a generic GWAS"""
     id = drf_serializers.IntegerField(source='slug')  # As far as the outside world is concerned, the slug is the ID
     owner_name = drf_serializers.SerializerMethodField(source='get_owner_name', read_only=True)
     url = drf_serializers.CharField(source='get_absolute_url', read_only=True)
@@ -18,7 +19,13 @@ class GwasSerializer(drf_serializers.ModelSerializer):
 
     class Meta:
         model = lz_models.AnalysisInfo
-        fields = ['id', 'created', 'label', 'build', 'url', 'owner_name']
+        fields = ('id', 'created', 'label', 'build', 'url', 'owner_name', 'is_public')
+
+
+class GwasSerializerUnprocessed(GwasSerializer):
+    """Represents the metadata for any GWAS file, including those that may not be processed or ready to share"""
+    class Meta(GwasSerializer.Meta):
+        fields = GwasSerializer.Meta.fields + ('ingest_status',)
 
 
 class GwasFileSerializer(drf_serializers.Serializer):

@@ -40,8 +40,10 @@ class GwasFilter(filters.FilterSet):
 
 class GwasListView(generics.ListAPIView):
     """
-    List all known uploaded GWAS analyses
+    List all known uploaded GWAS analyses that are available for viewing
         (public data sets, plus any private to just this user)
+
+    This excludes any datasets that are not yet ready for viewing (eg, failed the upload step)
     """
     queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False).select_related('owner')
     serializer_class = serializers.GwasSerializer
@@ -57,6 +59,21 @@ class GwasListView(generics.ListAPIView):
         if self.request.user.is_authenticated:
             modified |= queryset.filter(owner=self.request.user)
         return modified
+
+
+class GwasListViewUnprocessed(generics.ListAPIView):
+    """
+    List all GWAS studies owned by a specific user, *including* those that are pending or failed ingest
+    """
+    schema = None  # This is a private endpoint for internal use; hide from documentation
+
+    queryset = lz_models.AnalysisInfo.objects.all().select_related('owner')
+    serializer_class = serializers.GwasSerializerUnprocessed
+    permissions = [drf_permissions.IsAuthenticated, permissions.GwasPermission]
+
+    def get_queryset(self):
+        queryset = super(GwasListViewUnprocessed, self).get_queryset()
+        return queryset.filter(owner=self.request.user)
 
 
 class GwasDetailView(generics.RetrieveAPIView):

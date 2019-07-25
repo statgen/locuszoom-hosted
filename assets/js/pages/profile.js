@@ -10,7 +10,10 @@ Vue.use(VueResource);
 import App from '../../vue/profile_studies.vue';
 
 function makeWidget() {
-    return new Vue({ render: h => h(App)})
+    return new Vue({ render: h => h(App, {
+        props: {
+            'data_url': '/api/v1/gwas/user-all/',
+        }})})
         .$mount('#app');
 }
 

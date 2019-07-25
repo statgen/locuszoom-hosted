@@ -12,7 +12,7 @@
             pmid_link() {
                 const pmid = this.study_data.pmid;
                 return pmid ? `https://www.ncbi.nlm.nih.gov/pubmed/${pmid}/` : null;
-            }
+            },
         },
         components: { bsCard },
         filters: {
@@ -30,8 +30,11 @@
   <em class="text-muted">Uploaded by: {{ study_data.owner_name }}</em><br>
   <em class="text-muted">Created: {{ study_data.created | date }}</em><br>
   <span v-if="pmid_link">
-    <a :href="pmid_link">{{ study_data.pmid }}</a>
+    <a :href="pmid_link">{{ study_data.pmid }}</a><br>
   </span>
+  <span v-if="study_data.is_public" class="badge badge-primary">Public</span>
+  <span v-if="study_data.ingest_status === 0" class="badge badge-warning">Pending</span>
+  <span v-if="study_data.ingest_status === 1" class="badge badge-danger">Error</span>
 </bs-card>
 </template>
 
