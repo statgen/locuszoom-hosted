@@ -7,7 +7,7 @@ import VueResource from 'vue-resource';
 
 Vue.use(VueResource);
 
-import App from '../../vue/profile_studies.vue';
+import App from '../../vue/generic_gwas_list.vue';
 
 function makeWidget() {
     return new Vue({ render: h => h(App, {

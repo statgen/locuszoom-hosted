@@ -5,6 +5,9 @@
 import Vue from 'vue';
 
 import App from '../../vue/gwas_search.vue';
+import VueResource from 'vue-resource';
+
+Vue.use(VueResource);
 
 function makeWidget(is_authenticated) {
     const app_params = { is_authenticated };
