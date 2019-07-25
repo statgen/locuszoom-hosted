@@ -57,15 +57,13 @@ def normalize_contents(src_path: str, parser_options: dict, dest_path: str, log_
     finally:
         # Always write a log entry, no matter what
         with open(log_path, 'a+') as f:
-            f.write('\n')
             for n, reason, _ in reader.errors:
                 f.write('Excluded row {} from output due to parse error: {}\n'.format(n, reason))
-
             if success:
                 f.write('[success] GWAS file has been converted.\n')
                 return True
             else:
-                f.write('[failure] Could not create normalized GWAS file for: {}\n'.format(src_path))
+                f.write('[failure] Could not create normalized GWAS file.\n')
     # In reality a failing task will usually raise an exception rather than returning False
     return False
 

@@ -30,12 +30,16 @@ def lz_file_prep(step_name):
         def inner(self, fileset_id: int):
             instance = models.AnalysisFileset.objects.get(pk=fileset_id)
             log_path = instance.normalized_gwas_log_path
-            message = '[ingest] Performing upload step: {}\n'.format(step_name)
+            message = '[ingest][{}] Performing upload step: {}\n'.format(
+                timezone.now().replace(microsecond=0).isoformat(),
+                step_name
+            )
             try:
                 func(self, instance)
-                message += '[success] Completed\n'
+                message += '[success][{}] Step completed\n'.format(timezone.now().replace(microsecond=0).isoformat())
             except Exception as e:
-                message += '[failure] An error prevented this step from completing\n'
+                message += '[failure][{}] An error prevented this step from completing\n'.format(
+                    timezone.now().replace(microsecond=0).isoformat())
                 message += str(e) + '\n'
                 raise e
             finally:
