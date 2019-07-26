@@ -70,6 +70,7 @@ class GwasListViewUnprocessed(generics.ListAPIView):
     queryset = lz_models.AnalysisInfo.objects.all().select_related('owner')
     serializer_class = serializers.GwasSerializerUnprocessed
     permissions = [drf_permissions.IsAuthenticated, permissions.GwasPermission]
+    ordering = ('-created',)
 
     def get_queryset(self):
         queryset = super(GwasListViewUnprocessed, self).get_queryset()

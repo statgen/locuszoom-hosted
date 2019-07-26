@@ -32,7 +32,7 @@ files will be stored.
 
 ## Required app configuration
 Create two config files describing the production environment and populate secrets, config variables, etc according to 
-the pre-populated templates: `.envs/.production`
+the pre-populated templates: `.envs/.production/.django` and `.envs/.production/.postgres` 
 
 Be sure to keep your production settings private!
 
@@ -46,7 +46,7 @@ Build the docker container in production (or download an appropriate pre-made im
 Start the container:
 `sudo docker-compose -f production.yml up -d`
 
-This demo app runs collectstatic and uses whitenoise to serve automatically without a further build/deploy step.
+This app uses internal django features to serve static assets, so those do not require a separate deploy step.
 
 ## Once the app is running...
 ### Run migrations for the first time
@@ -58,7 +58,7 @@ You will need to enter some configuration into the admin panel before using the 
 In production, your admin site must be hidden behind an obfuscated URL. See ___ for details.
 
 Use the following command to create an admin user. 
-`$ docker-compose -f production.yml run --rm django python manage.py createsuperuser`
+`$ sudo docker-compose -f production.yml run --rm django python manage.py createsuperuser`
 
 
 ### OAuth settings

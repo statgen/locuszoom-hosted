@@ -91,6 +91,9 @@ ADMIN_URL = env('DJANGO_ADMIN_URL')
 # Use a shared/service account; consider single-purpose credentials such as app passwords
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = env('DJANGO_EMAIL_HOST')
+EMAIL_PORT = env('DJANGO_EMAIL_PORT', default=465)
+EMAIL_USE_SSL = env('DJANGO_EMAIL_USE_SSL', default=True)
+EMAIL_USE_TLS = env('DJANGO_EMAIL_USE_TLS', default=False)
 EMAIL_HOST_USER = env('DJANGO_EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('DJANGO_EMAIL_HOST_PASSWORD')
 

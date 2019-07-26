@@ -119,7 +119,7 @@ def mark_success(self, fileset_id):
 
     send_mail('Results done processing',
               f'Your results are done processing. Please visit {metadata.get_absolute_url()} to see the Manhattan plot.',
-              'noreply@umich.edu',
+              'locuszoom-service@umich.edu',
               [metadata.owner.email])
 
 
