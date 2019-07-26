@@ -3,7 +3,14 @@ version: '3.7'
 volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
-  user_uploads: {} # temporary workaround- use docker volume; switch storage to bind mount later?
+  user_uploads: # Bind to a local directory on the host system
+    # Ref: https://github.com/docker/compose/issues/2957#issuecomment-403175803
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device:
+        /var/lz-uploads/
 
 services:
   django: &django

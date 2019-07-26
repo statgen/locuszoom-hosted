@@ -37,8 +37,6 @@ COPY ./compose/production/django/celery/flower/start /start-flower
 RUN sed -i 's/\r//' /start-flower
 RUN chmod +x /start-flower
 
-# TODO: Special deployment note: build JS assets before making container? (this could be done better)
-#   Ask Jacob for best approach here: multistage builds etc
 COPY . /app
 
 RUN chown -R lzupload /app
