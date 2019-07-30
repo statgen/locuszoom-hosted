@@ -71,7 +71,7 @@ def normalize_gwas(self, instance: models.AnalysisFileset):
 
     if not validators.standard_gwas_validator.validate(src_path, instance.parser_options):
         logger.info(f"Could not load GWAS '{src_path}' because contents failed to validate")
-        raise exceptions.ValidationException(f'Validation failed for study ID {fileset_id}')
+        raise exceptions.ValidationException(f'Validation failed for study ID {instance.metadata.slug}')
 
     # For now the writer expects a temp file name, and it creates the .gz version internally
     tmp_normalized_path = dest_path.replace('.txt.gz', '.txt')
@@ -118,7 +118,7 @@ def mark_success(self, fileset_id):
     metadata.save()
 
     send_mail('Results done processing',
-              f'Your results are done processing. Please visit {metadata.get_absolute_url()} to see the Manhattan plot.',
+              f'Your upload is done processing. Please visit https://{settings.LZ_OFFICIAL_DOMAIN}{metadata.get_absolute_url()} to see the Manhattan plot.',
               'locuszoom-service@umich.edu',
               [metadata.owner.email])
 
@@ -136,8 +136,14 @@ def mark_failure(self, fileset_id):
     instance.ingest_complete = timezone.now()
     instance.save()
 
+    metadata = instance.metadata
+    send_mail('Results done processing',
+              f'Your upload failed to process. Please visit https://{settings.LZ_OFFICIAL_DOMAIN}{metadata.get_absolute_url()} to see the error logs.',
+              'locuszoom-service@umich.edu',
+              [metadata.owner.email])
+
     mail_admins('Results done processing',
-                f'Data ingestion failed for gwas id: {fileset_id}. Please see logs for details.'
+                f'Data ingestion failed for gwas id: {metadata.slug}. Please see logs for details.'
     )
 
 

@@ -271,12 +271,15 @@ ACCOUNT_ALLOW_REGISTRATION = env.bool('DJANGO_ACCOUNT_ALLOW_REGISTRATION', True)
 ACCOUNT_AUTHENTICATION_METHOD = 'email'  # rely on accounts being unique per oauth provider
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_USER_DISPLAY = lambda user: user.display_name
 # Boilerplate to control details how users log in
 ACCOUNT_ADAPTER = 'locuszoom_plotting_service.users.adapters.AccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'locuszoom_plotting_service.users.adapters.SocialAccountAdapter'
+SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_EMAIL_VERIFICATION = True
+SOCIALACCOUNT_EMAIL_REQUIRED = True
 
 
 REST_FRAMEWORK = {

@@ -69,7 +69,7 @@ class GwasListViewUnprocessed(generics.ListAPIView):
 
     queryset = lz_models.AnalysisInfo.objects.all().select_related('owner')
     serializer_class = serializers.GwasSerializerUnprocessed
-    permissions = [drf_permissions.IsAuthenticated, permissions.GwasPermission]
+    permissions = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
     ordering = ('-created',)
 
     def get_queryset(self):
@@ -79,7 +79,7 @@ class GwasListViewUnprocessed(generics.ListAPIView):
 
 class GwasDetailView(generics.RetrieveAPIView):
     """Metadata describing one particular uploaded GWAS"""
-    permission_classes = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
+    permission_classes = (permissions.GwasPermission,)
     queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False)
     serializer_class = serializers.GwasSerializer
 
@@ -93,7 +93,7 @@ class GwasRegionView(generics.RetrieveAPIView):
     filter_backends: list = []
     queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False)
     serializer_class = serializers.GwasFileSerializer
-    permission_classes = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
+    permission_classes = (permissions.GwasPermission,)
 
     lookup_field = 'slug'
 
