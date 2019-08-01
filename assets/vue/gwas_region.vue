@@ -63,6 +63,7 @@
                     :dynamic_urls="true"
                     :assoc_layout="lz_layout" :assoc_sources="lz_sources"
                     :study_names="study_names" :has_credible_sets="true"
+                    :build="build"
                     :chr="c_chr" :start="c_start" :end="c_end" />
       </div>
     </div>
