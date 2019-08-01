@@ -139,6 +139,10 @@ LOGGING = {
         }
     },
     'loggers': {
+        '': {  # Root logger; catchall for any module
+            'level': 'WARNING',
+            'handlers': ['console'],
+        },
         'django.db.backends': {
             'level': 'ERROR',
             'handlers': ['console'],
