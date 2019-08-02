@@ -1,3 +1,4 @@
+fastnumbers==2.2.1
 pytz==2018.9  # https://github.com/stub42/pytz
 python-slugify==3.0.2  # https://github.com/un33k/python-slugify
 Pillow==6.0.0 # https://github.com/python-pillow/Pillow
@@ -29,4 +30,4 @@ pyyaml  # Required for OpenAPI rendering
 boltons~=19.1
 scipy~=1.2
 python-magic==0.4.15  # TODO: May no longer be necessary
-git+git://github.com/abought/zorp.git@2e1e7395b6e216e8956a572f9a294926010dba65
+git+git://github.com/abought/zorp.git@03ec220

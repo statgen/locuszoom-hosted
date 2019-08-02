@@ -68,8 +68,9 @@ Variant = collections.namedtuple('Variant', ['qval', 'maf'])
 
 
 def augment_variants(variants: ty.Iterator[_basic_standard_container], num_samples=None):
-    for v in variants:
-        v = v.to_dict()
+    for var in variants:
+        v = var._asdict()
+        v['pvalue'] = var.pvalue  # derived property
 
         if v['pvalue'] == 0:
             # FIXME: Why does QQ plot require this stub value?

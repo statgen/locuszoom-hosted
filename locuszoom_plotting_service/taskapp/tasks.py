@@ -79,11 +79,10 @@ def normalize_gwas(self, instance: models.AnalysisFileset):
 
 
 @shared_task(bind=True)
-@lz_file_prep("Manhattan, QQ, and top hit detection")
+@lz_file_prep("QQ plots and top hit detection")
 def summarize_gwas(self, instance: models.AnalysisFileset):
     """Generate "summary" files based on the overall study contents; uses PheWeb loader code"""
     normalized_path = instance.normalized_gwas_path
-    manhattan_path = instance.manhattan_path
     qq_path = instance.qq_path
 
     # Find top hit
@@ -99,8 +98,16 @@ def summarize_gwas(self, instance: models.AnalysisFileset):
     instance.metadata.save()
 
     # Generate files
-    processors.generate_manhattan(normalized_path, manhattan_path)
     processors.generate_qq(normalized_path, qq_path)
+
+
+@shared_task(bind=True)
+@lz_file_prep("Prepare a manhattan plot")
+def manhattan_plot(self, instance: models.AnalysisFileset):
+    # This is a separate task because it can be quite slow
+    normalized_path = instance.normalized_gwas_path
+    manhattan_path = instance.manhattan_path
+    processors.generate_manhattan(normalized_path, manhattan_path)
 
 
 @shared_task(bind=True)
@@ -153,6 +160,7 @@ def total_pipeline(fileset_id: int):
         hash_contents.si(fileset_id) |
         normalize_gwas.si(fileset_id) |
         summarize_gwas.si(fileset_id) |
+        manhattan_plot.si(fileset_id) |
         mark_success.si(fileset_id)
     ).on_error(mark_failure.si(fileset_id))
 

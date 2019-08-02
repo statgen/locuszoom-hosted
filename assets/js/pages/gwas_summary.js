@@ -22,6 +22,7 @@ function createTopHitsTable(selector, data) {
     return new Tabulator(selector, {
         data: data,
         pagination: 'local',
+        paginationSize: 25,
         layout: 'fitColumns',
         placeholder: 'No peaks found in GWAS',
         columns: [

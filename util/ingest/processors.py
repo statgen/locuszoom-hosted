@@ -4,6 +4,7 @@ Steps used to process a GWAS file for future use
 import hashlib
 import json
 import logging
+import math
 
 from zorp import (
     exceptions as z_exc,
@@ -71,8 +72,6 @@ def normalize_contents(src_path: str, parser_options: dict, dest_path: str, log_
 @helpers.capture_errors
 def generate_manhattan(in_filename: str, out_filename: str) -> bool:
     """Generate manhattan plot data for the processed file"""
-    # FIXME: Pheweb loader code does not handle infinity values, so we exclude these from manhattan plots
-    #   This is almost assuredly not the final desired behavior
     reader = readers.standard_gwas_reader(in_filename)\
         .add_filter('neg_log_pvalue', lambda v, row: v is not None)
 
@@ -81,6 +80,11 @@ def generate_manhattan(in_filename: str, out_filename: str) -> bool:
         binner.process_variant(variant)
 
     manhattan_data = binner.get_result()
+
+    for v_dict in manhattan_data['unbinned_variants']:
+        if math.isinf(v_dict['neg_log_pvalue']):
+            # JSON has no concept of infinity; use a string that browsers can type-coerce into the correct number
+            v_dict['neg_log_pvalue'] = 'Infinity'
 
     with open(out_filename, 'w') as f:
         json.dump(manhattan_data, f)

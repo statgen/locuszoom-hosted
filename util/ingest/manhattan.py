@@ -99,32 +99,33 @@ class Binner:
 
         # TODO: Internally, PheWeb binner relies on the data being mutable.
         # Hence the container type defines what fields we use, but internally variants must be represented as dicts.
-        variant = variant.to_dict()
+        variant_dict = variant._asdict()
+        variant_dict['pvalue'] = variant.pvalue  # derived property
 
-        if variant['pvalue'] != 0:
-            qval = variant['neg_log_pvalue']
+        if variant_dict['pvalue'] != 0:
+            qval = variant_dict['neg_log_pvalue']
             if qval > 40:
                 self._qval_bin_size = 0.2  # this makes 200 bins for a y-axis extending past 40 (but folded so that the lower half is 0-20)
             elif qval > 20:
                 self._qval_bin_size = 0.1  # this makes 200-400 bins for a y-axis extending up to 20-40.
 
-        if variant['pvalue'] < self._peak_pval_threshold:  # part of a peak
+        if variant_dict['pvalue'] < self._peak_pval_threshold:  # part of a peak
             if self._peak_best_variant is None:  # open a new peak
-                self._peak_best_variant = variant
-                self._peak_last_chrpos = (variant['chrom'], variant['pos'])
-            elif self._peak_last_chrpos[0] == variant['chrom'] and self._peak_last_chrpos[1] + self._peak_sprawl_dist > variant['pos']:  # extend current peak
-                self._peak_last_chrpos = (variant['chrom'], variant['pos'])
-                if variant['pvalue'] >= self._peak_best_variant['pvalue']:
-                    self._maybe_bin_variant(variant)
+                self._peak_best_variant = variant_dict
+                self._peak_last_chrpos = (variant_dict['chrom'], variant_dict['pos'])
+            elif self._peak_last_chrpos[0] == variant_dict['chrom'] and self._peak_last_chrpos[1] + self._peak_sprawl_dist > variant_dict['pos']:  # extend current peak
+                self._peak_last_chrpos = (variant_dict['chrom'], variant_dict['pos'])
+                if variant_dict['pvalue'] >= self._peak_best_variant['pvalue']:
+                    self._maybe_bin_variant(variant_dict)
                 else:
                     self._maybe_bin_variant(self._peak_best_variant)
-                    self._peak_best_variant = variant
+                    self._peak_best_variant = variant_dict
             else:  # close old peak and open new peak
                 self._maybe_peak_variant(self._peak_best_variant)
-                self._peak_best_variant = variant
-                self._peak_last_chrpos = (variant['chrom'], variant['pos'])
+                self._peak_best_variant = variant_dict
+                self._peak_last_chrpos = (variant_dict['chrom'], variant_dict['pos'])
         else:
-            self._maybe_bin_variant(variant)
+            self._maybe_bin_variant(variant_dict)
 
     def _maybe_peak_variant(self, variant: dict):
         self._peak_pq.add_and_keep_size(variant, variant['pvalue'],
@@ -161,7 +162,7 @@ class Binner:
             peak['peak'] = True
 
         unbinned_variants = list(self._unbinned_variant_pq.pop_all())
-        unbinned_variants = sorted(unbinned_variants + peaks, key=(lambda variant: variant['pval']))
+        unbinned_variants = sorted(unbinned_variants + peaks, key=(lambda variant: variant['pvalue']))
 
         # unroll dict-of-dict-of-array `bins` into array `variant_bins`
         variant_bins = []
