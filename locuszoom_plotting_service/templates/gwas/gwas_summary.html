@@ -109,10 +109,15 @@
         </div>
       </div>
     {% elif gwas.ingest_status == 0 %}
-      Your file is still being processed. A notification email will be sent when it is ready.
+      This file is still being processed. A notification email will be sent when it is ready.
     {% else %}
-      <p>An error occurred while processing your GWAS file. Please contact us if the problem persists.</p>
-      <p><a class="btn btn-warning" href="{% url 'gwas:rerun' gwas.slug %}">Re-run ingest step</a></p>
+      <p>An error occurred while processing this GWAS for upload. Please contact us if the problem persists.</p>
+      {%  if request.user == gwas.owner %}
+      <p>
+        <a class="btn btn-outline-secondary" href="{% url 'gwas:gwas-ingest-log' gwas.slug %}">Ingest Logs</a>
+        <a class="btn btn-warning" href="{% url 'gwas:rerun' gwas.slug %}">Re-run ingest step</a>
+      </p>
+      {% endif %}
     {% endif %}
   </div>
 {% endblock %}

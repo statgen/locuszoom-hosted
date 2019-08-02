@@ -70,6 +70,7 @@ class AnalysisInfo(TimeStampedModel):
         :param User current_user: An object representing the current user (logged in or anon)
         :return:
         """
+        # In simplest form, this allows viewing of public, "ingest pending/failed" studies by other people
         return self.is_public or (current_user == self.owner)
 
     # Useful calculated properties
