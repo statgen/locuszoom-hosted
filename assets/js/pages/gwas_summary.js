@@ -11,7 +11,7 @@ import _ from 'underscore';
 function createTopHitsTable(selector, data) {
     // Filter the manhattan json to a subset of just peaks, sorted by pvalue (smallest first)
     data = data.filter(v => !!v.peak)
-        .sort((a, b) => (a.pval - b.val))
+        .sort((a, b) => (a.pvalue - b.pvalue))
         .map(item => {
             // FIXME: Synthetic field; feed a marker into pheweb loader code for better tables in the future
             // TODO: Get pheweb "nearest gene" annotations working (and make build agnostic)
@@ -22,15 +22,15 @@ function createTopHitsTable(selector, data) {
     return new Tabulator(selector, {
         data: data,
         pagination: 'local',
-        paginationSize: 25,
+        paginationSize: 10,
         layout: 'fitColumns',
         placeholder: 'No peaks found in GWAS',
         columns: [
             {title: 'Marker', field: 'marker'},
-            {title: 'p value', field: 'pval', formatter: cell => cell.getValue().toExponential(1)},
+            {title: 'p value', field: 'pvalue', formatter: cell => cell.getValue().toExponential(1)},
         ],
         initialSort: [
-            {column: 'pval', dir: 'asc'}
+            {column: 'pvalue', dir: 'asc'}
         ]
     });
 }

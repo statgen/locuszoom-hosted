@@ -26,7 +26,7 @@ import typing as ty
 import boltons.iterutils
 import boltons.mathutils
 import scipy.stats
-from zorp.parsers import _basic_standard_container
+from zorp.parsers import BasicVariant
 
 
 NUM_BINS = 400
@@ -67,9 +67,9 @@ def get_maf(variant, num_samples = None):
 Variant = collections.namedtuple('Variant', ['qval', 'maf'])
 
 
-def augment_variants(variants: ty.Iterator[_basic_standard_container], num_samples=None):
+def augment_variants(variants: ty.Iterator[BasicVariant], num_samples=None):
     for var in variants:
-        v = var._asdict()
+        v = var.to_dict()
         v['pvalue'] = var.pvalue  # derived property
 
         if v['pvalue'] == 0:

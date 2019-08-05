@@ -26,5 +26,10 @@
       </div>
     </div>
 
+  <div>
+    {#  TODO: This is more useful in staging/ debug mode: it allows completely rerunning the ingest step on the same file #}
+    <a class="btn btn-warning" href="{% url 'gwas:rerun' gwas.slug %}">Re-run ingest step</a>
+  </div>
+
   </div>
 {% endblock %}

@@ -29,5 +29,5 @@ pyyaml  # Required for OpenAPI rendering
 # Data ingestion pipeline
 boltons~=19.1
 scipy~=1.2
-python-magic==0.4.15  # TODO: May no longer be necessary
-git+git://github.com/abought/zorp.git@03ec220
+python-magic==0.4.15
+git+git://github.com/abought/zorp.git@08d0a4e

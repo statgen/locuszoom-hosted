@@ -17,7 +17,7 @@ class TestStandardGwasValidator:
             "#chrom\tpos\tref\talt\tpvalue",
             "1\t1\tA\tC\t7.3",
             "X\t1\tA\tC\t7.3",
-        ], parser=parsers.standard_gwas_parser, skip_rows=1)
+        ], parser=parsers.standard_gwas_parser_quick, skip_rows=1)
 
         is_valid = validators.standard_gwas_validator._validate_contents(reader)
         assert is_valid
@@ -27,7 +27,7 @@ class TestStandardGwasValidator:
             "#chrom\tpos\tref\talt\tpvalue",
             "1\t1\tA\tC\t7.3",
             "X\t1\tA\tC\tNOPE"
-        ], parser=parsers.standard_gwas_parser, skip_rows=1)
+        ], parser=parsers.standard_gwas_parser_quick, skip_rows=1)
 
         with pytest.raises(Exception):
             validators.standard_gwas_validator._validate_contents(reader)
@@ -38,7 +38,7 @@ class TestStandardGwasValidator:
             "#chrom\tpos\tref\talt\tpvalue",
             "2\t1\tA\tC\t7.3",
             "1\t1\tA\tC\t7.3"
-        ], parser=parsers.standard_gwas_parser, skip_rows=1)
+        ], parser=parsers.standard_gwas_parser_quick, skip_rows=1)
 
         with pytest.raises(val_exc.ValidationException):
             validators.standard_gwas_validator._validate_contents(reader)
@@ -50,7 +50,7 @@ class TestStandardGwasValidator:
             "1\t1\tA\tC\t7.3",
             "X\t1\tA\tC\t7.3",
             "1\t2\tA\tC\t7.3",
-        ], parser=parsers.standard_gwas_parser, skip_rows=1)
+        ], parser=parsers.standard_gwas_parser_quick, skip_rows=1)
 
         with pytest.raises(val_exc.ValidationException):
             validators.standard_gwas_validator._validate_contents(reader)
@@ -61,7 +61,7 @@ class TestStandardGwasValidator:
             "1\t2\tA\tC\t7.3",
             "1\t1\tA\tC\t7.3",
             "X\t1\tA\tC\t7.3",
-        ], parser=parsers.standard_gwas_parser, skip_rows=1)
+        ], parser=parsers.standard_gwas_parser_quick, skip_rows=1)
 
         with pytest.raises(val_exc.ValidationException):
             validators.standard_gwas_validator._validate_contents(reader)

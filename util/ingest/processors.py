@@ -97,9 +97,6 @@ def generate_qq(in_filename: str, out_filename) -> bool:
     # TODO: Currently the ingest pipeline never stores "af"/"maf" at all, which could affect this calculation
     # TODO: This step appears to load ALL data into memory (list on generator). This could be a memory hog; not sure if
     #   there is a way around it as it seems to rely on sorting values
-
-    # FIXME: See note above: we will exclude "infinity" values for now, but this is not the desired behavior because it
-    #   hides the hits of greatest interest
     reader = readers.standard_gwas_reader(in_filename)\
         .add_filter("neg_log_pvalue", lambda v, row: v is not None)
 

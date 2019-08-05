@@ -16,7 +16,7 @@ import collections
 import heapq
 import logging
 
-from zorp.parsers import _basic_standard_container
+from zorp.parsers import BasicVariant
 
 
 logger = logging.getLogger(__name__)
@@ -84,7 +84,7 @@ class Binner:
         self._bins = collections.OrderedDict()  # like {<chrom>: {<pos // bin_length>: [{chrom, startpos, qvals}]}}
         self._qval_bin_size = 0.05  # this makes 200 bins for the minimum-allowed y-axis covering 0-10
 
-    def process_variant(self, variant: _basic_standard_container):
+    def process_variant(self, variant: BasicVariant):
         """
         There are 3 types of variants:
           a) If the variant starts or extends a peak and has a stronger pval than the current `peak_best_variant`:
@@ -99,7 +99,7 @@ class Binner:
 
         # TODO: Internally, PheWeb binner relies on the data being mutable.
         # Hence the container type defines what fields we use, but internally variants must be represented as dicts.
-        variant_dict = variant._asdict()
+        variant_dict = variant.to_dict()
         variant_dict['pvalue'] = variant.pvalue  # derived property
 
         if variant_dict['pvalue'] != 0:

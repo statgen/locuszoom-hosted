@@ -10,8 +10,8 @@ from rest_framework import renderers as drf_renderers
 
 from locuszoom_plotting_service.gwas import models as lz_models
 
-from zorp.readers import TabixReader
-from zorp.parsers import standard_gwas_parser
+from zorp.readers import standard_gwas_reader
+from zorp.parsers import standard_gwas_parser_quick
 
 from . import (
     permissions,
@@ -108,7 +108,7 @@ class GwasRegionView(generics.RetrieveAPIView):
         if not os.path.isfile(gwas.files.normalized_gwas_path):
             raise drf_exceptions.NotFound
 
-        reader = TabixReader(gwas.files.normalized_gwas_path, parser=standard_gwas_parser)
+        reader = standard_gwas_reader(gwas.files.normalized_gwas_path)
         return list(reader.fetch(chrom, start, end))
 
     def _query_params(self) -> ty.Tuple[str, int, int]:

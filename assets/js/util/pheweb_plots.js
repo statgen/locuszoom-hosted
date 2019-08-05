@@ -162,13 +162,13 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
             .domain(genomic_position_extent)
             .range([0, plot_width]);
 
-        const includes_pval0 = _.any(unbinned_variants, function(variant) { return variant.pval === 0; });
+        const includes_pval0 = _.any(unbinned_variants, function(variant) { return variant.pvalue === 0; });
 
         const highest_plot_qval = Math.max(
             -Math.log10(significance_threshold) + 0.5,
             (function() {
                 const best_unbinned_qval = -Math.log10(d3.min(unbinned_variants, function(d) {
-                    return (d.pval === 0) ? 1 : d.pval;
+                    return (d.pvalue === 0) ? 1 : d.pvalue;
                 }));
                 if (best_unbinned_qval !== undefined) {return best_unbinned_qval;}
                 return d3.max(variant_bins, function(bin) {
@@ -286,7 +286,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
                     return x_scale(get_genomic_position(d));
                 })
                 .attr('cy', function(d) {
-                    return y_scale(-Math.log10(d.pval));
+                    return y_scale(-Math.log10(d.pvalue));
                 })
                 .attr('r', 7)
                 .style('opacity', 0)
@@ -317,7 +317,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
                     return x_scale(get_genomic_position(d));
                 })
                 .attr('cy', function(d) {
-                    return y_scale(-Math.log10(d.pval));
+                    return y_scale(-Math.log10(d.pvalue));
                 })
                 .attr('r', 2.3)
                 .style('fill', function(d) {
@@ -390,7 +390,7 @@ function create_qq_plot(maf_ranges, qq_ci) {
         const exp_max = d3.max(maf_ranges, function(maf_range) {
             return maf_range.qq.max_exp_qval;
         });
-        // Note: we already removed all observed -log10(pval)s > ceil(exp_max*2) in python, so we can just use the max observed here.
+        // Note: we already removed all observed -log10(pvalue)s > ceil(exp_max*2) in python, so we can just use the max observed here.
         let obs_max = d3.max(maf_ranges, function(maf_range) {
             return d3.max(maf_range.qq.bins, function(bin) {
                 return bin[1];
