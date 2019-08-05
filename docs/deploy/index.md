@@ -74,3 +74,11 @@ A sample callback URL for OAuth registration (in local development) would be:
     http://localhost:8000/accounts/google/login/callback/
 
 (Replace the hostname and port with your own production URL).
+
+
+## Releasing a new version (checklist)
+- (future) Verify backup status on DB backups
+- `yarn install && yarn run prod`
+- `docker-compose -f production.yml build`
+- `docker-compose -f production.yml up -d`
+- `docker-compose -f production.yml run --rm django python manage.py migrate`
