@@ -98,7 +98,8 @@ class Binner:
         """
 
         # TODO: Internally, PheWeb binner relies on the data being mutable.
-        # Hence the container type defines what fields we use, but internally variants must be represented as dicts.
+        #   Hence the container type defines what fields we use, but internally variants must be represented as dicts.
+        #   This is low hanging fruit for optimization in the future (eg using a mutable, non-slots container in the parser by default)
         variant_dict = variant.to_dict()
         variant_dict['pvalue'] = variant.pvalue  # derived property
 

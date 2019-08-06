@@ -44,10 +44,10 @@ class _GwasValidator:
     @helpers.capture_errors
     def _validate_mimetype(self, mimetype: str) -> bool:
         """Uploaded either a gzipped file or plain text"""
-        if (mimetype in ['application/gzip', 'application/gzip']) or mimetype.startswith('text/'):
+        if (mimetype in ['application/gzip', 'application/x-gzip']) or mimetype.startswith('text/'):
             return True
         else:
-            raise exceptions.ValidationException('Only plaintext or gzipped files are accepted')
+            raise exceptions.ValidationException(f'Only plaintext or gzipped files are accepted. Your file is: {mimetype}')
 
     @helpers.capture_errors
     def _validate_data_rows(self, reader) -> bool:
