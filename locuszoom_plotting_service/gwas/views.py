@@ -39,8 +39,9 @@ class BaseFileView(View, SingleObjectMixin):
 
     def get(self, request, *args, **kwargs):
         gwas = self.get_object()
+        target = gwas.files or gwas.most_recent_upload
 
-        filename = getattr(gwas.files, self.path_arg)
+        filename = getattr(target, self.path_arg)
         if not os.path.isfile(filename):
             return HttpResponseBadRequest(content={'error': 'File not found'})
 
@@ -134,6 +135,7 @@ class GwasSummaryStats(lz_permissions.GwasViewPermission, BaseFileView):
 
 
 class GwasIngestLog(lz_permissions.GwasViewPermission, BaseFileView):
+    queryset = lz_models.AnalysisInfo.objects.all()  # Allow viewing logs of a file that failed ingest
     path_arg = 'normalized_gwas_log_path'
     download_name = 'ingest_log.log'
 

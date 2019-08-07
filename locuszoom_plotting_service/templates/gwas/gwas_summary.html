@@ -111,7 +111,8 @@
     {% elif gwas.ingest_status == 0 %}
       This file is still being processed. A notification email will be sent when it is ready.
     {% else %}
-      <p>An error occurred while processing this GWAS for upload. Please contact us if the problem persists.</p>
+      <p>We were unable to process your uploaded GWAS file. Please review the logs for the cause, and contact us
+        if you believe the problem is an error.</p>
       {%  if request.user == gwas.owner %}
       <p>
         <a class="btn btn-outline-secondary" href="{% url 'gwas:gwas-ingest-log' gwas.slug %}">Ingest Logs</a>

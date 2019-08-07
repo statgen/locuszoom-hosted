@@ -75,6 +75,10 @@ class AnalysisInfo(TimeStampedModel):
 
     # Useful calculated properties
     @property
+    def most_recent_upload(self):
+        return self.analysisfileset_set.order_by('-created').first()
+
+    @property
     def ingest_status(self) -> int:
         """
         Get ingest status: if view does not point to a specific version, then default to whatever was uploaded recently
@@ -83,7 +87,7 @@ class AnalysisInfo(TimeStampedModel):
         if self.files:
             return self.files.ingest_status
 
-        most_recent_upload = self.analysisfileset_set.order_by('-created').first()
+        most_recent_upload = self.most_recent_upload
         if not most_recent_upload:  # Somehow we have metadata without any corresponding file!! Mark as an error.
             return 1
 

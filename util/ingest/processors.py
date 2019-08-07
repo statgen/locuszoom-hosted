@@ -128,7 +128,8 @@ def get_top_hit(in_filename: str):
 
     Although most of the tasks in our pipeline are written to be ORM-agnostic, this one modifies the database.
     """
-    reader = readers.standard_gwas_reader(in_filename).add_filter("neg_log_pvalue", lambda v, row: v is not None)
+    reader = readers.standard_gwas_reader(in_filename)\
+        .add_filter("neg_log_pvalue", lambda v, row: v is not None)
     best_pval = 1
     best_row = None
     for row in reader:

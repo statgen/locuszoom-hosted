@@ -41,7 +41,8 @@ def lz_file_prep(step_name):
                 message += '[failure][{}] An error prevented this step from completing\n'.format(
                     timezone.now().replace(microsecond=0).isoformat())
                 message += str(e) + '\n'
-                raise e
+                raise e  # FIXME: This works to abort the pipeline, but we don't really want a sentry error if the
+                         #  task is routine and expected (like validation in file format)
             finally:
                 with open(log_path, 'a+') as f:
                     f.write(message)
