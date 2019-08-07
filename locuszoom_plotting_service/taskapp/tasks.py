@@ -125,7 +125,8 @@ def mark_success(self, fileset_id):
     metadata.files = instance
     metadata.save()
 
-    send_mail('Results done processing',
+    # TODO: Render this as a nicer-looking template
+    send_mail('[locuszoom] Upload succeeded',
               f'Your upload is done processing. Please visit https://{settings.LZ_OFFICIAL_DOMAIN}{metadata.get_absolute_url()} to see the Manhattan plot.',
               'locuszoom-service@umich.edu',
               [metadata.owner.email])
@@ -145,7 +146,7 @@ def mark_failure(self, fileset_id):
     instance.save()
 
     metadata = instance.metadata
-    send_mail('Results done processing',
+    send_mail('[locuszoom] Upload failed',
               f'Your upload failed to process. Please visit https://{settings.LZ_OFFICIAL_DOMAIN}{metadata.get_absolute_url()} to see the error logs.',
               'locuszoom-service@umich.edu',
               [metadata.owner.email])
