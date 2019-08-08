@@ -78,7 +78,10 @@ A sample callback URL for OAuth registration (in local development) would be:
 
 ## Releasing a new version (checklist)
 - (future) Verify backup status on DB backups
-- `yarn install && yarn run prod`
+- `yarn install --from-lockfile && yarn run prod`
 - `docker-compose -f production.yml build`
 - `docker-compose -f production.yml up -d`
-- `docker-compose -f production.yml run --rm django python manage.py migrate`
+- (optional) `docker-compose -f production.yml run --rm django python manage.py migrate`
+
+Note: if you are using experimental versions of JS libraries (such as pinning to a git commit), yarn may ignore its 
+lockfile and install an older version instead. In that case,  

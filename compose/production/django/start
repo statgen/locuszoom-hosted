@@ -6,4 +6,5 @@ set -o nounset
 
 
 python /app/manage.py collectstatic --noinput
-/usr/local/bin/gunicorn config.wsgi --bind 0.0.0.0:5000 --chdir=/app
+# Vary the gunicorn timeout to avoid hanging on large/slow uploads: 30s default, go longer to see if it helps
+/usr/local/bin/gunicorn config.wsgi --bind 0.0.0.0:5000 --chdir=/app -t 450
