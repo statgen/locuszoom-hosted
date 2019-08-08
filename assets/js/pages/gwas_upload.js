@@ -9,8 +9,11 @@ import pako from 'pako';
 
 import App from '../../vue/gwas_upload.vue';
 
+import { isHeader } from 'locuszoom-tabix/src/gwas/sniffers';
+import { makeParser } from 'locuszoom-tabix/src/gwas/parsers';
+
 const PREVIEW_BYTES = 5000;  // enough for 50-100 lines
-const MAX_UPLOAD_SIZE = 1048576 * 500; // 500 MiB
+const MAX_UPLOAD_SIZE = 1048576 * 1000; // 1000 MiB
 
 
 class BaseReader {
@@ -94,6 +97,42 @@ function makeReader(filename, blob) {
     }
 }
 
+/**
+ * Validate that the rows are sorted (all chrom entries together, all rows in order)
+ * @param rows Object[] A list of parsed data objects, each representing a row
+ * @returns Boolean
+ */
+function validateSortOrder(rows) {
+    const chrom_seen = {};
+    let last_chrom = null;
+    let last_pos = null;
+    for (let i = 0; i < rows.length; i++) {
+        // Is this the same as last chrom? If not, is it in chrom_seen?
+        // If this is the same as last chrom, is the position > than previous one?
+        const row = rows[i];
+        const chrom = row.chromosome;
+        const pos = row.position;
+        if (row.chromosome !== last_chrom) {
+            // We don't enforce sorting of chromosome labels (1,2,3), so long as all data for
+            //  each chromosome is grouped together in the same block
+            if (chrom_seen[chrom]) {
+                return false;
+            } else {
+                chrom_seen[chrom] = true;
+            }
+            last_pos = null; // New chromosome, restart position counting
+        }
+        if (last_pos !== null && pos < last_pos) {  // Tabix allows two lines to have the same position (hence < , not <=)
+            return false;
+        }
+
+        // Prep for next row
+        last_chrom = chrom;
+        last_pos = pos;
+    }
+    return true;
+}
+
 // Mount interactive functionality
 const modal = new Vue({
     data() {
@@ -116,6 +155,23 @@ modal.$on('has_options', function (parser_options) { // Close with options selec
     document.getElementById('id_fileset-parser_options').value = JSON.stringify(parser_options);
     // Once options are received, mark form as valid
     fileField.setCustomValidity('');
+
+    // Once we know how to parse the file, do some quick validation to decide if the rows are sorted
+    const parser = makeParser(parser_options);
+    modal.file_reader.getRows().then((rows) => {
+        const first_data_index = rows.findIndex(text => !isHeader(text));
+
+        let is_valid;
+        try {
+            const sample_data = rows.slice(first_data_index).map(row => parser(row));
+            is_valid = validateSortOrder(sample_data);
+        } catch (e) {
+            is_valid = false;
+        }
+        if (!is_valid) {  // slightly vague message; in rare cases some middle data rows may be unparseable
+            fileField.setCustomValidity('Your file must be sorted by chromosome and position prior to upload.');
+        }
+    });
 });
 
 modal.$on('close', function() {
