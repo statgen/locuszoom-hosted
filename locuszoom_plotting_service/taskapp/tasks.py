@@ -37,12 +37,17 @@ def lz_file_prep(step_name):
             try:
                 func(self, instance)
                 message += '[success][{}] Step completed\n'.format(timezone.now().replace(microsecond=0).isoformat())
-            except Exception as e:
+            except (exceptions.UnexpectedIngestException, Exception) as e:
                 message += '[failure][{}] An error prevented this step from completing\n'.format(
                     timezone.now().replace(microsecond=0).isoformat())
                 message += str(e) + '\n'
-                raise e  # FIXME: This works to abort the pipeline, but we don't really want a sentry error if the
-                         #  task is routine and expected (like validation in file format)
+                # If this task failed, terminate subsequent tasks in the chain and notify the user
+                # If we did not do this, the exception would bubble up to sentry, even if it should have been handled
+                # TODO: In the future, we can make this handling more fine-grained (eg log totally unexpected problems
+                #   to sentry, while swallowing normal things like validation)
+                logger.exception('Ingestion failed due to an error')
+                self.request.chain = None
+                mark_failure.si(fileset_id).apply_async()
             finally:
                 with open(log_path, 'a+') as f:
                     f.write(message)
@@ -151,7 +156,7 @@ def mark_failure(self, fileset_id):
               'locuszoom-service@umich.edu',
               [metadata.owner.email])
 
-    mail_admins('Results done processing',
+    mail_admins('[locuszoom-service] Ingest error',
                 f'Data ingestion failed for gwas id: {metadata.slug}. Please see logs for details.'
     )
 

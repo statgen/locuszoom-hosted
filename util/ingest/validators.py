@@ -12,7 +12,7 @@ from zorp import (
 from zorp.readers import BaseReader, standard_gwas_reader
 
 from . import (
-    exceptions, helpers
+    exceptions as v_exc, helpers
 )
 
 
@@ -47,7 +47,7 @@ class _GwasValidator:
         if (mimetype in ['application/gzip', 'application/x-gzip']) or mimetype.startswith('text/'):
             return True
         else:
-            raise exceptions.ValidationException(f'Only plaintext or gzipped files are accepted. Your file is: {mimetype}')
+            raise v_exc.ValidationException(f'Only plaintext or gzipped files are accepted. Your file is: {mimetype}')
 
     @helpers.capture_errors
     def _validate_data_rows(self, reader) -> bool:
@@ -59,11 +59,9 @@ class _GwasValidator:
         prev_pos = -1
         for cp, tied_variants in cp_groups:
             cur_chrom = cp[0]
-            # TODO: Add back "chromosomes are grouped/ordered" validation
-
             if cur_chrom == prev_chrom and cp[1] < prev_pos:
                 # Positions not in correct order for Pheweb to use
-                raise exceptions.ValidationException('Positions must be sorted prior to uploading')
+                raise v_exc.ValidationException('Positions must be sorted prior to uploading')
 
             prev_chrom = cur_chrom
             prev_pos = cp[1]
@@ -73,7 +71,7 @@ class _GwasValidator:
         if prev_pos != -1:
             return True
         else:
-            raise exceptions.ValidationException('File must contain at least one row of data')
+            raise v_exc.ValidationException('File must contain at least one row of data')
 
     @helpers.capture_errors
     def _validate_contents(self, reader: BaseReader) -> bool:
