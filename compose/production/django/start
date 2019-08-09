@@ -6,5 +6,5 @@ set -o nounset
 
 
 python /app/manage.py collectstatic --noinput
-# Vary the gunicorn timeout to avoid hanging on large/slow uploads: 30s default, go longer to see if it helps
-/usr/local/bin/gunicorn config.wsgi --bind 0.0.0.0:5000 --chdir=/app -t 450
+# Gunicorn needs to handle long uploads: use async workers and longer timeouts
+/usr/local/bin/gunicorn config.wsgi --bind 0.0.0.0:5000 --chdir=/app -t 60 --worker-class gevent
