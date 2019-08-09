@@ -11,7 +11,26 @@
 {% endblock %}
 
 {% block content %}
-  <div class="container-fluid">
+  <div class="container">
+  <h2>Upload Summary Statistics</h2>
+    <div class="row">
+      <div class="col-md-12">
+        <p>
+          We accept <em>tab-delimited</em> files in either .txt or .gz formats. Your summary statistics should be
+          sorted via chromosome and position before uploading. In general, if your data can be tabixed, there is a
+          good chance that our server can accept and parse the contents. For best results, make sure that your file
+          contains the following information for each variant: chromosome, position, reference and alt alleles, and
+          p-value (or -log<sub>10</sub> p).
+        </p>
+        <p>
+          We limit uploads to ~1 GB max filesize. If you have a large file, it may take a considerable length of time
+          to upload on a slow connection. For very large datasets, consider using
+          <a href="https://github.com/abought/locuszoom-tabix">LocalZoom</a> to make region plots from a tabixed file,
+          without uploading.
+        </p>
+      </div>
+    </div>
+
     <div class="row">
       <div class="col-md-6">
         <form action="{% url 'gwas:upload' %}" enctype="multipart/form-data" method="POST">
