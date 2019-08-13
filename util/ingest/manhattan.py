@@ -3,8 +3,6 @@ Create json files which can be used to render Manhattan plots.
 
 Extracted from PheWeb: 2cfaa69
 """
-
-
 # NOTE: `qval` means `-log10(pvalue)`
 
 # TODO: optimize binning for fold@20 view.
@@ -15,6 +13,7 @@ Extracted from PheWeb: 2cfaa69
 import collections
 import heapq
 import logging
+import math
 
 from zorp.parsers import BasicVariant
 
@@ -114,7 +113,10 @@ class Binner:
             if self._peak_best_variant is None:  # open a new peak
                 self._peak_best_variant = variant_dict
                 self._peak_last_chrpos = (variant_dict['chrom'], variant_dict['pos'])
-            elif self._peak_last_chrpos[0] == variant_dict['chrom'] and self._peak_last_chrpos[1] + self._peak_sprawl_dist > variant_dict['pos']:  # extend current peak
+            elif self._peak_last_chrpos[0] == variant_dict['chrom'] and self._peak_last_chrpos[1] + self._peak_sprawl_dist > variant_dict['pos']:
+                # If this new position is near the previous top hit, extend current peak. I *think* the spec calls for
+                #   only a few top hits in a given window (not everything in a wide peak), so all the lower ones in
+                #   that peak become binned
                 self._peak_last_chrpos = (variant_dict['chrom'], variant_dict['pos'])
                 if variant_dict['pvalue'] >= self._peak_best_variant['pvalue']:
                     self._maybe_bin_variant(variant_dict)
@@ -187,15 +189,26 @@ class Binner:
         return round(x, 3)  # trim `0.35000000000000003` to `0.35` for convenience and network request size
 
     def _get_qvals_and_qval_extents(self, qvals: list):
-        qvals = sorted(self._rounded(qval) for qval in qvals)
-        extents = [[qvals[0], qvals[0]]]
+        """The PheWeb manhattan plot UI code draws three kinds of points: significant hits (clickable),
+            small (dense clusters) of hits drawn as blocky rectangles, and small (but isolated) hits drawn as single
+            points.
+
+        This code decides how to group the small hits: whether they are points or rectangles.
+        """
+        # Binning is something we do for UI; don't create "aggregate chunks" for infinity values (or any NaN output
+        #   by rounding in a previous step)
+        qvals = sorted(self._rounded(qval) for qval in qvals
+                       if not math.isinf(qval) and not math.isnan(qval))
+        extents = [[qvals[0], qvals[0]]]  # Initialize the extents as a single point so that we can begin grouping
         for q in qvals:
-            if q <= extents[-1][1] + self._qval_bin_size * 1.1:
-                extents[-1][1] = q
+            # If this item falls near an existing bin, add to bin; else create a new bin
+            if q <= (extents[-1][1] + self._qval_bin_size * 1.1):
+                extents[-1][1] = q  # expand the last bin to cover this new point
             else:
                 extents.append([q, q])
         rv_qvals, rv_qval_extents = [], []
         for (start, end) in extents:
+            # Separate the single points from the regions
             if start == end:
                 rv_qvals.append(start)
             else:
