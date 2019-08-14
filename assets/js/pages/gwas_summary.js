@@ -8,7 +8,7 @@ import Tabulator from 'tabulator-tables';
 import 'tabulator-tables/dist/css/bootstrap/tabulator_bootstrap4.css';
 import _ from 'underscore';
 
-function createTopHitsTable(selector, data) {
+function createTopHitsTable(selector, data, region_url) {
     // Filter the manhattan json to a subset of just peaks, sorted by pvalue (smallest first)
     data = data.filter(v => !!v.peak)
         .sort((a, b) => (a.pvalue - b.pvalue))
@@ -26,7 +26,18 @@ function createTopHitsTable(selector, data) {
         layout: 'fitColumns',
         placeholder: 'No peaks found in GWAS',
         columns: [
-            {title: 'Marker', field: 'marker'},
+            {
+                title: 'Marker', field: 'marker', formatter: 'link',
+                formatterParams: {
+                    label: (cell) => cell.getData().marker,
+                    url: (cell) => {
+                        const data = cell.getRow().getData();
+                        const start = Math.max(data.pos - 250000, 0);
+                        const end = data.pos + 250000;
+                        return `${region_url}?chrom=${data.chrom}&start=${start}&end=${end}`;
+                    }
+                },
+            },
             {title: 'p value', field: 'pvalue', formatter: cell => cell.getValue().toExponential(1)},
         ],
         initialSort: [
@@ -51,7 +62,7 @@ if (window.template_args.ingest_status === 2) {
                 create_gwas_plot(data.variant_bins, data.unbinned_variants);
                 return data;
             }).then((data) => {
-                createTopHitsTable('#top-hits-table', data.unbinned_variants);
+                createTopHitsTable('#top-hits-table', data.unbinned_variants, window.template_args.region_url);
                 return data;
             }).catch((err) => {
                 console.error(err);

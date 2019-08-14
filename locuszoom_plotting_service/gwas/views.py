@@ -166,6 +166,7 @@ class GwasSummary(lz_permissions.GwasViewPermission, DetailView):
         gwas = self.get_object()
         context['js_vars'] = json.dumps({
             'ingest_status': gwas.ingest_status,
+            'region_url': reverse('gwas:region', kwargs= {'slug': gwas.slug}),
             'manhattan_url': reverse('gwas:manhattan-json', kwargs={'slug': gwas.slug}) if gwas.files else None,
             'qq_url': reverse('gwas:qq-json', kwargs={'slug': gwas.slug}) if gwas.files else None,
         })
