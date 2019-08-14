@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+  <div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>What is this service?</h2>
+      <p>
+        This service allows you to generate interactive, shareable plots of GWAS summary statistics. Building on years
+        of experience from the developers of <a href="https://github.com/statgen/locuszoom">LocusZoom</a>, this adds
+        new features such as Manhattan plots, annotation, and calculations to help summarize findings and put them
+        in context.
+      </p>
+      <h2>Is my data private?</h2>
+      <p>
+        When uploading, you can choose whether to make your dataset either public (viewable by anyone) or private
+        (viewable only to yourself). If you make your dataset public, other people will be able to download the
+        standardized summary statistic files that we generate during the upload process.
+        Interactive plotting features require that we keep a copy of the data on our servers. We make every effort to
+        keep this secure, but if privacy is a driving issue, consider using the less-powerful
+        <a href="https://abought.github.io/locuszoom-tabix/">LocalZoom</a> tool to generate region plots client-side
+        instead.
+      </p>
+      <h2>How much data can I plot?</h2>
+      <p>
+        LocusZoom.js is dynamic and interactive: you can plot regions up to 500 kb wide at one time, but you make as
+        many region plots as you wish from a single upload. The server accepts uploads of up to 1 GB
+        (this may change in the future). A manhattan plot will also be generated for you.
+      </p>
+      <h2>How should I prepare my data for uploading?</h2>
+      <p>
+        The server attempts to handle many common GWAS formats, but we strongly recommend that you compress and
+        tabix-index your results first. Your file should contain columns that identify the variant
+        (marker OR chrom/pos/ref/alt), as well as p value (or -log<sub>10</sub> p value) for that hit. The upload step
+        will ignore any columns whose meaning is not explicitly specified.
+      </p>
+      <h2>How do I report a problem?</h2>
+      <p>
+        There are several ways to reach us, including <a href="mailto:locuszoom@googlegroups.com">user group</a> and
+        <a href="https://github.com/statgen/locuszoom-hosted">public bug tracker</a>. For questions involving security or sensitive data, we may be
+        reached at <a href="mailto:locuszoom-service@umich.edu">locuszoom-service@umich.edu</a>.
+      </p>
+    </div>
+  </div>
+  </div>
+{% endblock %}

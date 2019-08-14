@@ -3,6 +3,7 @@ from django.urls import include, path
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views import defaults as default_views
+from django.views.generic.base import TemplateView
 
 from rest_framework.documentation import include_docs_urls
 
@@ -10,6 +11,7 @@ from . import basic_views
 
 urlpatterns = [
     path("", basic_views.HomeView.as_view(), name="home"),
+    path("about/", TemplateView.as_view(template_name="pages/about.html"), name="about"),
     path("profile/", basic_views.ProfileView.as_view(), name="profile"),
     path(
         "gwas/",

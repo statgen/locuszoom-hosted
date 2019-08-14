@@ -22,7 +22,7 @@
                 base_url: base_url,
                 search_url: base_url, // Updated when calling doSearch()
                 search_text: '',
-                filter_published: true,
+                filter_published: false,
                 filter_mine: false,
             };
         },

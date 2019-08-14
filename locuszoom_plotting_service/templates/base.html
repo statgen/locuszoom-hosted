@@ -33,6 +33,9 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           {#  Left nav: site features  #}
           <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a href="{% url 'about' %}" class="nav-link">About</a>
+            </li>
             {% if request.user.is_authenticated %}
               <li class="nav-item">
                 <a href="{% url 'gwas:upload' %}" class="btn btn-outline-light">Upload...</a>
