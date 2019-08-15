@@ -18,23 +18,25 @@
         When uploading, you can choose whether to make your dataset either public (viewable by anyone) or private
         (viewable only to yourself). If you make your dataset public, other people will be able to download the
         standardized summary statistic files that we generate during the upload process.
-        Interactive plotting features require that we keep a copy of the data on our servers. We make every effort to
-        keep this secure, but if privacy is a driving issue, consider using the less-powerful
+        For all datasets, interactive plotting features require that we keep a copy of the data on our servers.
+        We make every effort to keep this secure, but if privacy is a driving issue, consider using the
         <a href="https://abought.github.io/locuszoom-tabix/">LocalZoom</a> tool to generate region plots client-side
-        instead.
+        instead. <em>LocalZoom</em> does not provide any enhanced annotation features, but it works without uploading
+        your data.
       </p>
       <h2>How much data can I plot?</h2>
       <p>
-        LocusZoom.js is dynamic and interactive: you can plot regions up to 500 kb wide at one time, but you make as
-        many region plots as you wish from a single upload. The server accepts uploads of up to 1 GB
-        (this may change in the future). A manhattan plot will also be generated for you.
+        LocusZoom.js is dynamic and interactive: you can plot regions up to 500 kb wide at one time, but you can
+        explore as many regions as you wish from a single upload. The server accepts uploads of up to 1 GB
+        (this may change in the future). A manhattan plot and list of suggested regions will also be generated for you.
       </p>
       <h2>How should I prepare my data for uploading?</h2>
       <p>
         The server attempts to handle many common GWAS formats, but we strongly recommend that you compress and
         tabix-index your results first. Your file should contain columns that identify the variant
-        (marker OR chrom/pos/ref/alt), as well as p value (or -log<sub>10</sub> p value) for that hit. The upload step
-        will ignore any columns whose meaning is not explicitly specified.
+        (marker OR chrom/pos/ref/alt), as well as p value (or -log<sub>10</sub> p value) for each variant. The data
+        must a <strong>tab-delimited</strong> file and be <strong>sorted</strong> by chromosome and position. The
+        upload step will ignore any columns whose meaning is not explicitly specified.
       </p>
       <h2>How do I report a problem?</h2>
       <p>
