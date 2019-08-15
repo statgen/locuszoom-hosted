@@ -15,3 +15,11 @@ CELERY_FLOWER_USER=CHANGEME
 CELERY_FLOWER_PASSWORD=CHANGEME
 
 LZ_OFFICIAL_DOMAIN=localhost:8000
+
+# Google Analytics
+# ------------------------------------------------------------------------------
+GOOGLE_ANALYTICS_ID=
+
+# Sentry
+# ------------------------------------------------------------------------------
+SENTRY_DSN=

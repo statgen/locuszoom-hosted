@@ -195,6 +195,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
+                'locuszoom_plotting_service.base.context_processors.common_settings'
             ],
         },
     },
@@ -314,6 +315,9 @@ LZ_MAX_REGION_SIZE = 500_000
 # The "official" domain name. This is set in a .env file, and it must exactly match the base url registered as part of
 #   your OAuth provider configuration (eg callback urls). It should be a domain, not an IP.
 LZ_OFFICIAL_DOMAIN = env('LZ_OFFICIAL_DOMAIN', default='my.locuszoom.org')
+
+# Google analytics credentials
+GOOGLE_ANALYTICS_ID = env('GOOGLE_ANALYTICS_ID', default=None)
 
 # This is used to find the interactive parts of pages, which are written and built using Vue.js + Webpack
 WEBPACK_LOADER = {
