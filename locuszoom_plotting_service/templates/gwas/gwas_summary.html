@@ -72,7 +72,7 @@
     <div class="row">
       <div class="col-md-12">
         <span class="text-muted">Created by: {{ gwas.owner.display_name }}, {{ gwas.created | date }}</span>
-        {% if gwas.is_public %}<span class="badge badge-primary">Public</span>{% endif %}
+        {% if gwas.is_public %}<span class="badge badge-primary">Public</span> {% else %}<span class="badge badge-warning">Private</span>{% endif %}
         {% if gwas.owner == request.user %}(<a href="{% url 'gwas:edit' gwas.slug %}">edit</a>){% endif %}
       </div>
     </div>
@@ -82,7 +82,10 @@
         <div class="col-md-8"></div>
         <div class="col-md-4">
           <a class="btn btn-outline-secondary float-right" href="{% url 'gwas:gwas-download' gwas.slug %}">Download summary statistics</a>
-          {%  if request.user == gwas.owner %}<a class="btn btn-outline-secondary float-right" href="{% url 'gwas:gwas-ingest-log' gwas.slug %}">Ingest Logs</a>{% endif %}
+          {%  if request.user == gwas.owner %}
+            <a class="btn btn-outline-secondary float-right" href="{% url 'gwas:gwas-ingest-log' gwas.slug %}">Ingest Logs</a>
+            <a class="btn btn-outline-secondary float-right" href="{% url 'gwas:gwas-ingest-log' gwas.slug %}">Ingest Logs</a>
+          {% endif %}
         </div>
       </div>
 

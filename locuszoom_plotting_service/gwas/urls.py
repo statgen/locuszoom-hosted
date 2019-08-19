@@ -13,6 +13,7 @@ urlpatterns = [
     path('', RedirectView.as_view(pattern_name='home')),
     path('<slug>/', views.GwasSummary.as_view(), name='overview'),
     path('<slug>/edit/', views.GwasEdit.as_view(), name='edit'),
+    path('<slug>/share/', views.GwasShare.as_view(), name='share'),
     path('<slug>/region/', views.GwasLocus.as_view(), name='region'),
 
     # Temporary debugging views

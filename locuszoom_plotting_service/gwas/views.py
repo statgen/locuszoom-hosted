@@ -7,6 +7,7 @@ import typing as ty
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import (
     CreateView,
@@ -125,6 +126,30 @@ class GwasEdit(lz_permissions.GwasOwner, UpdateView):
     form_class = lz_forms.AnalysisInfoForm
     template_name = "gwas/edit.html"
 
+
+class GwasShare(lz_permissions.GwasOwner, CreateView):
+    """Sharing options for a study"""
+    model = lz_models.ViewLink
+    form_class = lz_forms.ViewLinkForm
+
+    fields = ('label',)
+
+    context_object_name = "gwas"
+    template_name = "gwas/share.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        gwas = get_object_or_404(lz_models.AnalysisInfo, slug=self.kwargs['slug'])
+        context['gwas'] = gwas
+        context['viewlinks'] = gwas.viewlink_set.all()
+        return context
+
+    def form_valid(self, form):
+        """Set a relationship field for the specified GWAS"""
+        form.target = self.AnalysisInfo.
+        super().form_valid(form)
+
+    # TODO: Handle post request, create link, verify unique code
 
 #######
 # Data/download views, including raw JSON files that don't match the API design.

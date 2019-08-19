@@ -188,8 +188,8 @@ class RegionView(TimeStampedModel):
     """
     Represents an interesting locus region, with optional config parameters
 
-    The upload pipeline will define a few suggested views (eg top hits), and users can save their own views on any
-        public dataset
+    The upload pipeline will define a few suggested views (eg top hits). In the future, this will let users bookmark
+    their own regions of interest on any public dataset
     """
     gwas = models.ForeignKey(AnalysisInfo,
                              on_delete=models.SET_NULL,
@@ -225,3 +225,39 @@ class RegionView(TimeStampedModel):
         # extended = self.options or {}
         # return {**extended, **basic}
         return basic
+
+
+class ViewLink(TimeStampedModel):
+    """
+    A shareable link that allows private studies to be viewed by someone other than the owner
+
+    A given study must generate the exact link, only for that study
+    """
+    code = models.CharField(max_length=32,
+                            primary_key = True,
+                            help_text="A unique code that is tied to one specific study")
+
+    target = models.ForeignKey(AnalysisInfo, on_delete=models.CASCADE,
+                               help_text="The analysis to be shared")
+
+    label = models.CharField(max_length=100,
+                             default='',
+                             blank=True,
+                             help_text='A human-readable description (eg "Shared with journal reviewers")')
+
+    def get_absolute_url(self):
+        url = self.target.get_absolute_url()
+        return f'{url}?token={self.code}'
+
+    def save(self, *args, **kwargs):
+        """Generate a code and ensure it is unique"""
+        while True:  # Ensure creation of a random, unique view token
+            if self.pk:  # ...but only if the record is new
+                break
+
+            code = uuid.uuid4().hex
+            if not ViewLink.objects.filter(code=code).first():
+                self.code = code
+                break
+
+        super().save(*args, **kwargs)
