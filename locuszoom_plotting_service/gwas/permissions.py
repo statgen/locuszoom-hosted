@@ -11,7 +11,8 @@ class GwasViewPermission(UserPassesTestMixin):
 
     def test_func(self):
         model = self.get_object()
-        return model.can_view(self.request.user)
+        token = self.request.GET.get('token', None)
+        return model.can_view(self.request.user, token=token)
 
 
 class GwasOwner(UserPassesTestMixin):

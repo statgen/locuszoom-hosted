@@ -18,13 +18,19 @@ from django.views.generic.base import View
 from django.views.generic.detail import SingleObjectMixin
 
 from django.shortcuts import redirect
-from django.http import FileResponse, HttpResponseBadRequest, HttpResponseRedirect
+from django.http import (
+    FileResponse,
+    Http404,
+    HttpResponseBadRequest,
+    HttpResponseRedirect,
+)
 
 from locuszoom_plotting_service.taskapp import tasks
 
 from . import forms as lz_forms
 from . import models as lz_models
 from . import permissions as lz_permissions
+from .templatetags.shared import add_token
 
 
 class BaseFileView(View, SingleObjectMixin):
@@ -109,6 +115,7 @@ class GwasCreate(LoginRequiredMixin, CreateView):
 
     def post(self, request, *args, **kwargs):
         """Override parent create view, which relies on a single form.is_valid"""
+        # State stored on instance attr: Make sure it gets wiped before every new request
         self.object = None
 
         form = self.get_form()
@@ -127,15 +134,26 @@ class GwasEdit(lz_permissions.GwasOwner, UpdateView):
     template_name = "gwas/edit.html"
 
 
-class GwasShare(lz_permissions.GwasOwner, CreateView):
-    """Sharing options for a study"""
+class GwasShare(LoginRequiredMixin, CreateView):
+    """
+    Sharing options for a study. Only the owner can see this page.
+
+    The permissions check is implemented in `dispatch` (because the model for this view is different than the model
+        returned by `get_object` FIXME: This is a bit weird.
+    """
     model = lz_models.ViewLink
     form_class = lz_forms.ViewLinkForm
 
-    fields = ('label',)
-
-    context_object_name = "gwas"
+    context_object_name = "link"
     template_name = "gwas/share.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        # FIXME: This is ugly: it performs a permissions check on a different model, so can't use the existing
+        #   permissions class
+        gwas = get_object_or_404(lz_models.AnalysisInfo, slug=self.kwargs['slug'])
+        if not gwas.can_view(request.user):
+            self.handle_no_permission()
+        return super(GwasShare, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -146,10 +164,14 @@ class GwasShare(lz_permissions.GwasOwner, CreateView):
 
     def form_valid(self, form):
         """Set a relationship field for the specified GWAS"""
-        form.target = self.AnalysisInfo.
-        super().form_valid(form)
+        # The form doesn't specify the target directly; that gets referenced in the URL
+        # As such, if this block triggers an error then something has gone quite far wrong
+        gwas = self.kwargs.get('slug')
+        if not gwas:
+            raise Http404
+        form.instance.gwas = get_object_or_404(lz_models.AnalysisInfo, slug=gwas)
+        return super().form_valid(form)
 
-    # TODO: Handle post request, create link, verify unique code
 
 #######
 # Data/download views, including raw JSON files that don't match the API design.
@@ -189,11 +211,23 @@ class GwasSummary(lz_permissions.GwasViewPermission, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         gwas = self.get_object()
+
+        token = self.request.GET.get('token')  # If there is a secret access link, add that token to all API URLs
+        context['token'] = token
         context['js_vars'] = json.dumps({
             'ingest_status': gwas.ingest_status,
-            'region_url': reverse('gwas:region', kwargs= {'slug': gwas.slug}),
-            'manhattan_url': reverse('gwas:manhattan-json', kwargs={'slug': gwas.slug}) if gwas.files else None,
-            'qq_url': reverse('gwas:qq-json', kwargs={'slug': gwas.slug}) if gwas.files else None,
+            'region_url': add_token(
+                reverse('gwas:region', kwargs= {'slug': gwas.slug}),
+                token
+            ),
+            'manhattan_url': add_token(
+                reverse('gwas:manhattan-json', kwargs={'slug': gwas.slug}),
+                token,
+            ) if gwas.files else None,
+            'qq_url': add_token(
+                reverse('gwas:qq-json', kwargs={'slug': gwas.slug}),
+                token,
+            ) if gwas.files else None,
         })
         return context
 
@@ -213,8 +247,13 @@ class GwasLocus(lz_permissions.GwasViewPermission, DetailView):
         context = super().get_context_data(**kwargs)
         gwas = self.get_object()
 
+        token = self.request.GET.get('token')
+        context['token'] = token
         context['js_vars'] = json.dumps({
-            'assoc_base_url': reverse('apiv1:gwas-region', kwargs={'slug': gwas.slug}),
+            'assoc_base_url': add_token(
+                reverse('apiv1:gwas-region', kwargs={'slug': gwas.slug}),
+                token
+            ),
             'label': gwas.label,
             'build': gwas.build,
             # Default region for bare URLs is the top hit in the study

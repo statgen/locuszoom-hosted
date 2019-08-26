@@ -34,7 +34,12 @@ function createTopHitsTable(selector, data, region_url) {
                         const data = cell.getRow().getData();
                         const start = Math.max(data.pos - 250000, 0);
                         const end = data.pos + 250000;
-                        return `${region_url}?chrom=${data.chrom}&start=${start}&end=${end}`;
+
+                        const base = new URL(region_url, window.location.origin);
+                        base.searchParams.set('chrom', data.chrom);
+                        base.searchParams.set('start', start);
+                        base.searchParams.set('end', end);
+                        return base;
                     }
                 },
             },

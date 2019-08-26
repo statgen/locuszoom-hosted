@@ -61,17 +61,26 @@ class AnalysisInfo(TimeStampedModel):
                                         on_delete=models.SET_NULL,
                                         null=True)
 
-    def get_absolute_url(self):
-        return reverse('gwas:overview', kwargs={'slug': self.slug})
+    def get_absolute_url(self, token=None):
+        base = reverse('gwas:overview', kwargs={'slug': self.slug})
+        if not token:
+            return base
+        else:
+            return f'{base}?token={token}'
 
-    def can_view(self, current_user):
+    def can_view(self, current_user, *, token=None):
         """
         # FIXME: This is a simplest-possible permissions model; revise as app grows in complexity.
         :param User current_user: An object representing the current user (logged in or anon)
         :return:
         """
-        # In simplest form, this allows viewing of public, "ingest pending/failed" studies by other people
-        return self.is_public or (current_user == self.owner)
+        if not token:
+            return self.is_public or (current_user == self.owner)
+
+        # The study can be viewed by its owner, or if the study is public, or if accessed via a secret "sharing" link
+        # This should only work for view links associated with this specific study (filtered by the backref)
+        view_link = self.viewlink_set.filter(code=token).first()
+        return view_link is not None
 
     # Useful calculated properties
     @property
@@ -206,16 +215,19 @@ class RegionView(TimeStampedModel):
     # options = JSONField(null=True, blank=True,  # TODO: not used now, may be useful in the future
     #                     help_text="Additional URL query params to be sent to the front end. (eg for plot features)")
 
-    def can_view(self, current_user):
+    def can_view(self, current_user, *, token=None):
         """View permissions are solely determined by the underlying study"""
         # TODO: Fix backrefs here; sort out relationships.
-        return self.gwas.can_view(current_user)
+        return self.gwas.can_view(current_user, token=token)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self, *, token=None):
         """A region view is just a LocusZoom plot with some specific options"""
         # This references the backref for top hit view but this should be extended to allow many-to-many rels.
         base_url = reverse('gwas:region', kwargs={'slug': self.gwas.slug})
-        params = urlencode(self.get_url_params())
+        base_params = self.get_url_params()
+        if token:
+            base_params['token'] = token
+        params = urlencode(base_params)
         return f'{base_url}?{params}'
 
     # Helper methods
@@ -237,7 +249,7 @@ class ViewLink(TimeStampedModel):
                             primary_key = True,
                             help_text="A unique code that is tied to one specific study")
 
-    target = models.ForeignKey(AnalysisInfo, on_delete=models.CASCADE,
+    gwas = models.ForeignKey(AnalysisInfo, on_delete=models.CASCADE,
                                help_text="The analysis to be shared")
 
     label = models.CharField(max_length=100,
@@ -246,8 +258,7 @@ class ViewLink(TimeStampedModel):
                              help_text='A human-readable description (eg "Shared with journal reviewers")')
 
     def get_absolute_url(self):
-        url = self.target.get_absolute_url()
-        return f'{url}?token={self.code}'
+        return self.gwas.get_absolute_url(token=self.code)
 
     def save(self, *args, **kwargs):
         """Generate a code and ensure it is unique"""

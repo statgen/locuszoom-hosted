@@ -257,11 +257,11 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
         gwas_svg.call(point_tooltip);
 
         function get_link_to_LZ(variant) {
-            return fmt(window.model.urlprefix + '?chrom={1}&start={2}&end={3}',
-                       window.pheno,
-                       variant.chrom,
-                       Math.max(0, variant.pos - 200 * 1000),
-                       variant.pos + 200 * 1000);
+            var base = new URL(window.model.urlprefix, window.location.origin);
+            base.searchParams.set('chrom', variant.chrom);
+            base.searchParams.set('start', Math.max(0, variant.pos - 200 * 1000));
+            base.searchParams.set('end', variant.pos + 200 * 1000);
+            return base;
         }
 
         function pp1() {

@@ -8,7 +8,11 @@ import { sourceName} from 'locuszoom-tabix/src/util/lz-helpers';
 
 LocusZoom.KnownDataSources.extend('AssociationLZ', 'AssociationApi', {
     getURL: function(state, chain,fields) {
-        return `${this.url}?chrom=${state.chr}&start=${state.start}&end=${state.end}`;
+        const base = new URL(this.url, window.location.origin);
+        base.searchParams.set('chrom', state.chr);
+        base.searchParams.set('start', state.start);
+        base.searchParams.set('end', state.end);
+        return base;
     }
 });
 

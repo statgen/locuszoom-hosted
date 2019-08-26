@@ -11,8 +11,10 @@
     <div class="row">
       <div class="col-md-12">
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="{% url 'gwas:overview' gwas.slug %}">{{ gwas.label }}</a></li>
-          <li class="breadcrumb-item active">Manhattan Plot</li>
+          <li class="breadcrumb-item">
+            <a href="{% filter add_token:token %}{% url 'gwas:overview' gwas.slug %}{% endfilter %}">{{ gwas.label }}</a>
+          </li>
+          <li class="breadcrumb-item active">Region view</li>
         </ol>
         <span class="text-muted">Created by: {{ gwas.owner.display_name }}, {{ gwas.created | date }}</span>
         {% if gwas.is_public %}<span class="badge badge-primary">(Public)</span>{% endif %}

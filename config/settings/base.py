@@ -197,6 +197,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'locuszoom_plotting_service.base.context_processors.common_settings'
             ],
+            'builtins': ['locuszoom_plotting_service.gwas.templatetags.shared']
         },
     },
 ]

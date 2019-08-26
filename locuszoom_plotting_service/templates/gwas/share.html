@@ -10,37 +10,50 @@
       <div class="col-md-12">
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="{% url 'gwas:overview' gwas.slug %}">Study</a></li>
-          <li class="breadcrumb-item active">Edit</li>
+          <li class="breadcrumb-item active">Share</li>
         </ol>
       </div>
     </div>
-
     <div class="row">
       <div class="col-md-12">
-        <h2>Edit Study Data</h2>
-        <form method="POST">
-          {% csrf_token %}
-          {{ form | crispy }}
-          <input class="btn btn-success" type="submit" value="Submit"/>
-        </form>
-      </div>
-    </div>
+        {% if gwas.is_public %} {# If the study is public, no "special access" links are needed! #}
+          <p>
+            This GWAS is already publicly accessible, and can be shared via the following URL:
+            <a href="{% get_token_url gwas %}">{% get_token_url gwas %}</a>.
+          </p>
+        {% else %}
+          <h2>Shareable links</h2>
+          <table class="table table-striped">
+            <tr>
+              <th>Label</th>
+              <th>URL</th>
+            </tr>
+            {% for link in viewlinks %}
+              <tr>
+                <td>{% firstof link.label link.created %}</td>
+                <td>(<a href="{{ link.get_absolute_url }}">link</a>)</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="2">There are no shareable links yet.</td>
+              </tr>
+            {% endfor %}
+          </table>
 
-    <div>
-      {#  TODO: This is more useful in staging/ debug mode: it allows completely rerunning the ingest step on the same file #}
-      <a class="btn btn-warning" href="{% url 'gwas:rerun' gwas.slug %}">Re-run ingest step</a>
-    </div>
 
-    {% if not gwas.is_public %}  {# If the study is public, no "special access" links are needed! #}
-      <div class="row">
-        <div class="col-md-12">
-          <h2>Share a private link</h2>
+          <h2>Create a shareable link</h2>
+          <p>
+            Generate a secret link that can be used to share your private studies only with trusted collaborators.
+            Only you can see this page or create new shareable links.
+          </p>
+
           <form method="POST">
-
+            {% csrf_token %}
+            {{ form | crispy }}
+            <input class="btn btn-success" type="submit" value="Create"/>
           </form>
-        </div>
+        {% endif %}
       </div>
-    {% endif %}
-
+    </div>
   </div>
 {% endblock %}
