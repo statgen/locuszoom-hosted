@@ -10,7 +10,8 @@ from locuszoom_plotting_service.gwas import models as lz_models
 
 class GwasSerializer(drf_serializers.ModelSerializer):
     """Represent metadata for a generic GWAS"""
-    id = drf_serializers.IntegerField(source='slug')  # As far as the outside world is concerned, the slug is the ID
+    # FIXME: drf-jsonapi renderer ignores custom ID field and for now we restore it elsewhere
+    id = drf_serializers.CharField(source='slug')  # As far as the outside world is concerned, the slug is the ID
     owner_name = drf_serializers.SerializerMethodField(source='get_owner_name', read_only=True)
     url = drf_serializers.CharField(source='get_absolute_url', read_only=True)
 

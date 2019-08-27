@@ -152,7 +152,7 @@ class GwasShare(LoginRequiredMixin, CreateView):
         #   permissions class
         gwas = get_object_or_404(lz_models.AnalysisInfo, slug=self.kwargs['slug'])
         if not gwas.can_view(request.user):
-            self.handle_no_permission()
+            return self.handle_no_permission()
         return super(GwasShare, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

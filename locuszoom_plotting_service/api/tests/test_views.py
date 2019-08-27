@@ -2,7 +2,10 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from locuszoom_plotting_service.gwas.tests.factories import (
-    UserFactory, AnalysisInfoFactory, AnalysisFilesetFactory
+    AnalysisFilesetFactory,
+    AnalysisInfoFactory,
+    UserFactory,
+    ViewLinkFactory,
 )
 
 
@@ -48,3 +51,42 @@ class TestListviewPermissions(APITestCase):
         self.assertEqual(response.status_code, 200)
         payload = response.json()
         self.assertEqual(len(payload['data']), 1)
+
+
+class TestDetailViewPermissions(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_owner = user1 = UserFactory()
+        cls.user_other = user2 = UserFactory()
+
+        # Create fake studies with no data, that will render anyway
+        cls.study_private = AnalysisInfoFactory(owner=user1, is_public=False,
+                                                files=AnalysisFilesetFactory(has_completed=True))
+        cls.study_public = AnalysisInfoFactory(owner=user2, is_public=True,
+                                               files=AnalysisFilesetFactory(has_completed=True))
+
+        cls.study_private_viewlink = ViewLinkFactory(gwas=cls.study_private)
+
+    def test_renders_slug_instead_of_id(self):
+        # This test exists to catch regressions from a package that handles ID field badly
+        response = self.client.get(reverse('apiv1:gwas-metadata', args=[self.study_public.slug]))
+        payload = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(payload['data']['id'], self.study_public.slug, 'Exposes slug, not ID')
+
+    def test_other_user_cannot_see_private_study(self):
+        self.client.force_login(self.user_other)
+        response = self.client.get(reverse('apiv1:gwas-metadata', args=[self.study_private.slug]))
+        self.assertEqual(response.status_code, 403)
+
+    def test_other_user_can_see_private_study_via_shareable_link(self):
+        self.client.force_login(self.user_other)
+        response = self.client.get(reverse('apiv1:gwas-metadata', args=[self.study_private.slug]),
+                                   {'token': self.study_private_viewlink.code})
+        self.assertEqual(response.status_code, 200)
+
+    def test_private_study_can_be_accessed_via_shareable_link(self):
+        response = self.client.get(reverse('apiv1:gwas-metadata', args=[self.study_private.slug]),
+                                   {'token': self.study_private_viewlink.code})
+        print(response.content)
+        self.assertEqual(response.status_code, 200)

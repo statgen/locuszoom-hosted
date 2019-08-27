@@ -19,7 +19,7 @@
         {% if gwas.is_public %} {# If the study is public, no "special access" links are needed! #}
           <p>
             This GWAS is already publicly accessible, and can be shared via the following URL:
-            <a href="{% get_token_url gwas %}">{% get_token_url gwas %}</a>.
+            <a href="{% url 'gwas:overview' gwas.slug %}">{{ request.scheme }}://{{ request.get_host }}{% url 'gwas:overview' gwas.slug %}</a>.
           </p>
         {% else %}
           <h2>Shareable links</h2>

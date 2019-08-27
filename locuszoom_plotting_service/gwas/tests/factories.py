@@ -7,7 +7,7 @@ import factory
 
 from locuszoom_plotting_service.users.tests.factories import UserFactory
 from .. import constants as lz_constants
-from ..models import AnalysisInfo, AnalysisFileset
+from .. import models as lz_models
 
 
 def choose_genome_build() -> str:
@@ -32,7 +32,7 @@ class AnalysisFilesetFactory(factory.DjangoModelFactory):
     })
 
     class Meta:
-        model = AnalysisFileset
+        model = lz_models.AnalysisFileset
 
     class Params:
         # Most samples will be fine with a 0B file. Only provide actual data if explicitly requested.
@@ -58,4 +58,12 @@ class AnalysisInfoFactory(factory.DjangoModelFactory):
     is_public = False
 
     class Meta:
-        model = AnalysisInfo
+        model = lz_models.AnalysisInfo
+
+
+class ViewLinkFactory(factory.DjangoModelFactory):
+    label = factory.Faker('words', nb=2)
+    gwas = factory.SubFactory(AnalysisInfoFactory)
+
+    class Meta:
+        model = lz_models.ViewLink

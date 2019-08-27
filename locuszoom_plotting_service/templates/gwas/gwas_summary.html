@@ -74,7 +74,8 @@
         <span class="text-muted">Created by: {{ gwas.owner.display_name }}, {{ gwas.created | date }}</span>
         {% if gwas.is_public %}<span class="badge badge-primary">Public</span> {% else %}<span class="badge badge-warning">Private</span>{% endif %}
         {% if gwas.owner == request.user %}(<a href="{% url 'gwas:edit' gwas.slug %}">edit</a>)
-          (<a href="{% url 'gwas:share' gwas.slug %}">share</a>){% endif %}
+          {% if not gwas.is_public %}(<a href="{% url 'gwas:share' gwas.slug %}">share</a>){% endif %}
+        {% endif %}
       </div>
     </div>
 

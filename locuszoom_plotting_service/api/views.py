@@ -2,40 +2,20 @@ import os
 import typing as ty
 
 from django.conf import settings
-from django_filters import rest_framework as filters
 from rest_framework import exceptions as drf_exceptions
 from rest_framework import permissions as drf_permissions
 from rest_framework import generics
 from rest_framework import renderers as drf_renderers
 
+from locuszoom_plotting_service.api.filters import GwasFilter
 from locuszoom_plotting_service.gwas import models as lz_models
 
 from zorp.readers import standard_gwas_reader
-from zorp.parsers import standard_gwas_parser_quick
 
 from . import (
     permissions,
     serializers
 )
-
-from locuszoom_plotting_service.gwas import models
-
-
-class GwasFilter(filters.FilterSet):
-    """Filters used for GWAS endpoints, including a special "only my studies" alias"""
-    me = filters.BooleanFilter(method='filter_by_user',
-                               label='Show only records owned by the current logged-in user, as filter[me]')
-
-    class Meta:
-        model = models.AnalysisInfo
-        fields = {
-            'pmid': ('isnull', 'iexact')
-        }
-
-    def filter_by_user(self, queryset, name, value):
-        if value and self.request.user.is_authenticated:
-            return queryset.filter(owner=self.request.user)
-        return queryset
 
 
 class GwasListView(generics.ListAPIView):
@@ -47,7 +27,7 @@ class GwasListView(generics.ListAPIView):
     """
     queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False).select_related('owner')
     serializer_class = serializers.GwasSerializer
-    permission_classes = (permissions.GwasPermission,)
+    permission_classes = (permissions.GwasViewPermission,)
     ordering = ('-created',)
 
     filterset_class = GwasFilter
@@ -69,7 +49,7 @@ class GwasListViewUnprocessed(generics.ListAPIView):
 
     queryset = lz_models.AnalysisInfo.objects.all().select_related('owner')
     serializer_class = serializers.GwasSerializerUnprocessed
-    permissions = (drf_permissions.IsAuthenticated, permissions.GwasPermission)
+    permissions = (drf_permissions.IsAuthenticated, permissions.GwasViewPermission)
     ordering = ('-created',)
 
     def get_queryset(self):
@@ -79,21 +59,25 @@ class GwasListViewUnprocessed(generics.ListAPIView):
 
 class GwasDetailView(generics.RetrieveAPIView):
     """Metadata describing one particular uploaded GWAS"""
-    permission_classes = (permissions.GwasPermission,)
+    permission_classes = (permissions.GwasViewPermission,)
     queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False)
     serializer_class = serializers.GwasSerializer
+
+    lookup_field = 'slug'
 
 
 class GwasRegionView(generics.RetrieveAPIView):
     """
     Fetch the parsed GWAS data (such as from a file) for a specific region
-    # TODO: Improve serialization, error handling, etc. (better follow JSONAPI spec for errors)
+
+    This is not a JSONAPI endpoint and it does not draw from a database. Therefore, it is intentionally allowed to use
+        a different (more concise) format and disables default validation/ filtering behavior
     """
     renderer_classes = [drf_renderers.JSONRenderer]
     filter_backends: list = []
     queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False)
     serializer_class = serializers.GwasFileSerializer
-    permission_classes = (permissions.GwasPermission,)
+    permission_classes = (permissions.GwasViewPermission,)
 
     lookup_field = 'slug'
 
