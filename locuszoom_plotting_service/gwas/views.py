@@ -147,11 +147,15 @@ class GwasShare(LoginRequiredMixin, CreateView):
     context_object_name = "link"
     template_name = "gwas/share.html"
 
+    # Fields required because of wonky permissions on this view
+    permission_denied_message = 'You must be the author of this study to access this page.'
+    raise_exception = True
+
     def dispatch(self, request, *args, **kwargs):
         # FIXME: This is ugly: it performs a permissions check on a different model, so can't use the existing
         #   permissions class
         gwas = get_object_or_404(lz_models.AnalysisInfo, slug=self.kwargs['slug'])
-        if not gwas.can_view(request.user):
+        if not gwas.owner == request.user:
             return self.handle_no_permission()
         return super(GwasShare, self).dispatch(request, *args, **kwargs)
 
