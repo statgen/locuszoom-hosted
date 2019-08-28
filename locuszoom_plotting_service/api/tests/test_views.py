@@ -9,7 +9,7 @@ from locuszoom_plotting_service.gwas.tests.factories import (
 )
 
 
-class TestListviewPermissions(APITestCase):
+class TestListview(APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user_owner = user1 = UserFactory()
@@ -24,6 +24,18 @@ class TestListviewPermissions(APITestCase):
     def tearDown(self):
         self.client.logout()
 
+    def test_deleted_studies_not_accessible(self):
+        study_public = AnalysisInfoFactory(is_public=True)
+        study_public.delete()
+        response = self.client.get(reverse('apiv1:gwas-list'))
+        payload = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(payload['data']), 1)
+
+        record_ids = [item['id'] for item in payload['data']]
+        self.assertNotIn(study_public.slug, record_ids)
+
+    ### Permissions-related tests
     def test_owner_can_see_private_study(self):
         self.client.force_login(self.user_owner)
         response = self.client.get(reverse('apiv1:gwas-list'))
@@ -53,7 +65,7 @@ class TestListviewPermissions(APITestCase):
         self.assertEqual(len(payload['data']), 1)
 
 
-class TestDetailViewPermissions(APITestCase):
+class TestDetailView(APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user_owner = user1 = UserFactory()
@@ -74,6 +86,13 @@ class TestDetailViewPermissions(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(payload['data']['id'], self.study_public.slug, 'Exposes slug, not ID')
 
+    def test_deleted_studies_not_accessible(self):
+        study_public = AnalysisInfoFactory(is_public=True)
+        study_public.delete()
+        response = self.client.get(reverse('apiv1:gwas-metadata', args=[study_public.slug]))
+        self.assertEqual(response.status_code, 404)
+
+    ### Permissions-related tests
     def test_other_user_cannot_see_private_study(self):
         self.client.force_login(self.user_other)
         response = self.client.get(reverse('apiv1:gwas-metadata', args=[self.study_private.slug]))

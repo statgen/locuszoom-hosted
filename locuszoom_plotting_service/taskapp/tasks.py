@@ -59,8 +59,6 @@ def lz_file_prep(step_name):
 @lz_file_prep("Calculate SHA256")
 def hash_contents(self, instance: models.AnalysisFileset):
     """Store a unique hash of the file contents"""
-    # instance = models.AnalysisFileset.objects.get(pk=fileset_id)
-
     sha256 = processors.get_file_sha256(os.path.join(settings.MEDIA_ROOT, instance.raw_gwas_file.name))
     instance.file_sha256 = sha256
     instance.save()

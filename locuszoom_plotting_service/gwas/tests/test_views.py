@@ -81,3 +81,27 @@ class TestOverviewPermissions(TestCase):
     def test_fake_share_links_are_rejected(self):
         response = self.client.get(self.study_private.get_absolute_url(token='fjord'))
         self.assertEqual(response.status_code, 403)
+
+
+class TestSummaryView(TestCase):
+    def test_deleted_studies_not_accessible(self):
+        study_public = AnalysisInfoFactory(is_public=True)
+        study_public.delete()
+        response = self.client.get(reverse('gwas:overview', args=[study_public.slug]))
+        self.assertEqual(response.status_code, 404)
+
+
+class TestRegionView(TestCase):
+    def test_deleted_studies_not_accessible(self):
+        study_public = AnalysisInfoFactory(is_public=True)
+        study_public.delete()
+        response = self.client.get(reverse('gwas:region', args=[study_public.slug]))
+        self.assertEqual(response.status_code, 404)
+
+
+class TestManhattanJsonView(TestCase):
+    def test_deleted_studies_not_accessible(self):
+        study_public = AnalysisInfoFactory(is_public=True)
+        study_public.delete()
+        response = self.client.get(reverse('gwas:manhattan-json', args=[study_public.slug]))
+        self.assertEqual(response.status_code, 404)

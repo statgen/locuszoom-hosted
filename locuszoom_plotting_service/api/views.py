@@ -25,7 +25,7 @@ class GwasListView(generics.ListAPIView):
 
     This excludes any datasets that are not yet ready for viewing (eg, failed the upload step)
     """
-    queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False).select_related('owner')
+    queryset = lz_models.AnalysisInfo.objects.ingested().select_related('owner')
     serializer_class = serializers.GwasSerializer
     permission_classes = (permissions.GwasViewPermission,)
     ordering = ('-created',)
@@ -47,7 +47,7 @@ class GwasListViewUnprocessed(generics.ListAPIView):
     """
     schema = None  # This is a private endpoint for internal use; hide from documentation
 
-    queryset = lz_models.AnalysisInfo.objects.all().select_related('owner')
+    queryset = lz_models.AnalysisInfo.objects.all_active().select_related('owner')
     serializer_class = serializers.GwasSerializerUnprocessed
     permissions = (drf_permissions.IsAuthenticated, permissions.GwasViewPermission)
     ordering = ('-created',)
@@ -60,7 +60,7 @@ class GwasListViewUnprocessed(generics.ListAPIView):
 class GwasDetailView(generics.RetrieveAPIView):
     """Metadata describing one particular uploaded GWAS"""
     permission_classes = (permissions.GwasViewPermission,)
-    queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False)
+    queryset = lz_models.AnalysisInfo.objects.ingested()
     serializer_class = serializers.GwasSerializer
 
     lookup_field = 'slug'
@@ -75,7 +75,7 @@ class GwasRegionView(generics.RetrieveAPIView):
     """
     renderer_classes = [drf_renderers.JSONRenderer]
     filter_backends: list = []
-    queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False)
+    queryset = lz_models.AnalysisInfo.objects.ingested()
     serializer_class = serializers.GwasFileSerializer
     permission_classes = (permissions.GwasViewPermission,)
 

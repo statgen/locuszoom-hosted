@@ -7,12 +7,14 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.http import urlencode
 from django.urls import reverse
-from model_utils.models import TimeStampedModel
+from model_utils.models import SoftDeletableModel, TimeStampedModel
 
 from ..base.util import _generate_slug
-from . import constants
-from . import util
-
+from . import (
+    constants,
+    managers,
+    util
+)
 
 logger = logging.getLogger(__name__)
 
@@ -24,10 +26,12 @@ def _pipeline_folder():
     return uuid.uuid1().hex
 
 
-class AnalysisInfo(TimeStampedModel):
+class AnalysisInfo(SoftDeletableModel, TimeStampedModel):
     """
     Metadata describing a single analysis (GWAS results). Typically associated with an `AnalysisFileset`
     """
+    objects = managers.AnalysisInfoManager
+
     slug = models.SlugField(max_length=6, unique=True, editable=False, default=_generate_slug,
                             help_text="The external facing identifier for this record")
 
@@ -97,7 +101,7 @@ class AnalysisInfo(TimeStampedModel):
             return self.files.ingest_status
 
         most_recent_upload = self.most_recent_upload
-        if not most_recent_upload:  # Somehow we have metadata without any corresponding file!! Mark as an error.
+        if not most_recent_upload:  # Somehow we have metadata without any corresponding file!! Mark as an error (todo: switch to using an enum).
             return 1
 
         return most_recent_upload.ingest_status

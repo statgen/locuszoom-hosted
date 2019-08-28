@@ -1,16 +1,20 @@
 """(mostly) Template-based front end views"""
 
 import json
+import logging
 import os
+import shutil
 import typing as ty
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     CreateView,
+    DeleteView,
     DetailView,
     UpdateView,
 )
@@ -31,6 +35,10 @@ from . import forms as lz_forms
 from . import models as lz_models
 from . import permissions as lz_permissions
 from .templatetags.shared import add_token
+from . import util
+
+
+logger = logging.getLogger(__name__)
 
 
 class BaseFileView(View, SingleObjectMixin):
@@ -38,7 +46,7 @@ class BaseFileView(View, SingleObjectMixin):
     Base class that serves up a file associated with a GWAS. This centralizes the logic in one place in case we
     change the storage location in the future. Supports serving as JSON (like an API) or as download/attachment.
     """
-    queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False)
+    queryset = lz_models.AnalysisInfo.objects.ingested()
 
     path_arg: str  # Name of a property on the GWAS fileset object that specifies where to find the desired file
     content_type: ty.Union[str, None] = None
@@ -64,7 +72,7 @@ def rerun_analysis(request, slug):
     FIXME: TEMPORARY debugging view
     Replace this later with something smarter, eg "rerun, and possibly replace the options in some of the fields"
     """
-    metadata = lz_models.AnalysisInfo.objects.get(slug=slug)
+    metadata = lz_models.AnalysisInfo.objects.all_active().get(slug=slug)
     files = metadata.analysisfileset_set.order_by('-created').first()
     files.ingest_status = 0
     files.save()
@@ -76,6 +84,32 @@ def rerun_analysis(request, slug):
     return redirect(metadata)
 
 
+#######
+# Data/download views, including raw JSON files that don't match the API design.
+class GwasSummaryStats(lz_permissions.GwasViewPermission, BaseFileView):
+    path_arg = 'normalized_gwas_path'
+    content_type = 'application/gzip'
+    download_name = 'summary_stats.gz'
+
+
+class GwasIngestLog(lz_permissions.GwasViewPermission, BaseFileView):
+    queryset = lz_models.AnalysisInfo.objects.all_active()  # Allow viewing logs of a file that failed ingest
+    path_arg = 'normalized_gwas_log_path'
+    download_name = 'ingest_log.log'
+
+
+class GwasManhattanJson(lz_permissions.GwasViewPermission, BaseFileView):
+    path_arg = 'manhattan_path'
+    content_type = 'application/json'
+
+
+class GwasQQJson(lz_permissions.GwasViewPermission, BaseFileView):
+    path_arg = 'qq_path'
+    content_type = 'application/json'
+
+
+#######
+# HTML views
 class GwasCreate(LoginRequiredMixin, CreateView):
     """
     Upload a GWAS file.
@@ -134,6 +168,65 @@ class GwasEdit(lz_permissions.GwasOwner, UpdateView):
     template_name = "gwas/edit.html"
 
 
+class GwasDelete(lz_permissions.GwasOwner, DeleteView):
+    """Show a confirmation page and delete the study if applicable"""
+    queryset = lz_models.AnalysisInfo.objects.all_active()
+    context_object_name = "gwas"
+    template_name = "gwas/delete.html"
+
+    success_url = reverse_lazy('home')
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Clean up the local files, then, if that succeeds, mark the DB record as deleted
+        We do things in this order so as not to retain data that the user thought was deleted
+        """
+        gwas = self.get_object()
+        # The same gwas file might be revised or re-processed, and we want to delete all known copies.
+        for fileset in gwas.analysisfileset_set.all():
+            target_path = util.get_study_folder(fileset, absolute_path=True)
+            logger.info('User has requested that we delete media folder: ', target_path)
+            if not target_path or not os.path.isdir(target_path) or \
+                target_path.strip('/') == settings.MEDIA_ROOT.strip('/'):
+                # Guard against some malformed path bugs that would be really awkward to explain
+                raise Exception('Cannot find the data requested for deletion')
+
+            shutil.rmtree(target_path)
+        return super(GwasDelete, self).delete(request, *args, **kwargs)
+
+
+class GwasRegion(lz_permissions.GwasViewPermission, DetailView):
+    """
+    A LocusZoom plot associated with one specific GWAS region
+
+    The region is actually specified as query params; if none are provided, it defaults to the top hit in the study
+    """
+    template_name = 'gwas/gwas_region.html'
+    queryset = lz_models.AnalysisInfo.objects.ingested()
+    context_object_name = 'gwas'
+
+    def get_context_data(self, **kwargs):
+        """Additional template context"""
+        context = super().get_context_data(**kwargs)
+        gwas = self.get_object()
+
+        token = self.request.GET.get('token')
+        context['token'] = token
+        context['js_vars'] = json.dumps({
+            'assoc_base_url': add_token(
+                reverse('apiv1:gwas-region', kwargs={'slug': gwas.slug}),
+                token
+            ),
+            'label': gwas.label,
+            'build': gwas.build,
+            # Default region for bare URLs is the top hit in the study
+            'chr': gwas.top_hit_view.chrom,
+            'start': gwas.top_hit_view.start,
+            'end': gwas.top_hit_view.end,
+        })
+        return context
+
+
 class GwasShare(LoginRequiredMixin, CreateView):
     """
     Sharing options for a study. Only the owner can see this page.
@@ -155,7 +248,7 @@ class GwasShare(LoginRequiredMixin, CreateView):
         # FIXME: This is ugly: it performs a permissions check on a different model, so can't use the existing
         #   permissions class
         gwas = get_object_or_404(lz_models.AnalysisInfo, slug=self.kwargs['slug'])
-        if not gwas.owner == request.user:
+        if not (gwas.owner == request.user) or gwas.is_removed:
             return self.handle_no_permission()
         return super(GwasShare, self).dispatch(request, *args, **kwargs)
 
@@ -177,39 +270,13 @@ class GwasShare(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-#######
-# Data/download views, including raw JSON files that don't match the API design.
-class GwasSummaryStats(lz_permissions.GwasViewPermission, BaseFileView):
-    path_arg = 'normalized_gwas_path'
-    content_type = 'application/gzip'
-    download_name = 'summary_stats.gz'
-
-
-class GwasIngestLog(lz_permissions.GwasViewPermission, BaseFileView):
-    queryset = lz_models.AnalysisInfo.objects.all()  # Allow viewing logs of a file that failed ingest
-    path_arg = 'normalized_gwas_log_path'
-    download_name = 'ingest_log.log'
-
-
-class GwasManhattanJson(lz_permissions.GwasViewPermission, BaseFileView):
-    path_arg = 'manhattan_path'
-    content_type = 'application/json'
-
-
-class GwasQQJson(lz_permissions.GwasViewPermission, BaseFileView):
-    path_arg = 'qq_path'
-    content_type = 'application/json'
-
-
-#######
-# HTML views
 class GwasSummary(lz_permissions.GwasViewPermission, DetailView):
     """
     Basic GWAS overview. Shows manhattan plot and other summary info for a dataset.
     """
     template_name = 'gwas/gwas_summary.html'
     # Some studies will still be processing- it's still ok to see the summary page for these
-    queryset = lz_models.AnalysisInfo.objects.select_related('files')
+    queryset = lz_models.AnalysisInfo.objects.all_active().select_related('files')
     context_object_name = 'gwas'
 
     def get_context_data(self, **kwargs):
@@ -232,37 +299,5 @@ class GwasSummary(lz_permissions.GwasViewPermission, DetailView):
                 reverse('gwas:qq-json', kwargs={'slug': gwas.slug}),
                 token,
             ) if gwas.files else None,
-        })
-        return context
-
-
-class GwasLocus(lz_permissions.GwasViewPermission, DetailView):
-    """
-    A LocusZoom plot associated with one specific GWAS region
-
-    The region is actually specified as query params; if none are provided, it defaults to the top hit in the study
-    """
-    template_name = 'gwas/gwas_region.html'
-    queryset = lz_models.AnalysisInfo.objects.filter(files__isnull=False)
-    context_object_name = 'gwas'
-
-    def get_context_data(self, **kwargs):
-        """Additional template context"""
-        context = super().get_context_data(**kwargs)
-        gwas = self.get_object()
-
-        token = self.request.GET.get('token')
-        context['token'] = token
-        context['js_vars'] = json.dumps({
-            'assoc_base_url': add_token(
-                reverse('apiv1:gwas-region', kwargs={'slug': gwas.slug}),
-                token
-            ),
-            'label': gwas.label,
-            'build': gwas.build,
-            # Default region for bare URLs is the top hit in the study
-            'chr': gwas.top_hit_view.chrom,
-            'start': gwas.top_hit_view.start,
-            'end': gwas.top_hit_view.end,
         })
         return context

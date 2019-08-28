@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Delete Study{% endblock %}
+
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'gwas:overview' gwas.slug %}">Study</a></li>
+          <li class="breadcrumb-item active">Delete</li>
+        </ol>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <p>
+          Are you sure you want to delete this study? This will permanently remove your data from the server.
+          This operation cannot be un-done.
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form | crispy }}
+            <a class="btn btn-outline-secondary">Go back</a> <input class="btn btn-danger" type="submit" value="Delete"/>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
