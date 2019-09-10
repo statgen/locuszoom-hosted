@@ -3,12 +3,14 @@
      * Implement the homepage search interface in Vue.js
      */
 
-    import bsFormCheckbox from 'bootstrap-vue/es/components/form-checkbox/form-checkbox';
-    import bsFormInput from 'bootstrap-vue/es/components/form-input/form-input';
-    import bsFormGroup from 'bootstrap-vue/es/components/form-group/form-group';
-    import bsInputGroup from 'bootstrap-vue/es/components/input-group/input-group';
-    import bsInputGroupAppend from 'bootstrap-vue/es/components/input-group/input-group-append';
-    import bsJumbotron from 'bootstrap-vue/es/components/jumbotron/jumbotron';
+    import {
+        BFormCheckbox,
+        BFormInput,
+        BFormGroup,
+        BInputGroup,
+        BInputGroupAppend,
+        BJumbotron
+    } from 'bootstrap-vue/esm/';
 
     import GenericGwasList from './generic_gwas_list.vue';
 
@@ -42,12 +44,12 @@
             }
         },
         components: {
-            bsFormCheckbox,
-            bsFormInput,
-            bsFormGroup,
-            bsInputGroup,
-            bsInputGroupAppend,
-            bsJumbotron,
+            BFormCheckbox,
+            BFormInput,
+            BFormGroup,
+            BInputGroup,
+            BInputGroupAppend,
+            BJumbotron,
             GenericGwasList,
         }
     }
@@ -58,25 +60,25 @@
   <div>
     <div class="row">
       <div class="col-md-12">
-        <bs-jumbotron :fluid="true" lead="Create and share interactive GWAS Plots" class="search-field">
-          <bs-input-group>
-            <bs-form-input type="text" placeholder="Search by analysis name or PMID" v-model="search_text"/>
-            <bs-input-group-append>
+        <b-jumbotron :fluid="true" lead="Create and share interactive GWAS Plots" class="search-field">
+          <b-input-group>
+            <b-form-input type="text" placeholder="Search by analysis name or PMID" v-model="search_text"/>
+            <b-input-group-append>
               <button class="btn btn-info" @click="doSearch">Search</button>
-            </bs-input-group-append>
-          </bs-input-group>
-          <bs-form-group>
+            </b-input-group-append>
+          </b-input-group>
+          <b-form-group>
             Filter(s):
-            <bs-form-checkbox id="filter-published" inline
+            <b-form-checkbox id="filter-published" inline
                               v-model="filter_published">Published
-            </bs-form-checkbox>
-            <bs-form-checkbox v-if="is_authenticated"
+            </b-form-checkbox>
+            <b-form-checkbox v-if="is_authenticated"
                               id="filter-mine" inline
                               v-model="filter_mine">Mine
-            </bs-form-checkbox>
-          </bs-form-group>
+            </b-form-checkbox>
+          </b-form-group>
 
-        </bs-jumbotron>
+        </b-jumbotron>
       </div>
     </div>
     <div class="container">

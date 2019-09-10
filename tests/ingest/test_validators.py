@@ -69,11 +69,11 @@ class TestStandardGwasValidator:
     def test_validates_for_file(self):
         sample_fn = os.path.join(os.path.dirname(__file__), 'fixtures/gwas.tab')
         is_valid = validators.standard_gwas_validator.validate(sample_fn, {  # Parser options for sample file
-            'chr_col': 1,
+            'chrom_col': 1,
             'pos_col': 2,
             'ref_col': 3,
             'alt_col': 4,
-            'pval_col': 5,
-            'is_log_pval': False
+            'pvalue_col': 5,
+            'is_neg_log_pvalue': False
         })
         assert is_valid

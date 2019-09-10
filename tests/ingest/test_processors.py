@@ -14,12 +14,12 @@ class TestPipelineTasks:
         status = processors.normalize_contents(
             SAMPLE_FILE,
             {  # Parser options for sample file
-                'chr_col': 1,
+                'chrom_col': 1,
                 'pos_col': 2,
                 'ref_col': 3,
                 'alt_col': 4,
-                'pval_col': 5,
-                'is_log_pval': False
+                'pvalue_col': 5,
+                'is_neg_log_pvalue': False
             },
             os.path.join(tmpdir, 'normalized.txt'),
             os.path.join(tmpdir, 'logalog.log'),

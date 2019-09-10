@@ -23,12 +23,12 @@ class AnalysisFilesetFactory(factory.DjangoModelFactory):
     ingest_complete = None
 
     parser_options = factory.Dict({  # Parser options for standard gwas format
-        'chr_col': 1,
+        'chrom_col': 1,
         'pos_col': 2,
         'ref_col': 3,
         'alt_col': 4,
-        'pval_col': 5,
-        'is_log_pval': False
+        'pvalue_col': 5,
+        'is_neg_log_pvalue': False
     })
 
     class Meta:

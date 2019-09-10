@@ -118,7 +118,7 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'root': {
-        'level': 'WARNING',
+        'level': 'INFO',
         'handlers': ['console', 'sentry'],
     },
     'formatters': {
@@ -140,7 +140,7 @@ LOGGING = {
     },
     'loggers': {
         '': {  # Root logger; catchall for any module
-            'level': 'WARNING',
+            'level': 'INFO',
             'handlers': ['console'],
         },
         'django.db.backends': {

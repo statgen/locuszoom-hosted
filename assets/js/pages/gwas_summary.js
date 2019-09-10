@@ -6,7 +6,7 @@ import {create_qq_plot, create_gwas_plot} from '../util/pheweb_plots';
 
 import Tabulator from 'tabulator-tables';
 import 'tabulator-tables/dist/css/bootstrap/tabulator_bootstrap4.css';
-import _ from 'underscore';
+import { pairs, sortBy } from 'underscore';
 
 function createTopHitsTable(selector, data, region_url) {
     // Filter the manhattan json to a subset of just peaks, sorted by pvalue (smallest first)
@@ -83,7 +83,7 @@ if (window.template_args.ingest_status === 2) {
                 return resp.json();
             })
             .then(data => {
-                _.sortBy(_.pairs(data.overall.gc_lambda), function (d) {
+                sortBy(pairs(data.overall.gc_lambda), function (d) {
                     return -d[0];
                 }).forEach(function (d, i) {
                     // FIXME: Manually constructed HTML; change

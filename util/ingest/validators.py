@@ -32,7 +32,7 @@ class _GwasValidator:
 
         # Create a reader than can handle the filetype and header format of whatever the user uploads
         parser = parsers.GenericGwasLineParser(**parser_options)
-        reader = sniffers.guess_gwas(filename, parser=parser)
+        reader = sniffers.guess_gwas_generic(filename, parser=parser)
         return all([
             self._validate_mimetype(encoding),
             self._validate_contents(reader),

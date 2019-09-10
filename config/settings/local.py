@@ -19,6 +19,10 @@ ALLOWED_HOSTS = [
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
+    'root': {
+        'level': 'INFO',
+        'handlers': ['console'],
+    },
     'formatters': {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s '

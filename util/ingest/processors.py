@@ -45,7 +45,7 @@ def normalize_contents(src_path: str, parser_options: dict, dest_path: str, log_
     This routine will deliberately exclude lines that could not be handled in a reliable fashion, such as pval=NA
     """
     parser = parsers.GenericGwasLineParser(**parser_options)
-    reader = sniffers.guess_gwas(src_path, parser=parser)
+    reader = sniffers.guess_gwas_generic(src_path, parser=parser)
 
     success = False
     try:

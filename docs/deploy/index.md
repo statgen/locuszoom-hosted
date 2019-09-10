@@ -84,4 +84,9 @@ A sample callback URL for OAuth registration (in local development) would be:
 - (optional) `docker-compose -f production.yml run --rm django python manage.py migrate`
 
 Note: if you are using experimental versions of JS libraries (such as pinning to a git commit), yarn may ignore its 
-lockfile and install an older version instead. In that case,  
+lockfile and install an older version instead. In that case, run `yarn cache clean [<module_name...>]` before 
+you begin. As the project matures, we will shift to using official version releases in place of git commits.
+
+### Monitoring the new release
+- Monitor new error reports from Sentry
+- Watch application logs during manual QA via: `docker-compose -f production.yml logs --follow --tail 20`

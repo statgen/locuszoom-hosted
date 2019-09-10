@@ -3,7 +3,7 @@
      * Represent a single GWAS item as a tile. Accepts an API representation of the data as a single prop
      */
 
-    import bsCard from 'bootstrap-vue/es/components/card/card';
+    import { BCard } from 'bootstrap-vue/esm/';
 
     export default {
         name: "gwas_description",
@@ -14,7 +14,7 @@
                 return pmid ? `https://www.ncbi.nlm.nih.gov/pubmed/${pmid}/` : null;
             },
         },
-        components: { bsCard },
+        components: { BCard },
         filters: {
             date(value) {
                 return value? new Date(value).toLocaleDateString() : '';
@@ -25,7 +25,7 @@
 
 
 <template>
-<bs-card border-variant="light">
+<b-card border-variant="light">
   <a :href="study_data.url" class="study-title">{{ study_data.label }}</a><br>
   <em class="text-muted">Uploaded by: {{ study_data.owner_name }}</em><br>
   <em class="text-muted">Created: {{ study_data.created | date }}</em><br>
@@ -35,7 +35,7 @@
   <span v-if="study_data.is_public" class="badge badge-primary">Public</span>
   <span v-if="study_data.ingest_status === 0" class="badge badge-warning">Pending</span>
   <span v-if="study_data.ingest_status === 1" class="badge badge-danger">Error</span>
-</bs-card>
+</b-card>
 </template>
 
 
