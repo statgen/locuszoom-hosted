@@ -33,11 +33,40 @@
       <h2>How should I prepare my data for uploading?</h2>
       <p>
         The server attempts to handle many common GWAS formats, but we strongly recommend that you compress and
-        tabix-index your results first. Your file should contain columns that identify the variant
-        (marker OR chrom/pos/ref/alt), as well as p value (or -log<sub>10</sub> p value) for each variant. The data
-        must a <strong>tab-delimited</strong> file and be <strong>sorted</strong> by chromosome and position. The
-        upload step will ignore any columns whose meaning is not explicitly specified.
+        tabix-index your results first. Your file should contain columns that identify key information, as described
+        below. The data must a <strong>tab-delimited</strong> file and be <strong>sorted</strong> by chromosome and
+        position. The upload step will ignore any columns whose meaning is not explicitly specified.
+        The following columns are expected:
       </p>
+      <ul>
+        <li>Variant specification
+          <ul>
+          <li>By marker (chrom_pos:ref/alt): <i>9:22125503_G/C</i></li>, OR
+          <li>By individual columns (preferred)
+            <ul>
+              <li>Chromosome</li>
+              <li>Position</li>
+              <li>Ref. allele (according to human reference genome)</li>
+              <li>Alt. allele (according to human reference genome)</li>
+            </ul>
+          </li>
+        </ul>
+        </li>
+        <li>p-value or -log<sub>10</sub> p-value</li>
+        <li>(optional) Effect size (&beta;)</li>
+        <li>(optional) Standard error of the effect size</li>
+        <li>
+          (optional) Allele frequency; will be oriented towards the alt allele
+          <ul>
+            <li>Use frequency as given (single column)</li>
+            <li>Calculate from two columns, as <i>COUNT</i> / <i>NSAMPLES</i> / 2</li>
+            <li>
+              Note: at present, this service <b>does not</b> support files where the allele frequency refers to a
+              different allele (ref or alt) per row. The frequency must always refer to the same column for all rows.
+            </li>
+          </ul>
+        </li>
+      </ul>
       <h2>How do I report a problem?</h2>
       <p>
         There are several ways to reach us, including <a href="mailto:locuszoom@googlegroups.com">user group</a> and

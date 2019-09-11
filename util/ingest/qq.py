@@ -37,47 +37,18 @@ MAF_SIGFIGS = 2
 logger = logging.getLogger(__name__)
 
 
-def get_maf(variant, num_samples = None):
-    mafs = []
-    if 'maf' in variant:
-        mafs.append(variant['maf'])
-    if 'af' in variant:
-        mafs.append(min(variant['af'], 1 - variant['af']))
-    if 'mac' in variant and num_samples:
-        mafs.append(variant['ac'] / 2 / num_samples)
-    if 'ac' in variant and num_samples:
-        x = variant['ac'] / 2 / num_samples
-        mafs.append(min(x, 1 - x))
-    if len(mafs) == 0:
-        return None
-    elif len(mafs) == 1:
-        return mafs[0]
-    else:
-        if any(maf > 0.5 for maf in mafs):
-            raise Exception(
-                "Error: the variant {} in has at least one way of computing maf that is > 0.5 ({})".format(
-                    variant, mafs))
-        if max(mafs) - min(mafs) > 0.05:
-            raise Exception(
-                "Error: the variant {} has two ways of computing maf, resulting in the mafs {}, which differ by more than 0.05.".format(
-                    variant, mafs))
-        return round_sig(sum(mafs) / len(mafs), MAF_SIGFIGS)
-
-
 Variant = collections.namedtuple('Variant', ['qval', 'maf'])
 
 
 def augment_variants(variants: ty.Iterator[BasicVariant], num_samples=None):
     for var in variants:
-        v = var.to_dict()
-        v['pvalue'] = var.pvalue  # derived property
-
-        if v['pvalue'] == 0:
+        if var.pvalue == 0:
             # FIXME: Why does QQ plot require this stub value?
             qval = 1000  # TODO(pjvh): make an option "convert_pval0_to = [num|None]"
         else:
-            qval = v['neg_log_pvalue']
-        maf = get_maf(v, num_samples=num_samples)
+            qval = var.neg_log_pvalue
+
+        maf = round(var.alt_allele_freq, MAF_SIGFIGS) if var.alt_allele_freq else None
         yield Variant(qval=qval, maf=maf)
 
 
