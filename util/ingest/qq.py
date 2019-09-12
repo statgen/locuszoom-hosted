@@ -48,9 +48,8 @@ def augment_variants(variants: ty.Iterator[BasicVariant], num_samples=None):
         else:
             qval = var.neg_log_pvalue
 
-        af = var.alt_allele_freq
+        af = var.maf
         if af is not None:
-            af = min(af, 1 - af)
             af = round(af, MAF_SIGFIGS)
         yield Variant(qval=qval, maf=af)
 
