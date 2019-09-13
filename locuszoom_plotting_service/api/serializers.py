@@ -42,6 +42,9 @@ class GwasFileSerializer(drf_serializers.Serializer):
     alt_allele = drf_serializers.CharField(source='alt', read_only=True)
     log_pvalue = drf_serializers.SerializerMethodField(method_name='get_neg_log_pvalue', read_only=True)
     variant = drf_serializers.CharField(source='marker', read_only=True)
+    beta = drf_serializers.FloatField(read_only=True)
+    se = drf_serializers.FloatField(source='stderr_beta', read_only=True)
+    alt_allele_freq = drf_serializers.FloatField(read_only=True)
 
     def get_neg_log_pvalue(self, row):
         """
@@ -51,7 +54,7 @@ class GwasFileSerializer(drf_serializers.Serializer):
         Therefore we serialize this as a special case so it can be used in the frontend
         """
         value = row.neg_log_pvalue
-        if math.isinf(value):
+        if value is not None and math.isinf(value):
             return 'Infinity'
         else:
             return value

@@ -71,7 +71,7 @@ class GwasRegionView(generics.RetrieveAPIView):
     Fetch the parsed GWAS data (such as from a file) for a specific region
 
     This is not a JSONAPI endpoint and it does not draw from a database. Therefore, it is intentionally allowed to use
-        a different (more concise) format and disables default validation/ filtering behavior
+        a different (more concise) format and disables default query param validation/ filtering behavior
     """
     renderer_classes = [drf_renderers.JSONRenderer]
     filter_backends: list = []
@@ -92,7 +92,10 @@ class GwasRegionView(generics.RetrieveAPIView):
         if not os.path.isfile(gwas.files.normalized_gwas_path):
             raise drf_exceptions.NotFound
 
-        reader = standard_gwas_reader(gwas.files.normalized_gwas_path)
+        # We deliberately exclude missing pvalues because this endpoint is primarily aimed at association plots
+        reader = standard_gwas_reader(gwas.files.normalized_gwas_path)\
+            .add_filter('neg_log_pvalue', lambda v, row: v is not None)
+
         return list(reader.fetch(chrom, start, end))
 
     def _query_params(self) -> ty.Tuple[str, int, int]:

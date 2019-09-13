@@ -73,12 +73,13 @@ def rerun_analysis(request, slug):
     Replace this later with something smarter, eg "rerun, and possibly replace the options in some of the fields"
     """
     metadata = lz_models.AnalysisInfo.objects.all_active().get(slug=slug)
+    if request.user != metadata.owner:
+        raise HttpResponseBadRequest
+
     files = metadata.analysisfileset_set.order_by('-created').first()
     files.ingest_status = 0
     files.save()
 
-    if request.user != metadata.owner:
-        raise HttpResponseBadRequest
     transaction.on_commit(lambda: tasks.total_pipeline(files.pk).apply_async())
 
     return redirect(metadata)
