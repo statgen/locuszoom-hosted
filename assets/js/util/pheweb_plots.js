@@ -476,8 +476,8 @@ function create_qq_plot(maf_ranges, qq_ci) {
             })
             .text(function(d) {
                 return fmt('{0} ≤ MAF < {1} ({2})',
-                           attempt_two_decimals(d.maf_range[0]),
-                           attempt_two_decimals(d.maf_range[1]),
+                           attempt_two_decimals(d.maf_range[0] || 0),
+                           attempt_two_decimals(d.maf_range[1] || 0.5),  // If MAF values are missing, MAF 0-0.5
                            d.count);
             })
             .attr('fill', function(d) {

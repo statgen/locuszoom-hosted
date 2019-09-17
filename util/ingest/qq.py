@@ -80,7 +80,8 @@ assert not approx_equal(42, 42.01)
 
 
 def make_qq_stratified(variants):
-    variants = sorted(variants, key=lambda v: v.maf)
+    # Some variants may be missing MAF. Sort those at the end of the list (eg, lump with the common variants)
+    variants = sorted(variants, key=lambda v: (v.maf is None, v.maf))
 
     def make_strata(idx):
         # Note: slice_indices[1] is the same as slice_indices[0] of the next slice.
