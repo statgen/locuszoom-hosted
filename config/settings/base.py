@@ -273,7 +273,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-ACCOUNT_USER_DISPLAY = lambda user: user.display_name
+ACCOUNT_USER_DISPLAY = lambda user: user.display_name  # noqa
 # Boilerplate to control details how users log in
 ACCOUNT_ADAPTER = 'locuszoom_plotting_service.users.adapters.AccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'locuszoom_plotting_service.users.adapters.SocialAccountAdapter'
@@ -292,7 +292,7 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.MultiPartParser'
     ),
     'DEFAULT_RENDERER_CLASSES': (
-        'locuszoom_plotting_service.api.renderers.HackJSONAPIRenderer',  # DRF-JSONAPI ignores custom ID field and hardcodes ID
+        'locuszoom_plotting_service.api.renderers.HackJSONAPIRenderer',  # DRF-JSONAPI hardcodes ID; override w/custom
         'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'DEFAULT_METADATA_CLASS': 'rest_framework_json_api.metadata.JSONAPIMetadata',

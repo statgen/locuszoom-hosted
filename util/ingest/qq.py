@@ -10,7 +10,8 @@ Extracted from PheWeb: 2cfaa69
 # Peter has included some original notes on the processing requirements, as follows::
 # TODO: reduce QQ memory using Counter(v.qval for v in variants).
 #      - but we still need to split into 4 strata using MAF. Can that be done efficiently?
-#          a) we could keep balanced lists for the 4 strata, but we can only be confidently start processing variants once we've read 3/4 of all variants
+#          a) we could keep balanced lists for the 4 strata, but we can only be confidently start processing variants
+#          once we've read 3/4 of all variants
 #          b) we could assume that, since we're sorted by chr-pos-ref-alt, MAF should be pretty randomly ordered.
 #               - then we could start processing variants after reading only 10% of all variants
 #               - if we're wrong, `raise StrataGuessingFailed()` and try again with sorting.
@@ -131,7 +132,8 @@ def compute_qq(qvals):
     # So we can drop any obs_qval above that, to save space and make sure the visible range gets all the NUM_BINS.
 
     # this calculation must avoid dropping points that would be shown by the calculation done in javascript.
-    # `max_obs_qval` means the largest observed -log10(pvalue) that will be shown in the plot. It's usually NOT the largest in the data.
+    # `max_obs_qval` means the largest observed -log10(pvalue) that will be shown in the plot. It's usually NOT the
+    # largest in the data.
     max_obs_qval = boltons.mathutils.clamp(qvals[0],
                                            lower=max_exp_qval,
                                            upper=math.ceil(2 * max_exp_qval))
@@ -143,11 +145,13 @@ def compute_qq(qvals):
 
     occupied_bins = set()
     for i, obs_qval in enumerate(qvals):
-        if obs_qval > max_obs_qval: continue
+        if obs_qval > max_obs_qval:
+            continue
         exp_qval = -math.log10((i + 0.5) / len(qvals))
         exp_bin = int(exp_qval / max_exp_qval * NUM_BINS)
         # TODO(pjvh): it'd be great if the `obs_bin`s started right at the lowest qval in that `exp_bin`.
-        #       that way we could have fewer bins but still get a nice straight diagonal line without that stair-stepping appearance.
+        #       that way we could have fewer bins but still get a nice straight diagonal line without that
+        #       stair-stepping appearance.
         obs_bin = int(obs_qval / max_obs_qval * NUM_BINS)
         occupied_bins.add((exp_bin, obs_bin))
 
@@ -174,7 +178,7 @@ def gc_value_from_list(qvals, quantile=0.5):
 
 
 def gc_value(pval, quantile=0.5):
-    # This should be equivalent to this R: `qchisq(median_pval, df=1, lower.tail=F) / qchisq(quantile, df=1, lower.tail=F)`
+    # This should be equivalent to R: `qchisq(median_pval, df=1, lower.tail=F) / qchisq(quantile, df=1, lower.tail=F)`
     return scipy.stats.chi2.ppf(1 - pval, 1) / scipy.stats.chi2.ppf(1 - quantile, 1)
 
 
@@ -189,7 +193,7 @@ def get_confidence_intervals(num_variants, confidence=0.95):
     one_sided_doubt = (1 - confidence) / 2
 
     # `variant_counts` are the numbers of variants at which we'll calculate the confidence intervals
-    # any `1 <= variant_count <= num_variants-1` could be used, but we scale in powers of 2 to make the CI visually pretty smooth.
+    # any `1 <= variant_count <= num_variants-1` could be used, but scale in powers of 2 to make the CI visually smooth
     variant_counts = []
     for x in range(0, int(math.ceil(math.log2(num_variants)))):
         variant_counts.append(2 ** x)

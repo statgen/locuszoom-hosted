@@ -26,7 +26,7 @@ class GwasSerializer(drf_serializers.ModelSerializer):
 class GwasSerializerUnprocessed(GwasSerializer):
     """Represents the metadata for any GWAS file, including those that may not be processed or ready to share"""
     class Meta(GwasSerializer.Meta):
-        fields = GwasSerializer.Meta.fields + ('ingest_status',)
+        fields = GwasSerializer.Meta.fields + ('ingest_status',)  # type: ignore
 
 
 class GwasFileSerializer(drf_serializers.Serializer):
@@ -58,4 +58,3 @@ class GwasFileSerializer(drf_serializers.Serializer):
             return 'Infinity'
         else:
             return value
-

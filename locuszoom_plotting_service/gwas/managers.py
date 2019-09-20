@@ -22,4 +22,3 @@ class AnalysisInfoQuerySet(SoftDeletableQuerySet):
 
 
 AnalysisInfoManager = AnalysisInfoQuerySet.as_manager()
-

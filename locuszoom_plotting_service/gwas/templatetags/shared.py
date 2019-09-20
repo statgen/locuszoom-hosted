@@ -1,7 +1,9 @@
 from django import template
 import furl
 
+
 register = template.Library()
+
 
 @register.filter(name='add_token')
 def add_token(value, token):

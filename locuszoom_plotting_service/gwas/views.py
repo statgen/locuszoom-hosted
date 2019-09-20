@@ -188,7 +188,7 @@ class GwasDelete(lz_permissions.GwasOwner, DeleteView):
             target_path = util.get_study_folder(fileset, absolute_path=True)
             logger.info('User has requested that we delete media folder: ', target_path)
             if not target_path or not os.path.isdir(target_path) or \
-                target_path.strip('/') == settings.MEDIA_ROOT.strip('/'):
+                    target_path.strip('/') == settings.MEDIA_ROOT.strip('/'):
                 # Guard against some malformed path bugs that would be really awkward to explain
                 raise Exception('Cannot find the data requested for deletion')
 
@@ -289,7 +289,7 @@ class GwasSummary(lz_permissions.GwasViewPermission, DetailView):
         context['js_vars'] = json.dumps({
             'ingest_status': gwas.ingest_status,
             'region_url': add_token(
-                reverse('gwas:region', kwargs= {'slug': gwas.slug}),
+                reverse('gwas:region', kwargs={'slug': gwas.slug}),
                 token
             ),
             'manhattan_url': add_token(

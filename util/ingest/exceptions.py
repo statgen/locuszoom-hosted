@@ -29,5 +29,6 @@ class ManhattanExeption(BaseIngestException):
 class TopHitException(BaseIngestException):
     DEFAULT_MESSAGE = 'No top hit could be found'
 
+
 class QQPlotException(BaseIngestException):
     DEFAULT_MESSAGE = 'Could not generate QQ plot'

@@ -25,7 +25,7 @@ urlpatterns = [
     ),
     path(
         "api-docs/",
-         include_docs_urls(title='GWAS API Docs')
+        include_docs_urls(title='GWAS API Docs')
     ),
     # User management
     path("accounts/", include("allauth.urls")),

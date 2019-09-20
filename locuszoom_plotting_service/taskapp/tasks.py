@@ -130,7 +130,7 @@ def mark_success(self, fileset_id):
 
     # TODO: Render this as a nicer-looking template
     send_mail('[locuszoom] Upload succeeded',
-              f'Your upload is done processing. Please visit https://{settings.LZ_OFFICIAL_DOMAIN}{metadata.get_absolute_url()} to see the Manhattan plot.',
+              f'Your upload is done processing. Please visit https://{settings.LZ_OFFICIAL_DOMAIN}{metadata.get_absolute_url()} to see the Manhattan plot.',  # noqa
               'locuszoom-service@umich.edu',
               [metadata.owner.email])
 
@@ -150,12 +150,13 @@ def mark_failure(self, fileset_id):
 
     metadata = instance.metadata
     send_mail('[locuszoom] Upload failed',
-              f'Your upload failed to process. Please visit https://{settings.LZ_OFFICIAL_DOMAIN}{metadata.get_absolute_url()} to see the error logs.',
+              f'Your upload failed to process. Please visit https://{settings.LZ_OFFICIAL_DOMAIN}{metadata.get_absolute_url()} to see the error logs.',  # noqa
               'locuszoom-service@umich.edu',
               [metadata.owner.email])
 
-    mail_admins('[locuszoom-service] Ingest error',
-                f'Data ingestion failed for gwas id: {metadata.slug}. Please see logs for details.'
+    mail_admins(
+        '[locuszoom-service] Ingest error',
+        f'Data ingestion failed for gwas id: {metadata.slug}. Please see logs for details.'
     )
 
 
@@ -184,4 +185,3 @@ def gwas_upload_signal(sender, instance: models.AnalysisFileset = None, created=
 
     # Avoid atomic request race condition by only running task once record created
     transaction.on_commit(lambda: total_pipeline(instance.pk).apply_async())
-

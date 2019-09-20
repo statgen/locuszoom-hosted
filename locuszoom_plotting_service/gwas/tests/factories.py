@@ -42,7 +42,7 @@ class AnalysisFilesetFactory(factory.DjangoModelFactory):
         )
 
         has_completed = factory.Trait(  # Marks pipeline complete (without actually running it)
-            ingest_complete = timezone.now(),
+            ingest_complete=timezone.now(),
             ingest_status=2
         )
 

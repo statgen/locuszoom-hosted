@@ -101,7 +101,8 @@ class AnalysisInfo(SoftDeletableModel, TimeStampedModel):
             return self.files.ingest_status
 
         most_recent_upload = self.most_recent_upload
-        if not most_recent_upload:  # Somehow we have metadata without any corresponding file!! Mark as an error (todo: switch to using an enum).
+        if not most_recent_upload:  # Somehow we have metadata without any corresponding file!! Mark as an error
+            # (todo: switch to using an enum).
             return 1
 
         return most_recent_upload.ingest_status
@@ -250,11 +251,11 @@ class ViewLink(TimeStampedModel):
     A given study must generate the exact link, only for that study
     """
     code = models.CharField(max_length=32,
-                            primary_key = True,
+                            primary_key=True,
                             help_text="A unique code that is tied to one specific study")
 
     gwas = models.ForeignKey(AnalysisInfo, on_delete=models.CASCADE,
-                               help_text="The analysis to be shared")
+                             help_text="The analysis to be shared")
 
     label = models.CharField(max_length=100,
                              default='',

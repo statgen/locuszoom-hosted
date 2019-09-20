@@ -30,7 +30,8 @@ class MaxPriorityQueue:
     """
     # TODO: check if this is slower than blist-based MaxPriorityQueue, for ~500 items
     # Note: `ComparesFalse()` is used to prevent `heapq` from comparing `item`s to eachother.
-    #       Even if two priorities are equal, `ComparesFalse() <= ComparesFalse()` will be `False`, so `item`s won't be compared.
+    #       Even if two priorities are equal, `ComparesFalse() <= ComparesFalse()` will be `False`, so `item`s won't
+    #       be compared.
     class ComparesFalse:
         __eq__ = __lt__ = __gt__ = lambda s, o: False
 
@@ -44,7 +45,7 @@ class MaxPriorityQueue:
         if len(self._q) < size:
             self.add(item, priority)
         else:
-            if -priority > self._q[0][0]:  # if the new priority isn't as big as the biggest priority in the heap, switch them
+            if -priority > self._q[0][0]:  # if new priority < the biggest priority in the heap, switch them
                 _, _, item = heapq.heapreplace(self._q, (-priority, MaxPriorityQueue.ComparesFalse(), item))
             popped_callback(item)
 
@@ -89,23 +90,28 @@ class Binner:
           a) If the variant starts or extends a peak and has a stronger pval than the current `peak_best_variant`:
              1) push the old `peak_best_variant` into `unbinned_variant_pq`.
              2) make the current variant the new `peak_best_variant`.
-          b) If the variant ends a peak, push `peak_best_variant` into `peak_pq` and push the current variant into `unbinned_variant_pq`.
+          b) If the variant ends a peak, push `peak_best_variant` into `peak_pq` and push the current variant into
+            `unbinned_variant_pq`.
           c) Otherwise, just push the variant into `unbinned_variant_pq`.
-        Whenever `peak_pq` exceeds the size `conf.manhattan_peak_max_count`, push its member with the weakest pval into `unbinned_variant_pq`.
-        Whenever `unbinned_variant_pq` exceeds the size `conf.manhattan_num_unbinned`, bin its member with the weakest pval.
+        Whenever `peak_pq` exceeds the size `conf.manhattan_peak_max_count`, push its member with the weakest pval into
+            `unbinned_variant_pq`.
+        Whenever `unbinned_variant_pq` exceeds the size `conf.manhattan_num_unbinned`, bin its member with the
+            weakest pval.
         So, at the end, we'll have `peak_pq`, `unbinned_variant_pq`, and `bins`.
         """
 
         # TODO: Internally, PheWeb binner relies on the data being mutable.
         #   Hence the container type defines what fields we use, but internally variants must be represented as dicts.
-        #   This is low hanging fruit for optimization in the future (eg using a mutable, non-slots container in the parser by default)
+        #   This is low hanging fruit for optimization in the future (eg using a mutable, non-slots container
+        #   in the parser by default)
         variant_dict = variant.to_dict()
         variant_dict['pvalue'] = variant.pvalue  # derived property
 
         if variant_dict['pvalue'] != 0:
             qval = variant_dict['neg_log_pvalue']
             if qval > 40:
-                self._qval_bin_size = 0.2  # this makes 200 bins for a y-axis extending past 40 (but folded so that the lower half is 0-20)
+                # this makes 200 bins for a y-axis extending past 40 (but folded so that the lower half is 0-20)s
+                self._qval_bin_size = 0.2
             elif qval > 20:
                 self._qval_bin_size = 0.1  # this makes 200-400 bins for a y-axis extending up to 20-40.
 
@@ -113,7 +119,8 @@ class Binner:
             if self._peak_best_variant is None:  # open a new peak
                 self._peak_best_variant = variant_dict
                 self._peak_last_chrpos = (variant_dict['chrom'], variant_dict['pos'])
-            elif self._peak_last_chrpos[0] == variant_dict['chrom'] and self._peak_last_chrpos[1] + self._peak_sprawl_dist > variant_dict['pos']:
+            elif self._peak_last_chrpos[0] == variant_dict['chrom'] \
+                    and self._peak_last_chrpos[1] + self._peak_sprawl_dist > variant_dict['pos']:
                 # If this new position is near the previous top hit, extend current peak. I *think* the spec calls for
                 #   only a few top hits in a given window (not everything in a wide peak), so all the lower ones in
                 #   that peak become binned
@@ -184,7 +191,8 @@ class Binner:
         }
 
     def _rounded(self, qval: float):
-        # round down to the nearest multiple of `self._qval_bin_size`, then add 1/2 of `self._qval_bin_size` to be in the middle of the bin
+        # round down to the nearest multiple of `self._qval_bin_size`, then add 1/2 of `self._qval_bin_size` to be
+        # in the middle of the bin
         x = qval // self._qval_bin_size * self._qval_bin_size + self._qval_bin_size / 2
         return round(x, 3)  # trim `0.35000000000000003` to `0.35` for convenience and network request size
 

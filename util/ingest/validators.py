@@ -9,7 +9,7 @@ from zorp import (
     parsers,
     sniffers
 )
-from zorp.readers import BaseReader, standard_gwas_reader
+from zorp.readers import BaseReader
 
 from . import (
     exceptions as v_exc, helpers

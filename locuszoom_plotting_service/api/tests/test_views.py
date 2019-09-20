@@ -35,7 +35,8 @@ class TestListview(APITestCase):
         record_ids = [item['id'] for item in payload['data']]
         self.assertNotIn(study_public.slug, record_ids)
 
-    ### Permissions-related tests
+    ###
+    # Permissions-related tests
     def test_owner_can_see_private_study(self):
         self.client.force_login(self.user_owner)
         response = self.client.get(reverse('apiv1:gwas-list'))
@@ -92,7 +93,8 @@ class TestDetailView(APITestCase):
         response = self.client.get(reverse('apiv1:gwas-metadata', args=[study_public.slug]))
         self.assertEqual(response.status_code, 404)
 
-    ### Permissions-related tests
+    ###
+    # Permissions-related tests
     def test_other_user_cannot_see_private_study(self):
         self.client.force_login(self.user_other)
         response = self.client.get(reverse('apiv1:gwas-metadata', args=[self.study_private.slug]))

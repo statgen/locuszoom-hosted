@@ -16,6 +16,7 @@ class HomeView(TemplateView):
         context['js_vars'] = json.dumps({'is_authenticated': self.request.user.is_authenticated})
         return context
 
+
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = "pages/profile.html"
 
