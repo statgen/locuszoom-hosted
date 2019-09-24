@@ -203,7 +203,7 @@ class GwasRegion(lz_permissions.GwasViewPermission, DetailView):
     The region is actually specified as query params; if none are provided, it defaults to the top hit in the study
     """
     template_name = 'gwas/gwas_region.html'
-    queryset = lz_models.AnalysisInfo.objects.ingested()
+    queryset = lz_models.AnalysisInfo.objects.ingested().select_related('owner')
     context_object_name = 'gwas'
 
     def get_context_data(self, **kwargs):
@@ -277,7 +277,7 @@ class GwasSummary(lz_permissions.GwasViewPermission, DetailView):
     """
     template_name = 'gwas/gwas_summary.html'
     # Some studies will still be processing- it's still ok to see the summary page for these
-    queryset = lz_models.AnalysisInfo.objects.all_active().select_related('files')
+    queryset = lz_models.AnalysisInfo.objects.all_active().select_related('files', 'owner')
     context_object_name = 'gwas'
 
     def get_context_data(self, **kwargs):
