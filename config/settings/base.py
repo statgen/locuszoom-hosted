@@ -312,7 +312,7 @@ REST_FRAMEWORK = {
 }
 
 # The maximum region size (bp) for a single Locuszoom plot. This is used to prevent ginormous API calls.
-LZ_MAX_REGION_SIZE = 500_000
+LZ_MAX_REGION_SIZE = 1_000_000
 # The "official" domain name. This is set in a .env file, and it must exactly match the base url registered as part of
 #   your OAuth provider configuration (eg callback urls). It should be a domain, not an IP.
 LZ_OFFICIAL_DOMAIN = env('LZ_OFFICIAL_DOMAIN', default='my.locuszoom.org')
