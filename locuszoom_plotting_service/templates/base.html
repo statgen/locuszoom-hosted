@@ -2,112 +2,121 @@
 {% load socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>{% block title %}LocusZoom.org{% endblock title %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>{% block title %}LocusZoom.org{% endblock title %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
 
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
-    {% if GOOGLE_ANALYTICS_ID %}
-      <!-- Global site tag (gtag.js) - Google Analytics -->
-      <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133609618-2"></script>
-      <script>
+  {% if GOOGLE_ANALYTICS_ID %}
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133609618-2"></script>
+    <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
 
         gtag('config', '{{ GOOGLE_ANALYTICS_ID | safe }}');
-      </script>
-    {% endif %}
+    </script>
+  {% endif %}
 
-    <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}">
+  <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}">
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-    <link href="{% static 'css/site.css' %}" rel="stylesheet">
-    {% block css %}{% endblock %}
-  </head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+        integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <link href="{% static 'css/site.css' %}" rel="stylesheet">
+  {% block css %}{% endblock %}
+</head>
 
-  <body>
-    <div class="mb-1">
-      <nav class="navbar navbar-expand-md navbar-dark bg-info">
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <a class="navbar-brand" href="{% url 'home' %}">LocusZoom.org</a>
+<body>
+<div class="mb-1">
+  <nav class="navbar navbar-expand-md navbar-dark bg-info">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="{% url 'home' %}">LocusZoom.org</a>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          {#  Left nav: site features  #}
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-              <a href="{% url 'about' %}" class="nav-link">About</a>
-            </li>
-            {% if request.user.is_authenticated %}
-              <li class="nav-item">
-                <a href="{% url 'gwas:upload' %}" class="btn btn-outline-light">Upload...</a>
-              </li>
-            {% endif %}
-          </ul>
-          {#  Right nav: user login/management  #}
-          <ul class="navbar-nav">
-            {% if request.user.is_authenticated %}
-              <li>
-              <div class="dropdown">
-                <button class="dropdown-toggle bg-info" style="border-color: transparent;"
-                        type="button" id="profile-button-toggle" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                  <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" style="height: 30px;"
-                       alt="{{ user.display_name }}" title="{{ user.display_name }}" />
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profile-button-toggle">
-                  <a class="dropdown-item" href="{% url 'profile' %}">{% trans "My Profile" %}</a>
-                  <div class="dropdown-divider"></div>
-                  <div>
-                    {# Logout must be a POST request to prevent malicious use #}
-                    <form method="post" action="{% url 'account_logout' %}">
-                      {% csrf_token %}
-                      <button class="dropdown-item btn-link" type="submit">Sign Out</button>
-                    </form>
-                  </div>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      {#  Left nav: site features  #}
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a href="{% url 'about' %}" class="nav-link">About</a>
+        </li>
+        {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <a href="{% url 'gwas:upload' %}" class="btn btn-outline-light">Upload...</a>
+          </li>
+        {% endif %}
+      </ul>
+      {#  Right nav: user login/management  #}
+      <ul class="navbar-nav">
+        {% if request.user.is_authenticated %}
+          <li>
+            <div class="dropdown">
+              <button class="dropdown-toggle bg-info" style="border-color: transparent;"
+                      type="button" id="profile-button-toggle" data-toggle="dropdown"
+                      aria-haspopup="true" aria-expanded="false">
+                <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" style="height: 30px;"
+                     alt="{{ user.display_name }}" title="{{ user.display_name }}"/>
+              </button>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profile-button-toggle">
+                <a class="dropdown-item" href="{% url 'profile' %}">{% trans "My Profile" %}</a>
+                <div class="dropdown-divider"></div>
+                <div>
+                  {# Logout must be a POST request to prevent malicious use #}
+                  <form method="post" action="{% url 'account_logout' %}">
+                    {% csrf_token %}
+                    <button class="dropdown-item btn-link" type="submit">Sign Out</button>
+                  </form>
                 </div>
               </div>
-              </li>
-              {% else %}
-              <li class="nav-item">
-                {# URL provided by django-allauth/account/urls.py #}
-                <a class="btn btn-success" href="{% provider_login_url "google" %}">Sign In</a>
-              </li>
-            {% endif %}
-          </ul>
-        </div>
-      </nav>
-
+            </div>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            {# URL provided by django-allauth/account/urls.py #}
+            <a class="btn btn-success" href="{% provider_login_url "google" %}">Sign In</a>
+          </li>
+        {% endif %}
+      </ul>
     </div>
+  </nav>
 
-    {% if messages %}
-      <div class="container-fluid">
-        {% for message in messages %}
-            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
+</div>
 
-    {% block content %}
-      <div class="container-fluid">
-        <p>Use this document as a way to quick start any new project.</p>
-      </div>
-    {% endblock content %}
+{% if messages %}
+  <div class="container-fluid">
+    {% for message in messages %}
+      <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
 
-    {# Javascript: global template code, plus custom items per page #}
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
-    {% block javascript %}{% endblock javascript %}
-  </body>
+{% block content %}
+  <div class="container-fluid">
+    <p>Use this document as a way to quick start any new project.</p>
+  </div>
+{% endblock content %}
+
+{# Javascript: global template code, plus custom items per page #}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
+        integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+        crossorigin="anonymous"></script>
+{% block javascript %}{% endblock javascript %}
+</body>
 </html>
 
