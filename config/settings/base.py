@@ -320,6 +320,11 @@ LZ_OFFICIAL_DOMAIN = env('LZ_OFFICIAL_DOMAIN', default='my.locuszoom.org')
 # Google analytics credentials
 GOOGLE_ANALYTICS_ID = env('GOOGLE_ANALYTICS_ID', default=None)
 
+# Sentry. Specify two buckets: one for python errors (backend) and one for JS (frontend)
+# ------------------------------------------------------------------------------
+SENTRY_DSN = env('SENTRY_DSN', default=None)
+SENTRY_DSN_FRONTEND = env('SENTRY_DSN_FRONTEND', default=None)
+
 # This is used to find the interactive parts of pages, which are written and built using Vue.js + Webpack
 WEBPACK_LOADER = {
     'DEFAULT': {

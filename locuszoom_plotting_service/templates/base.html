@@ -15,8 +15,8 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
   {% if GOOGLE_ANALYTICS_ID %}
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133609618-2"></script>
+    {# Global site tag (gtag.js) - Google Analytics #}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ GOOGLE_ANALYTICS_ID | safe }}"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
@@ -24,6 +24,17 @@
 
         gtag('config', '{{ GOOGLE_ANALYTICS_ID | safe }}');
     </script>
+  {% endif %}
+  {% if SENTRY_DSN_FRONTEND %}
+    <script src="https://browser.sentry-cdn.com/5.6.3/bundle.min.js"
+            integrity="sha384-/Cqa/8kaWn7emdqIBLk3AkFMAHBk0LObErtMhO+hr52CntkaurEnihPmqYj3uJho"
+            crossorigin="anonymous">
+    </script>
+
+    <script>
+      Sentry.init({ dsn: '{{ SENTRY_DSN_FRONTEND | safe }}' });
+    </script>
+
   {% endif %}
 
   <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}">

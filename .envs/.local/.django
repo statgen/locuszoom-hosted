@@ -20,6 +20,7 @@ LZ_OFFICIAL_DOMAIN=localhost:8000
 # ------------------------------------------------------------------------------
 GOOGLE_ANALYTICS_ID=
 
-# Sentry
+# Sentry uses two buckets: one for python errors (backend) and one for JS (frontend)
 # ------------------------------------------------------------------------------
 SENTRY_DSN=
+SENTRY_DSN_FRONTEND=
