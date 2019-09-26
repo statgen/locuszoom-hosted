@@ -96,6 +96,7 @@ class GwasSummaryStats(lz_permissions.GwasViewPermission, BaseFileView):
 class GwasIngestLog(lz_permissions.GwasViewPermission, BaseFileView):
     queryset = lz_models.AnalysisInfo.objects.all_active()  # Allow viewing logs of a file that failed ingest
     path_arg = 'normalized_gwas_log_path'
+    content_type = 'text/plain'
     download_name = 'ingest_log.log'
 
 
