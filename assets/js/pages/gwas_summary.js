@@ -9,9 +9,8 @@ import 'tabulator-tables/dist/css/bootstrap/tabulator_bootstrap4.css';
 import { pairs, sortBy } from 'underscore';
 
 function createTopHitsTable(selector, data, region_url) {
-    // Filter the manhattan json to a subset of just peaks, sorted by pvalue (smallest first)
+    // Filter the manhattan json to a subset of just peaks, largest -log10p first
     data = data.filter(v => !!v.peak)
-        .sort((a, b) => (a.pvalue - b.pvalue))
         .map(item => {
             // FIXME: Synthetic field; feed a marker into pheweb loader code for better tables in the future
             // TODO: Get pheweb "nearest gene" annotations working (and make build agnostic)
@@ -43,10 +42,10 @@ function createTopHitsTable(selector, data, region_url) {
                     }
                 },
             },
-            {title: 'p value', field: 'pvalue', formatter: cell => cell.getValue().toExponential(1)},
+            {title: '-log<sub>10</sub>(p)', field: 'neg_log_pvalue', formatter: cell => cell.getValue().toFixed(3)},
         ],
         initialSort: [
-            {column: 'pvalue', dir: 'asc'}
+            {column: 'neg_log_pvalue', dir: 'desc'}
         ]
     });
 }

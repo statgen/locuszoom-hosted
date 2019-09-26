@@ -265,8 +265,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
         }
 
         function pp1() {
-            gwas_plot.append('g')
-                .attr('class', 'variant_hover_rings')
+            gwas_plot.append('g').attr('class', 'variant_hover_rings')
                 .selectAll('a.variant_hover_ring')
                 .data(unbinned_variants)
                 .enter()
@@ -278,7 +277,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
                     return x_scale(get_genomic_position(d));
                 })
                 .attr('cy', function(d) {
-                    return y_scale(-Math.log10(d.pvalue));
+                    return y_scale(d.neg_log_pvalue);
                 })
                 .attr('r', 7)
                 .style('opacity', 0)
@@ -309,7 +308,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
                     return x_scale(get_genomic_position(d));
                 })
                 .attr('cy', function(d) {
-                    return y_scale(-Math.log10(d.pvalue));
+                    return y_scale(d.neg_log_pvalue);
                 })
                 .attr('r', 2.3)
                 .style('fill', function(d) {

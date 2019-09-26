@@ -39,14 +39,18 @@ class MaxPriorityQueue:
         self._q = []  # a heap-property-satisfying list like [(priority, ComparesFalse(), item), ...]
 
     def add(self, item, priority):
-        heapq.heappush(self._q, (-priority, MaxPriorityQueue.ComparesFalse(), item))
+        heapq.heappush(self._q, (priority, MaxPriorityQueue.ComparesFalse(), item))
 
     def add_and_keep_size(self, item, priority, size, popped_callback):
+        """
+        This is a min-heap data structure, but the "priorities" we receive are in terms of -log10p (larger is better)
+        In order to satisfy the "smaller values are best" property, flip the sign on the priority as we add to heap
+        """
         if len(self._q) < size:
             self.add(item, priority)
         else:
-            if -priority > self._q[0][0]:  # if new priority < the biggest priority in the heap, switch them
-                _, _, item = heapq.heapreplace(self._q, (-priority, MaxPriorityQueue.ComparesFalse(), item))
+            if priority > self._q[0][0]:  # if new priority < the biggest priority in the heap, switch them
+                _, _, item = heapq.heapreplace(self._q, (priority, MaxPriorityQueue.ComparesFalse(), item))
             popped_callback(item)
 
     def pop(self):
@@ -64,13 +68,13 @@ class MaxPriorityQueue:
 class Binner:
     """Manhattan plot binner class"""
     def __init__(self, *,
-                 peak_pval_threshold: float = 1e-6,
+                 peak_neg_log_pval_threshold: float =6.0,
                  peak_sprawl_dist: int = int(200e3),
                  peak_max_count: int = 500,
                  num_unbinned: int = 500,
                  bin_length: int = int(3e6)):
         # Instance configuration
-        self._peak_pval_threshold = peak_pval_threshold
+        self._peak_neg_log_pval_threshold = peak_neg_log_pval_threshold
         self._peak_sprawl_dist = peak_sprawl_dist
         self._peak_max_count = peak_max_count
         self._num_unbinned = num_unbinned
@@ -107,7 +111,8 @@ class Binner:
         variant_dict = variant.to_dict()
         variant_dict['pvalue'] = variant.pvalue  # derived property
 
-        if variant_dict['pvalue'] != 0:
+        if not math.isinf(variant_dict['pvalue']):
+            # Determine bin size based on variants with finite values (eg not pvalue underflow)
             qval = variant_dict['neg_log_pvalue']
             if qval > 40:
                 # this makes 200 bins for a y-axis extending past 40 (but folded so that the lower half is 0-20)s
@@ -115,7 +120,7 @@ class Binner:
             elif qval > 20:
                 self._qval_bin_size = 0.1  # this makes 200-400 bins for a y-axis extending up to 20-40.
 
-        if variant_dict['pvalue'] < self._peak_pval_threshold:  # part of a peak
+        if variant_dict['neg_log_pvalue'] > self._peak_neg_log_pval_threshold:  # part of a peak
             if self._peak_best_variant is None:  # open a new peak
                 self._peak_best_variant = variant_dict
                 self._peak_last_chrpos = (variant_dict['chrom'], variant_dict['pos'])
@@ -125,7 +130,7 @@ class Binner:
                 #   only a few top hits in a given window (not everything in a wide peak), so all the lower ones in
                 #   that peak become binned
                 self._peak_last_chrpos = (variant_dict['chrom'], variant_dict['pos'])
-                if variant_dict['pvalue'] >= self._peak_best_variant['pvalue']:
+                if variant_dict['neg_log_pvalue'] <= self._peak_best_variant['neg_log_pvalue']:
                     self._maybe_bin_variant(variant_dict)
                 else:
                     self._maybe_bin_variant(self._peak_best_variant)
@@ -138,12 +143,13 @@ class Binner:
             self._maybe_bin_variant(variant_dict)
 
     def _maybe_peak_variant(self, variant: dict):
-        self._peak_pq.add_and_keep_size(variant, variant['pvalue'],
+
+        self._peak_pq.add_and_keep_size(variant, variant['neg_log_pvalue'],
                                         size=self._peak_max_count,
                                         popped_callback=self._maybe_bin_variant)
 
     def _maybe_bin_variant(self, variant):
-        self._unbinned_variant_pq.add_and_keep_size(variant, variant['pvalue'],
+        self._unbinned_variant_pq.add_and_keep_size(variant, variant['neg_log_pvalue'],
                                                     size=self._num_unbinned,
                                                     popped_callback=self._bin_variant)
 
@@ -172,7 +178,9 @@ class Binner:
             peak['peak'] = True
 
         unbinned_variants = list(self._unbinned_variant_pq.pop_all())
-        unbinned_variants = sorted(unbinned_variants + peaks, key=(lambda variant: variant['pvalue']))
+        unbinned_variants = sorted(unbinned_variants + peaks,
+                                   key=(lambda variant: variant['neg_log_pvalue']),
+                                   reverse=True)
 
         # unroll dict-of-dict-of-array `bins` into array `variant_bins`
         variant_bins = []
