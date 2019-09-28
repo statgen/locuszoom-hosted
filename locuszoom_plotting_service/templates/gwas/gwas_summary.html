@@ -92,6 +92,12 @@
 
       <div class="row">
         <div class="col-md-12">
+          <h3>Manhattan Plot</h3>
+          <p>
+            Click on any peak in the manhattan plot below to jump to a specific LocusZoom region view, or visit the
+            <a href="{% url 'gwas:region' gwas.slug %}">region page</a> to make plots for any region in your dataset
+            (with search features for gene, position, or rsid).
+          </p>
           <div id="manhattan_plot_container"></div>
         </div>
       </div>
@@ -105,7 +111,7 @@
 
       <div class="row">
         <div class="pheno-info col-xs-12 col-sm-4 col-md-3 col-lg-3">
-          <h3>QQ plot:</h3>
+          <h3>QQ Plot:</h3>
           <div id="qq_plot_container"></div>
           <p class="gc-control"></p>
           <i>(Genomic Control lambda calculated based on the 50th percentile (median), 10th percentile, 1st percentile,

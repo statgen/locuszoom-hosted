@@ -130,7 +130,7 @@ def mark_success(self, fileset_id):
 
     # TODO: Render this as a nicer-looking template
     send_mail('[locuszoom] Upload succeeded',
-              f'Your upload is done processing. Please visit https://{settings.LZ_OFFICIAL_DOMAIN}{metadata.get_absolute_url()} to see the Manhattan plot.',  # noqa
+              f'Your upload is done processing. Please visit https://{settings.LZ_OFFICIAL_DOMAIN}{metadata.get_absolute_url()} to see the Manhattan plot and begin exploring regions of your data.',  # noqa
               'locuszoom-service@umich.edu',
               [metadata.owner.email])
 

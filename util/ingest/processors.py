@@ -9,7 +9,6 @@ import math
 from zorp import (
     exceptions as z_exc,
     parsers,
-    readers,
     sniffers
 )
 # from .exceptions import ManhattanExeption, QQPlotException, UnexpectedIngestException
@@ -72,7 +71,7 @@ def normalize_contents(src_path: str, parser_options: dict, dest_path: str, log_
 @helpers.capture_errors
 def generate_manhattan(in_filename: str, out_filename: str) -> bool:
     """Generate manhattan plot data for the processed file"""
-    reader = readers.standard_gwas_reader(in_filename)\
+    reader = sniffers.guess_gwas_standard(in_filename)\
         .add_filter('neg_log_pvalue', lambda v, row: v is not None)
 
     binner = manhattan.Binner()
@@ -97,7 +96,7 @@ def generate_qq(in_filename: str, out_filename) -> bool:
     # TODO: Currently the ingest pipeline never stores "af"/"maf" at all, which could affect this calculation
     # TODO: This step appears to load ALL data into memory (list on generator). This could be a memory hog; not sure if
     #   there is a way around it as it seems to rely on sorting values
-    reader = readers.standard_gwas_reader(in_filename)\
+    reader = sniffers.guess_gwas_standard(in_filename)\
         .add_filter("neg_log_pvalue", lambda v, row: v is not None)
 
     # TODO: Pheweb QQ code benefits from being passed { num_samples: n }, from metadata stored outside the
@@ -128,7 +127,7 @@ def get_top_hit(in_filename: str):
 
     Although most of the tasks in our pipeline are written to be ORM-agnostic, this one modifies the database.
     """
-    reader = readers.standard_gwas_reader(in_filename)\
+    reader = sniffers.guess_gwas_standard(in_filename)\
         .add_filter("neg_log_pvalue", lambda v, row: v is not None)
     best_pval = 1
     best_row = None

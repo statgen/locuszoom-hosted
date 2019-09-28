@@ -3253,9 +3253,9 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
-"locuszoom-tabix@https://github.com/abought/locuszoom-tabix#74f57ef":
+"locuszoom-tabix@https://github.com/abought/locuszoom-tabix#f6551bf":
   version "0.2.1"
-  resolved "https://github.com/abought/locuszoom-tabix#74f57ef4740bab86975d47771e2ac4ba4422d43b"
+  resolved "https://github.com/abought/locuszoom-tabix#f6551bff332699f311193655b4e950585b9db79c"
   dependencies:
     "@sentry/browser" "^4.5.2"
     bootstrap "^4.1.3"

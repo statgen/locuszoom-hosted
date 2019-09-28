@@ -28,7 +28,7 @@
     "d3-tip": "0.9.0",
     "gwas-credible-sets": "^0.1.0",
     "locuszoom": "statgen/locuszoom#develop",
-    "locuszoom-tabix": "https://github.com/abought/locuszoom-tabix#74f57ef",
+    "locuszoom-tabix": "https://github.com/abought/locuszoom-tabix#f6551bf",
     "pako": "^1.0.8",
     "underscore": "1.8.3",
     "vue": "^2.6.10",

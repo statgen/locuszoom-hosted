@@ -10,7 +10,7 @@ from rest_framework import renderers as drf_renderers
 from locuszoom_plotting_service.api.filters import GwasFilter
 from locuszoom_plotting_service.gwas import models as lz_models
 
-from zorp.readers import standard_gwas_reader
+from zorp.sniffers import guess_gwas_standard
 
 from . import (
     permissions,
@@ -93,7 +93,7 @@ class GwasRegionView(generics.RetrieveAPIView):
             raise drf_exceptions.NotFound
 
         # We deliberately exclude missing pvalues because this endpoint is primarily aimed at association plots
-        reader = standard_gwas_reader(gwas.files.normalized_gwas_path)\
+        reader = guess_gwas_standard(gwas.files.normalized_gwas_path)\
             .add_filter('neg_log_pvalue', lambda v, row: v is not None)
 
         return list(reader.fetch(chrom, start, end))
