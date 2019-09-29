@@ -72,7 +72,7 @@ def normalize_contents(src_path: str, parser_options: dict, dest_path: str, log_
 def generate_manhattan(in_filename: str, out_filename: str) -> bool:
     """Generate manhattan plot data for the processed file"""
     reader = sniffers.guess_gwas_standard(in_filename)\
-        .add_filter('neg_log_pvalue', lambda v, row: v is not None)
+        .add_filter('neg_log_pvalue')
 
     binner = manhattan.Binner()
     for variant in reader:
@@ -97,7 +97,7 @@ def generate_qq(in_filename: str, out_filename) -> bool:
     # TODO: This step appears to load ALL data into memory (list on generator). This could be a memory hog; not sure if
     #   there is a way around it as it seems to rely on sorting values
     reader = sniffers.guess_gwas_standard(in_filename)\
-        .add_filter("neg_log_pvalue", lambda v, row: v is not None)
+        .add_filter("neg_log_pvalue")
 
     # TODO: Pheweb QQ code benefits from being passed { num_samples: n }, from metadata stored outside the
     #   gwas file. This is used when AF/MAF are present (which at the moment ingest pipeline does not support)
@@ -128,7 +128,7 @@ def get_top_hit(in_filename: str):
     Although most of the tasks in our pipeline are written to be ORM-agnostic, this one modifies the database.
     """
     reader = sniffers.guess_gwas_standard(in_filename)\
-        .add_filter("neg_log_pvalue", lambda v, row: v is not None)
+        .add_filter("neg_log_pvalue")
     best_pval = 1
     best_row = None
     for row in reader:

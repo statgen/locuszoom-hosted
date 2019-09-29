@@ -94,7 +94,7 @@ class GwasRegionView(generics.RetrieveAPIView):
 
         # We deliberately exclude missing pvalues because this endpoint is primarily aimed at association plots
         reader = guess_gwas_standard(gwas.files.normalized_gwas_path)\
-            .add_filter('neg_log_pvalue', lambda v, row: v is not None)
+            .add_filter('neg_log_pvalue')
 
         return list(reader.fetch(chrom, start, end))
 
