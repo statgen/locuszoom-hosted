@@ -23,7 +23,7 @@
           </p>
         {% else %}
           <h2>Shareable links</h2>
-          <table class="table table-striped">
+          <table class="table">
             <tr>
               <th>Label</th>
               <th>URL</th>
@@ -31,7 +31,7 @@
             {% for link in viewlinks %}
               <tr>
                 <td>{% firstof link.label link.created %}</td>
-                <td>(<a href="{{ link.get_absolute_url }}">link</a>)</td>
+                <td><input type="text" value="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ link.get_absolute_url }}"></td>
               </tr>
             {% empty %}
               <tr>

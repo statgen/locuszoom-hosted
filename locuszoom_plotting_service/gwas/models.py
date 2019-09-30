@@ -37,7 +37,12 @@ class AnalysisInfo(SoftDeletableModel, TimeStampedModel):
 
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  # One user, many gwas
     label = models.CharField(max_length=100,
-                             help_text='A human-readable description, eg DIAGRAM Height GWAS')
+                             help_text='A human-readable description, eg Height GWAS')
+
+    study_name = models.CharField(max_length=100,
+                                  blank=True,
+                                  null=True,
+                                  help_text='The name of the study or dataset that produced this GWAS (DIAGRAM, GLGC, etc)')  # noqa
 
     is_public = models.BooleanField(default=False, help_text='Is this study visible to everyone?')
 

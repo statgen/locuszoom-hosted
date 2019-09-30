@@ -119,7 +119,7 @@ class GwasCreate(LoginRequiredMixin, CreateView):
     Note there is a bit of trickery here to accommodate creating two models (file + metadata) instead of one.
     """
     model = lz_models.AnalysisInfo
-    fields = ['label', 'pmid', 'is_public', 'build']
+    fields = ['label', 'study_name', 'pmid', 'is_public', 'build']
     template_name = 'gwas/upload.html'
 
     def get_form_kwargs(self):
@@ -253,6 +253,9 @@ class GwasShare(LoginRequiredMixin, CreateView):
         if not (gwas.owner == request.user) or gwas.is_removed:
             return self.handle_no_permission()
         return super(GwasShare, self).dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('gwas:share', kwargs={'slug': self.object.gwas.slug})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
