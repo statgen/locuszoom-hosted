@@ -69,12 +69,14 @@ class BaseFileView(View, SingleObjectMixin):
 @login_required()
 def rerun_analysis(request, slug):
     """
-    FIXME: TEMPORARY debugging view
-    Replace this later with something smarter, eg "rerun, and possibly replace the options in some of the fields"
+    TODO Replace this later with something smarter, eg "rerun, and possibly replace the options in some of the fields"
     """
+    if request.method != 'POST':
+        return HttpResponseBadRequest(content='To prevent abuse, this endpoint must be trigger via POST request')
+
     metadata = lz_models.AnalysisInfo.objects.all_active().get(slug=slug)
     if request.user != metadata.owner:
-        raise HttpResponseBadRequest
+        return HttpResponseBadRequest(content='Only the owner can re-run analysis for a study')
 
     files = metadata.analysisfileset_set.order_by('-created').first()
     files.ingest_status = 0
