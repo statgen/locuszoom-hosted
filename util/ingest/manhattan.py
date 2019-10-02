@@ -68,7 +68,7 @@ class MaxPriorityQueue:
 class Binner:
     """Manhattan plot binner class"""
     def __init__(self, *,
-                 peak_neg_log_pval_threshold: float =6.0,
+                 peak_neg_log_pval_threshold: float = 6.0,
                  peak_sprawl_dist: int = int(200e3),
                  peak_max_count: int = 500,
                  num_unbinned: int = 500,
