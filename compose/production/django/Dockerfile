@@ -49,6 +49,7 @@ RUN chown lzupload /start-celerybeat
 COPY ./compose/production/django/celery/flower/start /start-flower
 RUN sed -i 's/\r//' /start-flower
 RUN chmod +x /start-flower
+RUN chown lzupload /start-flower
 
 COPY . /app
 
