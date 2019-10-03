@@ -4,7 +4,7 @@ A sample script that can be used to load a real dataset from a GWAS file on disk
     pipeline. Running this script requires that the app be running already in a separate container.
 
     Sample usage (to be improved later):
-    `docker-compose -f local.yml run --rm django python3 util/load_dataset.py`
+    `docker-compose -f local.yml run --rm django python3 scripts/load_dataset.py`
 """
 
 import os

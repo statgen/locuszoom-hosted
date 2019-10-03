@@ -3,7 +3,7 @@ Command line script to populate a testing database with a few fake studies, to e
 
 usage:
 
-`python3 util/populate_db.py -n 10`
+`python3 scripts/populate_db.py -n 10`
 
 """
 import argparse

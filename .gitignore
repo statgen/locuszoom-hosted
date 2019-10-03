@@ -34,8 +34,8 @@ node_modules/
 
 ### Project template
 locuszoom_plotting_service/media/
-data-loaders/raw/*
-data-loaders/sources/*
+scripts/data_loaders/raw/*
+scripts/data_loaders/sources/*
 
 # Configuration files that should not be checked into Git
 .envs/*

@@ -84,7 +84,7 @@ Generating sample data for testing
 
 * A bootstrapping script has been created to populate the database with fake users and studies. To use it, run::
 
-    $ docker-compose -f local.yml run --rm django python3 util/populate_db.py -n 10
+    $ docker-compose -f local.yml run --rm django python3 scripts/populate_db.py -n 10
 
 
 
@@ -189,6 +189,8 @@ Initializing the app with default data
 
 Certain app features, such as "tagging datasets", require loading initial data into the database.
 
+This feature is not yet used in production, but the notes below demonstrate loader scripts in progress.
+
 These datasets may be large or restricted by licensing rules; as such, they are not distributed with the code and must
 be downloaded/reprocessed separately for loading.
 
@@ -197,12 +199,10 @@ be downloaded/reprocessed separately for loading.
 
 
 These files must be downloaded separately due to license issues (they cannot be distributed with this repo).
-Run the appropriate scripts in `data-loaders/` to transform them into a format suitable for django usage.
+Run the appropriate scripts in `scripts/data_loaders/` to transform them into a format suitable for django usage.
 
 After creating the app, run the following command (once) to load them in (using the appropriate docker-compose file)::
 
-    $ docker-compose -f local.yml run --rm django python3 manage.py loaddata data-loaders/sources/snomed.json
-
-
+    $ docker-compose -f local.yml run --rm django python3 manage.py loaddata scripts/data_loaders/sources/snomed.json
 
 (TODO: additional/modified commands may be required to do this in production)
