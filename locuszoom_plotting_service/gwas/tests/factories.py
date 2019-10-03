@@ -14,7 +14,10 @@ def choose_genome_build() -> str:
     return random.choice(lz_constants.GENOME_BUILDS)[0]
 
 
-# TODO: find a way to keep test runs from cluttering FS with 0B files; temp folder maybe?
+def choose_consortium() -> str:
+    return random.choice(['LocusZoom JS', 'LocusZoom Standalone', 'LocusZoom Hosted', 'LocusZoom.org'])
+
+
 @factory.django.mute_signals(signals.post_save)
 class AnalysisFilesetFactory(factory.DjangoModelFactory):
     raw_gwas_file = None  # Only create temp files if has_data trait is True
@@ -49,7 +52,8 @@ class AnalysisFilesetFactory(factory.DjangoModelFactory):
 
 class AnalysisInfoFactory(factory.DjangoModelFactory):
     owner = factory.SubFactory(UserFactory)
-    label = factory.Faker('words', nb=2)
+    label = factory.Faker('sentence', nb_words=2)
+    study_name = factory.LazyFunction(choose_consortium)
 
     files = factory.SubFactory(AnalysisFilesetFactory)
 
@@ -62,7 +66,7 @@ class AnalysisInfoFactory(factory.DjangoModelFactory):
 
 
 class ViewLinkFactory(factory.DjangoModelFactory):
-    label = factory.Faker('words', nb=2)
+    label = factory.Faker('sentence', nb_words=2)
     gwas = factory.SubFactory(AnalysisInfoFactory)
 
     class Meta:
