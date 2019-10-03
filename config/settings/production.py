@@ -14,7 +14,7 @@ ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['my.locuszoom.org'])
 # ------------------------------------------------------------------------------
 DATABASES['default'] = env.db('DATABASE_URL')  # noqa F405
 DATABASES['default']['ATOMIC_REQUESTS'] = True  # noqa F405
-DATABASES['default']['CONN_MAX_AGE'] = None  # noqa F405
+DATABASES['default']['CONN_MAX_AGE'] = 0  # noqa F405
 
 # CACHES
 # ------------------------------------------------------------------------------
