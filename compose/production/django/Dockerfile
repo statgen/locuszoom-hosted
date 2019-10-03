@@ -1,11 +1,24 @@
 FROM python:3.6
 
+ARG UID
+ARG GID
+
 ENV PYTHONUNBUFFERED 1
 
 # libmagic: file format detection
 RUN apt-get update && apt-get install -y libmagic-dev
 
-RUN adduser --gecos "User for running app as non-root" --shell /bin/bash --disabled-password lzupload
+RUN \
+  if [ -n "$GID" ]; then \
+    addgroup --gid $GID lzupload; \
+  else \
+    addgroup lzupload; \
+  fi && \
+  if [ -n "$UID" ]; then \
+    adduser --gecos "User for running app as non-root" --shell /bin/bash --disabled-password --uid $UID --gid $GID lzupload; \
+  else \
+    adduser --gecos "User for running app as non-root" --shell /bin/bash --disabled-password lzupload; \
+  fi
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
