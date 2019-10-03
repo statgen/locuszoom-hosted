@@ -5,6 +5,7 @@ Sample usage:
     locust --host=http://staging.locuszoom.org
 
     To run web UI, see: https://docs.locust.io/en/stable/quickstart.html#open-up-locust-s-web-interface
+    Eg, from local machine, visit: http://127.0.0.1:8089/
 
 **PLEASE DO NOT RUN ROUTINE LOAD TESTING AGAINST THE PRODUCTION SERVER**
 
