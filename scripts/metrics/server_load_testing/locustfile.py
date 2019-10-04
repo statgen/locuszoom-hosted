@@ -15,7 +15,7 @@ Although this is tracked in the repo, this is not an administrative CLI task, an
 
 You may, therefore, need to install separate dependencies. See: https://docs.locust.io/en/stable/installation.html
 """
-from locust import HttpLocust, TaskSet, task
+from locust import HttpLocust, TaskSet, task  # type: ignore
 
 # Hardcoding this is inelegant. Eventually, every task will grab an item from the API sp that this script
 # is server-agnostic

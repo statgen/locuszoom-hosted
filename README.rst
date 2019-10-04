@@ -3,11 +3,6 @@ locuszoom_plotting_service
 
 Upload and share GWAS results with LocusZoom.js
 
-.. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
-     :target: https://github.com/pydanny/cookiecutter-django/
-     :alt: Built with Cookiecutter Django
-
-
 :License: MIT
 
 
@@ -29,11 +24,11 @@ The following commands will start a development environment.
 
 * In one tab, build assets::
 
-    $ npm run dev
+    $ yarn run prod
 
 or with live rebuilding, if you intend to be changing JS code as you work::
 
-    $ npm run prod
+    $ yarn run dev
 
 
 * In a second open terminal::
@@ -53,11 +48,10 @@ Google OAuth social authentication for everyone else::
 For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox
 (or similar), so that you can see how the site behaves for both kinds of users.
 
-Then follow the _`social-auth` setup instructions. If you encounter a django error when adding a new Site under admin, retry. (this is a known issue)
+Then follow the _`social-auth` setup instructions. If you encounter a django error when adding a new Site under
+admin, retry. (this is a known issue)
 .. _:https://django-allauth.readthedocs.io/en/latest/installation.html
 
-
-TODO: Creating a site may not be necessary; one is created automatically by the contrib.sites migration in this repo.
 
 The OAuth credentials may be obtained through the Google API console. For local development, you must use named origins
   (not an IP address) for the values you enter in the console:
@@ -107,14 +101,15 @@ Similarly, the django app can be probed interactively (eg, to experiment with th
     $ docker-compose -f local.yml run --rm django ./manage.py shell_plus
 
 
-Type checks
-^^^^^^^^^^^
+Static analysis checks
+^^^^^^^^^^^^^^^^^^^^^^^
 
-Running type checks with mypy:
+We run static analysis with flake8, and type checks with mypy:::
 
-::
+  $ flake8 .
+  $ mypy .
 
-  $ mypy locuszoom_plotting_service
+
 
 Test coverage
 ^^^^^^^^^^^^^
@@ -128,18 +123,9 @@ To run the tests, check your test coverage, and generate an HTML coverage report
 Running tests with py.test
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-::
+A suite of unit tests is available::
 
   $ docker-compose -f local.yml run --rm django pytest
-
-Live reloading and Sass CSS compilation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Moved to `Live reloading and SASS compilation`_.
-
-.. _`Live reloading and SASS compilation`: https://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
-
-
 
 Celery
 ^^^^^^
@@ -154,26 +140,19 @@ To run a celery worker:
     celery -A locuszoom_plotting_service.taskapp worker -l info
 
 Please note: For Celery's import magic to work, it is important *where* the celery commands are run. If you are in the
-same folder with *manage.py*, you should be right.
-
-
+same folder with *manage.py*, you should be ok.
 
 
 Sentry
 ^^^^^^
 
-Sentry is an error logging aggregator service. You can sign up for a free account at
-https://sentry.io/signup/?code=cookiecutter  or download and host it yourself.
-The system is setup with reasonable defaults, including 404 logging and integration with the WSGI application.
-
-You must set the DSN url in production.
-
+Sentry is an error logging aggregator service. If a key (DSN) is provided in your .env file, errors will be tracked
+ automatically. You will need one DSN each for your frontend (JS) and backend (python) code.
 
 Deployment
 ----------
 
 The following details how to deploy this application.
-
 
 
 Docker
@@ -183,11 +162,13 @@ See detailed `cookiecutter-django Docker documentation`_.
 
 .. _`cookiecutter-django Docker documentation`: https://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
 
+And `specific instructions for this app`:
+.. _`specific instructions for this app`: deploy/index.md
 
-Initializing the app with default data
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(future) Initializing the app with default data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Certain app features, such as "tagging datasets", require loading initial data into the database.
+Certain app features, such as "tagging datasets", will require loading initial data into the database.
 
 This feature is not yet used in production, but the notes below demonstrate loader scripts in progress.
 
@@ -206,3 +187,8 @@ After creating the app, run the following command (once) to load them in (using 
     $ docker-compose -f local.yml run --rm django python3 manage.py loaddata scripts/data_loaders/sources/snomed.json
 
 (TODO: additional/modified commands may be required to do this in production)
+
+
+.. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
+     :target: https://github.com/pydanny/cookiecutter-django/
+     :alt: Built with Cookiecutter Django
