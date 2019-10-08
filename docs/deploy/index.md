@@ -6,8 +6,7 @@ The hosted LocusZoom app is run inside a docker container, but the web server (e
 Sample configuration files are provided where appropriate.
 
 - Apache 2
-    - Several modules must be enabled (`sudo a2enmod ssl proxy_http headers`)
-    - Also requires *mod_proxy* `proxy_http` ()
+    - Several modules must be enabled (`sudo a2enmod ssl proxy_http headers rewrite`)
     - All examples assume that you have enabled HTTPs in production. We use 
   [Certbot + LetsEncrypt](https://certbot.eff.org/lets-encrypt/ubuntuxenial-apache). 
 - [Docker](https://docs.docker.com/install/linux/docker-ce/ubuntu/) 
