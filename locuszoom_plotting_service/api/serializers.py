@@ -20,7 +20,7 @@ class GwasSerializer(drf_serializers.ModelSerializer):
 
     class Meta:
         model = lz_models.AnalysisInfo
-        fields = ('id', 'created', 'label', 'build', 'url', 'owner_name', 'is_public')
+        fields = ('id', 'created', 'label', 'study_name', 'build', 'url', 'owner_name', 'is_public')
 
 
 class GwasSerializerUnprocessed(GwasSerializer):

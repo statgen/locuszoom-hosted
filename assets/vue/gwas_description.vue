@@ -27,8 +27,9 @@
 <template>
 <b-card border-variant="light">
   <a :href="study_data.url" class="study-title">{{ study_data.label }}</a><br>
-  <em class="text-muted">Uploaded by: {{ study_data.owner_name }}</em><br>
-  <em class="text-muted">Created: {{ study_data.created | date }}</em><br>
+  <span v-if="study_data.study_name">Study: <em>{{study_data.study_name}}</em><br></span>
+  <span class="text-muted"><em class="text-muted">Uploaded: {{ study_data.created | date }}</em> by
+    <em>{{ study_data.owner_name }}</em></span><br>
   <span v-if="pmid_link">
     <a :href="pmid_link">{{ study_data.pmid }}</a><br>
   </span>
