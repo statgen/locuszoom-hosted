@@ -1,5 +1,9 @@
 FROM postgres:10.5
 
+# Optional arguments, if specified then maintenance scripts will be set as owned
+# by the UID and GID given.
+# This is useful if you are running postgres as a different user, usually via your
+# compose file `user:` option.
 ARG UID
 ARG GID
 
