@@ -1,79 +1,162 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}About{% endblock %}
 
 {% block content %}
   <div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h2>What is this service?</h2>
-      <p>
-        This service allows you to generate interactive, shareable plots of GWAS summary statistics. Building on years
-        of experience from the developers of <a href="https://github.com/statgen/locuszoom">LocusZoom</a>, this adds
-        new features such as Manhattan plots, annotation, and calculations to help summarize findings and put them
-        in context.
-      </p>
-      <h2>Is my data private?</h2>
-      <p>
-        When uploading, you can choose whether to make your dataset either public (viewable by anyone) or private
-        (viewable only to yourself). If you make your dataset public, other people will be able to download the
-        standardized summary statistic files that we generate during the upload process.
-        For all datasets, interactive plotting features require that we keep a copy of the data on our servers.
-        We make every effort to keep this secure, but if privacy is a driving issue, consider using the
-        <a href="https://abought.github.io/locuszoom-tabix/">LocalZoom</a> tool to generate region plots client-side
-        instead. <em>LocalZoom</em> does not provide any enhanced annotation features, but it works without uploading
-        your data.
-      </p>
-      <h2>How much data can I plot?</h2>
-      <p>
-        LocusZoom.js is dynamic and interactive: you can plot regions up to 500 kb wide at one time, but you can
-        explore as many regions as you wish from a single upload. The server accepts uploads of up to 1 GB
-        (this may change in the future). A manhattan plot and list of suggested regions will also be generated for you.
-      </p>
-      <h2>How should I prepare my data for uploading?</h2>
-      <p>
-        The server attempts to handle many common GWAS formats, but we strongly recommend that you compress and
-        tabix-index your results first. Your file should contain columns that identify key information, as described
-        below. The data must a <strong>tab-delimited</strong> file and be <strong>sorted</strong> by chromosome and
-        position. The upload step will ignore any columns whose meaning is not explicitly specified.
-        The following columns are expected:
-      </p>
-      <ul>
-        <li>Variant specification
-          <ul>
-          <li>By marker (chrom_pos:ref/alt): <i>9:22125503_G/C</i>, OR</li>
-          <li>By individual columns (preferred)
-            <ul>
-              <li>Chromosome</li>
-              <li>Position</li>
-              <li>Ref. allele (according to human reference genome)</li>
-              <li>Alt. allele (according to human reference genome)</li>
-            </ul>
-          </li>
-        </ul>
-        </li>
-        <li>p-value or -log<sub>10</sub> p-value</li>
-        <li>(optional) Effect size (&beta;)</li>
-        <li>(optional) Standard error of the effect size</li>
-        <li>
-          (optional) Allele frequency; will be oriented towards the alt allele
-          <ul>
-            <li>Use frequency as given (single column)</li>
-            <li>Calculate from two columns, as <i>COUNT</i> / <i>NSAMPLES</i> / 2</li>
-            <li>
-              Note: at present, this service <b>does not</b> support files where the allele frequency refers to a
-              different allele (ref or alt) per row. The frequency must always refer to the same column for all rows.
-            </li>
-          </ul>
-        </li>
-      </ul>
-      <h2>How do I report a problem?</h2>
-      <p>
-        There are several ways to reach us, including <a href="mailto:locuszoom@googlegroups.com">user group</a> and
-        <a href="https://github.com/statgen/locuszoom-hosted">public bug tracker</a>. For questions involving security or sensitive data, we may be
-        reached at <a href="mailto:locuszoom-service@umich.edu">locuszoom-service@umich.edu</a>.
-      </p>
+    <div class="row">
+      <div class="col-md-12">
+        <h2 class="mt-3">What is this service?</h2>
+        <p>
+          <img src="{% static 'images/cartoon-upload-analyze-share.png' %}" align="right"
+               style="max-width:100%"
+               alt="Upload, analyze, and share">
+          This service allows you to generate interactive, shareable plots of GWAS summary statistics. Building on years
+          of experience from the developers of <a href="https://github.com/statgen/locuszoom">LocusZoom</a>, this adds
+          new features such as Manhattan plots, annotation, and calculations to help summarize findings and put them
+          in context. More annotation features are planned soon; subscribe to our
+          <a href="https://groups.google.com/forum/#!forum/locuszoom">mailing list</a> to receive announcements.
+        </p>
+
+        <div class="accordion mb-3" id="faq-questions">
+          <div class="card">
+            <div class="card-header" id="heading-question-privacy">
+              <a href="#" class="mb-0 text-info" data-toggle="collapse" aria-expanded="false"
+                 data-target="#question-privacy" aria-controls="question-privacy">Is my data private?
+              </a>
+            </div>
+            <div id="question-privacy" class="collapse" aria-labelledby="heading-question-privacy"
+                 data-parent="#faq-questions">
+              <div class="card-body">
+                <p>
+                  When uploading, you can choose whether to make your dataset either public (viewable by anyone) or
+                  private (viewable only to yourself). If you make your dataset public, other people will be able to
+                  download the standardized summary statistic files that we generate during the upload process.
+                  For all datasets, interactive plotting features require that we keep a copy of the data on our
+                  servers.
+                  We make every effort to keep this secure, but if privacy is a driving issue, consider using the
+                  <a href="https://statgen.github.io/localzoom/">LocalZoom</a> tool to generate region plots
+                  client-side instead. <em>LocalZoom</em> does not provide any enhanced annotation features, but it
+                  works without uploading your data.
+                </p>
+                <p>
+                  You can delete your results from our servers at any time. The "delete this study" button may be found
+                  by clicking the "edit" link at the top of the summary page
+                  (only visible on studies that you uploaded).
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header" id="heading-question-size">
+              <a href="#" class="mb-0 text-info" data-toggle="collapse" aria-expanded="false"
+                 data-target="#question-size" aria-controls="question-size">How much data can I plot?
+              </a>
+            </div>
+            <div id="question-size" class="collapse" aria-labelledby="heading-question-size"
+                 data-parent="#faq-questions">
+              <div class="card-body">
+                LocusZoom.js is dynamic and interactive: you can plot regions up to 500 kb wide at one time, but you can
+                explore as many regions as you wish from a single upload. The server accepts uploads of up to 1 GB
+                (this may change in the future). A manhattan plot and list of suggested regions will also be generated
+                for you.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header" id="heading-question-prep">
+              <a href="#" class="mb-0 text-info" data-toggle="collapse" aria-expanded="false"
+                 data-target="#question-prep" aria-controls="question-prep">
+                How should I prepare my data for uploading?
+              </a>
+            </div>
+            <div id="question-prep" class="collapse" aria-labelledby="heading-question-prep"
+                 data-parent="#faq-questions">
+              <div class="card-body">
+                The server attempts to handle many common GWAS formats, but we strongly recommend that you compress and
+                tabix-index your results first. Your file should contain columns that identify key information, as
+                described
+                below. The data must a <strong>tab-delimited</strong> file and be <strong>sorted</strong> by chromosome
+                and
+                position. The upload step will ignore any columns whose meaning is not explicitly specified.
+                The following columns are expected:
+                <ul>
+                  <li>Variant specification
+                    <ul>
+                      <li>By marker (chrom_pos:ref/alt): <i>9:22125503_G/C</i>, OR</li>
+                      <li>By individual columns (preferred)
+                        <ul>
+                          <li>Chromosome</li>
+                          <li>Position</li>
+                          <li>Ref. allele (according to human reference genome)</li>
+                          <li>Alt. allele (according to human reference genome)</li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>p-value or -log<sub>10</sub> p-value</li>
+                  <li>(optional) Effect size (&beta;), assuming alt allele is the effect allele</li>
+                  <li>(optional) Standard error of the effect size</li>
+                  <li>
+                    (optional) Allele frequency; will be oriented towards the alt allele
+                    <ul>
+                      <li>Use frequency as given (single column)</li>
+                      <li>Calculate from two columns, as <i>COUNT</i> / <i>NSAMPLES</i> / 2</li>
+                      <li>
+                        Note: at present, this service <b>does not</b> support files where the allele frequency refers
+                        to a
+                        different allele (ref or alt) per row. The frequency must always refer to the same column for
+                        all rows.
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header" id="heading-question-share">
+              <a href="#" class="mb-0 text-info" data-toggle="collapse" aria-expanded="false"
+                 data-target="#question-share" aria-controls="question-share">
+                How do I share my results with only collaborators?
+              </a>
+            </div>
+            <div id="question-share" class="collapse" aria-labelledby="heading-question-share"
+                 data-parent="#faq-questions">
+              <div class="card-body">
+                Sometimes, it may be useful to share a GWAS with a collaborator, without having to make it public for
+                everyone. This service allows you to generate private links that can be sent to trusted collaborators.
+                These secret links allow view-only access to all summary and region plots. Sharing features can be
+                accessed from the "share" link on top of the GWAS summary page.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header" id="heading-question-bug">
+              <a href="#" class="mb-0 text-info" data-toggle="collapse" aria-expanded="false"
+                 data-target="#question-bug" aria-controls="question-bug">
+                How do I report a problem?
+              </a>
+            </div>
+            <div id="question-bug" class="collapse" aria-labelledby="heading-question-bug" data-parent="#faq-questions">
+              <div class="card-body">
+                <p>
+                  There are several ways to reach us, including our
+                  <a href="mailto:locuszoom@googlegroups.com">user group</a> and
+                  <a href="https://github.com/statgen/locuszoom-hosted">public bug tracker</a>. For questions
+                  involving security or sensitive data, we may be reached at
+                  <a href="mailto:locuszoom-service@umich.edu">locuszoom-service@umich.edu</a>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
   </div>
 {% endblock %}

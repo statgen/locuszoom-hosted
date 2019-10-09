@@ -68,11 +68,13 @@
 
 {% block content %}
   <div class="container-fluid">
-    <h1>Analysis summary for: <em>{{ gwas.label }}</em></h1>
+    <h1>{{ gwas.label }}</h1>
     <div class="row">
       <div class="col-md-12">
-        <span class="text-muted">Created by: {{ gwas.owner.display_name }}, {{ gwas.created | date }}</span>
-        {% if gwas.is_public %}<span class="badge badge-primary">Public</span> {% else %}<span class="badge badge-warning">Private</span>{% endif %}
+        {% if gwas.study_name %}<span class="text-muted">Study: {{ gwas.study_name }}</span><br>{% endif %}
+        <span class="text-muted">Uploaded by: {{ gwas.owner.display_name }}, {{ gwas.created | date }}</span>
+        {% if gwas.is_public %}<span class="badge badge-info">Public</span> {% else %}<span class="badge badge-warning">Private</span>{% endif %}
+        {% if gwas.pmid %}<a href="https://www.ncbi.nlm.nih.gov/pubmed/{{gwas.pmid}}" target="_blank" class="badge badge-dark">PubMed</a>{% endif %}
         {% if gwas.owner == request.user %}(<a href="{% url 'gwas:edit' gwas.slug %}">edit</a>)
           {% if not gwas.is_public %}(<a href="{% url 'gwas:share' gwas.slug %}">share</a>){% endif %}
         {% endif %}
@@ -124,10 +126,11 @@
       <p>We were unable to process your uploaded GWAS file. Please review the logs for the cause, and contact us
         if you believe the problem is an error.</p>
       {%  if request.user == gwas.owner %}
-      <p>
-        <a class="btn btn-outline-secondary" href="{% url 'gwas:gwas-ingest-log' gwas.slug %}">Ingest Logs</a>
-        <a class="btn btn-warning" href="{% url 'gwas:rerun' gwas.slug %}">Re-run ingest step</a>
-      </p>
+        <form method="post" action="{% url 'gwas:rerun' gwas.slug %}" class="form-horizontal">
+          {% csrf_token %}
+          <a class="btn btn-outline-secondary" href="{% url 'gwas:gwas-ingest-log' gwas.slug %}">Ingest Logs</a>
+          <button class="btn btn-warning" type="submit">Re-run ingest step</button>
+        </form>
       {% endif %}
     {% endif %}
   </div>

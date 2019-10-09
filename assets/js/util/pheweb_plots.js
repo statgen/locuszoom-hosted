@@ -216,7 +216,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
 
         const color_by_chrom = d3.scale.ordinal()
             .domain(get_chrom_offsets().chroms)
-            .range(['#BBBBBB', '#007bff']);
+            .range(['#AFAFAF', '#007bff']);
 
         gwas_svg.selectAll('text.chrom_label')
             .data(chroms_and_midpoints)
