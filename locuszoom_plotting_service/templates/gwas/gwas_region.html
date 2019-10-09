@@ -16,8 +16,11 @@
           </li>
           <li class="breadcrumb-item active">Region view</li>
         </ol>
-        <span class="text-muted">Created by: {{ gwas.owner.display_name }}, {{ gwas.created | date }}</span>
-        {% if gwas.is_public %}<span class="badge badge-primary">(Public)</span>{% endif %}
+
+        {% if gwas.study_name %}<span class="text-muted">Study: {{ gwas.study_name }}</span><br>{% endif %}
+        <span class="text-muted">Uploaded by: {{ gwas.owner.display_name }}, {{ gwas.created | date }}</span>
+        {% if gwas.is_public %}<span class="badge badge-info">Public</span> {% else %}<span class="badge badge-warning">Private</span>{% endif %}
+        {% if gwas.pmid %}<a href="https://www.ncbi.nlm.nih.gov/pubmed/{{gwas.pmid}}" target="_blank" class="badge badge-dark">PubMed</a>{% endif %}
       </div>
     </div>
 

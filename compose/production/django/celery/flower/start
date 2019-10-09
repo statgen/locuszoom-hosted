@@ -4,7 +4,10 @@ set -o errexit
 set -o nounset
 
 
+# The URL prefix should match what is used in the Apache configuration.
+#   In the future we can make this more tolerant of other deployment scenarios.
 celery flower \
     --app=locuszoom_plotting_service.taskapp \
     --broker="${CELERY_BROKER_URL}" \
-    --basic_auth="${CELERY_FLOWER_USER}:${CELERY_FLOWER_PASSWORD}"
+    --basic_auth="${CELERY_FLOWER_USER}:${CELERY_FLOWER_PASSWORD}" \
+    --url_prefix="celery-flower"

@@ -26,15 +26,18 @@
 
 <template>
 <b-card border-variant="light">
-  <a :href="study_data.url" class="study-title">{{ study_data.label }}</a><br>
-  <em class="text-muted">Uploaded by: {{ study_data.owner_name }}</em><br>
-  <em class="text-muted">Created: {{ study_data.created | date }}</em><br>
+  <a :href="study_data.url" class="study-title align-middle text-info">{{ study_data.label }}</a>
+  <span v-if="study_data.is_public" class="badge badge-info align-middle">Public</span>
+  <span v-if="study_data.ingest_status === 0" class="badge badge-warning align-middle">Pending</span>
+  <span v-if="study_data.ingest_status === 1" class="badge badge-danger align-middle">Error</span>
   <span v-if="pmid_link">
-    <a :href="pmid_link">{{ study_data.pmid }}</a><br>
+    <a :href="pmid_link" class="badge badge-dark align-middle" target="_blank">PubMed</a><br>
   </span>
-  <span v-if="study_data.is_public" class="badge badge-primary">Public</span>
-  <span v-if="study_data.ingest_status === 0" class="badge badge-warning">Pending</span>
-  <span v-if="study_data.ingest_status === 1" class="badge badge-danger">Error</span>
+  <br>
+
+  <span v-if="study_data.study_name" class="text-secondary">Study: <em>{{study_data.study_name}}</em><br></span>
+  <span class="text-muted">Uploaded: <em class="text-muted">{{ study_data.created | date }}</em> by
+    <em>{{ study_data.owner_name }}</em></span><br>
 </b-card>
 </template>
 

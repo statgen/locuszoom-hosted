@@ -31,7 +31,7 @@ class GwasListView(generics.ListAPIView):
     ordering = ('-created',)
 
     filterset_class = GwasFilter
-    search_fields = ('label', 'pmid')  # TODO: Future search fields: author, phenotype name, snomed code
+    search_fields = ('label', 'study_name', 'pmid')
 
     def get_queryset(self):
         queryset = super(GwasListView, self).get_queryset()

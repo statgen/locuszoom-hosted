@@ -9,6 +9,10 @@ celery==4.3.0  # pyup: < 5.0  # https://github.com/celery/celery
 flower==0.9.3  # https://github.com/mher/flower
 whitenoise==4.1.2 # https://github.com/evansd/whitenoise
 
+# Pin version due to ongoing breakages that manifest as "unknown worker" in celery flower. See:
+#   https://github.com/celery/kombu/issues/1081
+#   https://github.com/mher/flower/issues/909
+kombu==4.6.3
 
 # Django
 # ------------------------------------------------------------------------------
