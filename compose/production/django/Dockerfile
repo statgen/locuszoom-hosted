@@ -17,7 +17,7 @@ RUN \
   if [ -n "$UID" ]; then \
     adduser --gecos "User for running app as non-root" --shell /bin/bash --disabled-password --uid $UID --gid $GID lzupload; \
   else \
-    adduser --gecos "User for running app as non-root" --shell /bin/bash --disabled-password lzupload; \
+    adduser --gecos "User for running app as non-root" --shell /bin/bash --disabled-password --ingroup lzupload lzupload; \
   fi
 
 # Requirements are installed here to ensure they will be cached.
