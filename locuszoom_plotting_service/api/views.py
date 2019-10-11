@@ -28,7 +28,8 @@ class GwasListView(generics.ListAPIView):
     queryset = lz_models.AnalysisInfo.objects.ingested().select_related('owner')
     serializer_class = serializers.GwasSerializer
     permission_classes = (permissions.GwasViewPermission,)
-    ordering = ('-created',)
+    # Show oldest first, so that people see high quality examples on the homepage. (eventually we could curate)
+    ordering = ('created',)
 
     filterset_class = GwasFilter
     search_fields = ('label', 'study_name', 'pmid')

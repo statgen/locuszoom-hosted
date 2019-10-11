@@ -28,6 +28,7 @@
 <b-card border-variant="light">
   <a :href="study_data.url" class="study-title align-middle text-info">{{ study_data.label }}</a>
   <span v-if="study_data.is_public" class="badge badge-info align-middle">Public</span>
+  <span v-else class="badge badge-warning align-middle">Private</span>
   <span v-if="study_data.ingest_status === 0" class="badge badge-warning align-middle">Pending</span>
   <span v-if="study_data.ingest_status === 1" class="badge badge-danger align-middle">Error</span>
   <span v-if="pmid_link">

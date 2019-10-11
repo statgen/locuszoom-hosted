@@ -72,6 +72,7 @@
     <div class="row">
       <div class="col-md-12">
         {% if gwas.study_name %}<span class="text-muted">Study: {{ gwas.study_name }}</span><br>{% endif %}
+        <span class="text-muted">Build: {{ gwas.build }}</span><br>
         <span class="text-muted">Uploaded by: {{ gwas.owner.display_name }}, {{ gwas.created | date }}</span>
         {% if gwas.is_public %}<span class="badge badge-info">Public</span> {% else %}<span class="badge badge-warning">Private</span>{% endif %}
         {% if gwas.pmid %}<a href="https://www.ncbi.nlm.nih.gov/pubmed/{{gwas.pmid}}" target="_blank" class="badge badge-dark">PubMed</a>{% endif %}
