@@ -372,6 +372,15 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
 
 
 function create_qq_plot(maf_ranges, qq_ci) {
+    // Escape hatch: for highly filtered datasets ("only the most extreme hits"), it may not be possible to draw a qq
+    // plot at all; the backend code clips all values past a cap. This manifests as empty bins, and drawing would fail
+    // Physically, this means a QQ plot would be meaningless: ALL the values are *way* more extreme than explained by
+    // chance!
+    if (!maf_ranges[0].qq.bins.length) {
+        $('#qq_plot_container').text(
+            'No QQ Plot could be generated. It is possible that your data has been filtered to only contain very extreme pvalues, such that a QQ plot would not be meaningful.');
+        return;
+    }
 
     maf_ranges.forEach(function(maf_range, i) {
         maf_range.color = ['#e66101', '#fdb863', '#b2abd2', '#5e3c99'][i];

@@ -42,7 +42,7 @@ function createTopHitsTable(selector, data, region_url) {
                     }
                 },
             },
-            {title: '-log<sub>10</sub>(p)', field: 'neg_log_pvalue', formatter: cell => cell.getValue().toFixed(3)},
+            {title: '-log<sub>10</sub>(p)', field: 'neg_log_pvalue', formatter: cell => (+cell.getValue()).toFixed(3)},
         ],
         initialSort: [
             {column: 'neg_log_pvalue', dir: 'desc'}
