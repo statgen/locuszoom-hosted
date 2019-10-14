@@ -10,14 +10,14 @@ https://stackoverflow.com/a/41454423/1422268
 
 import importlib
 
-from django.conf.urls import include, url
+from django.conf.urls import include
 from django.urls import path
 
 from allauth.account.views import login, logout, SignupView
 from allauth.socialaccount import providers
 from allauth.socialaccount import views as social_views
 
-providers_urlpatterns = []
+providers_urlpatterns = []  # type: ignore
 
 for provider in providers.registry.get_list():
     prov_mod = importlib.import_module(provider.get_package() + '.urls')
