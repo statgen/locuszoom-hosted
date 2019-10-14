@@ -78,11 +78,7 @@ def rerun_analysis(request, slug):
     if request.user != metadata.owner:
         return HttpResponseBadRequest(content='Only the owner can re-run analysis for a study')
 
-    files = metadata.analysisfileset_set.order_by('-created').first()
-    files.ingest_status = 0
-    files.save()
-
-    transaction.on_commit(lambda: tasks.total_pipeline(files.pk).apply_async())
+    metadata.rerun_ingest()
 
     return redirect(metadata)
 

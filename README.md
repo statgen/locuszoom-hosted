@@ -156,6 +156,4 @@ After creating the app, run the following command (once) to load them in (using 
 
 `$ docker-compose -f local.yml run --rm django python3 manage.py loaddata scripts/data_loaders/sources/snomed.json`
 
-(TODO: additional/modified commands may be required to do this in production)
-
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg)](https://github.com/pydanny/cookiecutter-django/)
