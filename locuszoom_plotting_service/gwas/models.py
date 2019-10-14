@@ -4,7 +4,7 @@ import uuid
 
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import JSONField
-from django.db import models
+from django.db import models, transaction
 from django.utils.http import urlencode
 from django.urls import reverse
 from model_utils.models import SoftDeletableModel, TimeStampedModel
@@ -31,6 +31,9 @@ class AnalysisInfo(SoftDeletableModel, TimeStampedModel):
     Metadata describing a single analysis (GWAS results). Typically associated with an `AnalysisFileset`
     """
     objects = managers.AnalysisInfoManager
+
+    class Meta:
+        verbose_name_plural = "GWAS Analysis Metadata"
 
     slug = models.SlugField(max_length=6, unique=True, editable=False, default=_generate_slug,
                             help_text="The external facing identifier for this record")
@@ -127,6 +130,14 @@ class AnalysisInfo(SoftDeletableModel, TimeStampedModel):
                 break
 
         super().save(*args, **kwargs)
+
+    def rerun_ingest(self):
+        from locuszoom_plotting_service.taskapp import tasks  # Avoid circular import
+        files = self.analysisfileset_set.order_by('-created').first()
+        files.ingest_status = 0
+        files.save()
+
+        transaction.on_commit(lambda: tasks.total_pipeline(files.pk).apply_async())
 
 
 class AnalysisFileset(TimeStampedModel):
