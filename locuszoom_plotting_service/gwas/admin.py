@@ -15,6 +15,7 @@ admin.site.unregister([SocialToken])
 # We may want to re-enable this in the future, but for now this is a powerful action and we will delete it
 admin.site.disable_action('delete_selected')
 
+
 # Add custom UI: view analysis info objects, ingest status, maybe a default sort order
 class AnalysisInfoAdmin(admin.ModelAdmin):
     list_display = ['created', 'owner', 'label', 'ingest_status']
@@ -40,5 +41,6 @@ class AnalysisInfoAdmin(admin.ModelAdmin):
         #   b) users, not admins, should dictate removal of their data. (at least until we better understand removal
         #   requests)
         return False
+
 
 admin.site.register(AnalysisInfo, AnalysisInfoAdmin)
