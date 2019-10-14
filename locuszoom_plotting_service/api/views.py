@@ -97,7 +97,13 @@ class GwasRegionView(generics.RetrieveAPIView):
         reader = guess_gwas_standard(gwas.files.normalized_gwas_path)\
             .add_filter('neg_log_pvalue')
 
-        return list(reader.fetch(chrom, start, end))
+        try:
+            return list(reader.fetch(chrom, start, end))
+        except ValueError:
+            # PySAM will throw a ValueError when tabixing to a chrom not present in the file (but it's ok with an
+            #   empty region in a known chromosome)
+            # Let's make the behavior the same: no known chromosome = no data for region
+            return []
 
     def _query_params(self) -> ty.Tuple[str, int, int]:
         """
