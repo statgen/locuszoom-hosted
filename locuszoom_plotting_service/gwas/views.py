@@ -9,7 +9,6 @@ import typing as ty
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
@@ -28,8 +27,6 @@ from django.http import (
     HttpResponseBadRequest,
     HttpResponseRedirect,
 )
-
-from locuszoom_plotting_service.taskapp import tasks
 
 from . import forms as lz_forms
 from . import models as lz_models
