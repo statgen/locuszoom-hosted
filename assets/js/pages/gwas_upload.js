@@ -166,6 +166,8 @@ modal.$on('has_options', function (parser_options) { // Close with options selec
             const sample_data = rows.slice(first_data_index).map(row => parser(row));
             is_valid = validateSortOrder(sample_data);
         } catch (e) {
+            // TODO: Improve UI representation of other parsing errors, like AF out of range
+            console.error('error encountered', e);
             is_valid = false;
         }
         if (!is_valid) {  // slightly vague message; in rare cases some middle data rows may be unparseable

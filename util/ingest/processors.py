@@ -11,7 +11,6 @@ from zorp import (
     parsers,
     sniffers
 )
-# from .exceptions import ManhattanExeption, QQPlotException, UnexpectedIngestException
 from . exceptions import TopHitException
 from . import (
     helpers,

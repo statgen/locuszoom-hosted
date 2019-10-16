@@ -32,7 +32,7 @@
   <span v-if="study_data.ingest_status === 0" class="badge badge-warning align-middle">Pending</span>
   <span v-if="study_data.ingest_status === 1" class="badge badge-danger align-middle">Error</span>
   <span v-if="pmid_link">
-    <a :href="pmid_link" class="badge badge-dark align-middle" target="_blank">PubMed</a><br>
+    <a :href="pmid_link" class="badge badge-dark align-middle" target="_blank">PubMed</a>
   </span>
   <br>
 
