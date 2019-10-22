@@ -58,7 +58,7 @@ class TestStandardGwasValidator:
 
     def test_validates_for_file(self):
         sample_fn = os.path.join(os.path.dirname(__file__), 'fixtures/gwas.tab')
-        is_valid = validators.standard_gwas_validator.validate(sample_fn, {  # Parser options for sample file
+        parser = parsers.GenericGwasLineParser(**{  # Parser options for sample file
             'chrom_col': 1,
             'pos_col': 2,
             'ref_col': 3,
@@ -66,4 +66,6 @@ class TestStandardGwasValidator:
             'pvalue_col': 5,
             'is_neg_log_pvalue': False
         })
+        reader = sniffers.guess_gwas_generic(sample_fn, parser=parser)
+        is_valid = validators.standard_gwas_validator.validate(sample_fn, reader)
         assert is_valid

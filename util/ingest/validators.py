@@ -5,10 +5,6 @@ import logging
 
 import magic
 
-from zorp import (
-    parsers,
-    sniffers
-)
 from zorp.readers import BaseReader
 
 from . import (
@@ -21,18 +17,13 @@ logger = logging.getLogger(__name__)
 
 class _GwasValidator:
     """Validate a raw GWAS file as initially uploaded (given filename and instructions on how to parse it)"""
-    def __init__(self, headers=None, delimiter='\t'):
+    def __init__(self, *, delimiter='\t'):
         self._delimiter = delimiter
-        self._headers = headers
 
     @helpers.capture_errors
-    def validate(self, filename: str, parser_options: dict) -> bool:
+    def validate(self, filename: str, reader: BaseReader) -> bool:
         """Perform all checks for a stored file"""
         encoding = self._get_encoding(filename)
-
-        # Create a reader than can handle the filetype and header format of whatever the user uploads
-        parser = parsers.GenericGwasLineParser(**parser_options)
-        reader = sniffers.guess_gwas_generic(filename, parser=parser)
         return all([
             self._validate_mimetype(encoding),
             self._validate_contents(reader),
