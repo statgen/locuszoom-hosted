@@ -3,6 +3,7 @@ version: '3'
 volumes:
   local_postgres_data: {}
   local_postgres_data_backups: {}
+  local_rabbitmq_data: {}
 
 services:
   django: &django
@@ -37,11 +38,16 @@ services:
   redis:
     image: redis:3.2
 
+  rabbitmq:
+    image: rabbitmq:3.8
+    volumes:
+      - local_postgres_data:/var/lib/rabbitmq
+
   celeryworker:
     <<: *django
     image: locuszoom_plotting_service_local_celeryworker
     depends_on:
-      - redis
+      - rabbitmq
       - postgres
 
     ports: []
@@ -51,7 +57,7 @@ services:
     <<: *django
     image: locuszoom_plotting_service_local_celerybeat
     depends_on:
-      - redis
+      - rabbitmq
       - postgres
 
     ports: []

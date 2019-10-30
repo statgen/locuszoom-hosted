@@ -70,6 +70,15 @@ INSTALLED_APPS += ['django_extensions']  # noqa F405
 CELERY_TASK_ALWAYS_EAGER = False
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-eager-propagates
 CELERY_TASK_EAGER_PROPAGATES = True
+# http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-task_acks_late
+# This causes messages from worker tasks to be received only after the task has completed, not right
+# before it executes. This means your tasks MUST be idempotent (i.e. no side effects or issues from
+# running the task multiple times). Redis should also be set to persist data across reboots using
+# the appendonly log so that no data is lost at all when it shuts down.
+CELERY_TASK_ACKS_LATE = True
+# http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-reject-on-worker-lost
+# This prevents the task from being lost simply because the worker was killed or terminated
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
 
 # Misc other configuration
 # ------------------------------------------------------------------------------

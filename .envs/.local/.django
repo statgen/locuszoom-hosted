@@ -9,6 +9,7 @@ REDIS_URL=redis://redis:6379/0
 
 # Celery
 # ------------------------------------------------------------------------------
+RABBITMQ_URL=amqp://rabbitmq:5672
 
 # Flower
 CELERY_FLOWER_USER=CHANGEME
