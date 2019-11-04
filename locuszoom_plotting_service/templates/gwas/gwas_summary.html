@@ -156,5 +156,12 @@
     window.pheno = '';
   </script>
 
+  {% if GOOGLE_ANALYTICS_ID %}
+    <script>
+      // Track aggregate manhattan plots viewed (across all possible studies) as an event
+      gtag('event', 'manhattanview');
+    </script>
+  {% endif %}
+
   {% render_bundle 'gwas_summary' %}
 {% endblock %}

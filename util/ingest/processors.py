@@ -7,8 +7,7 @@ import logging
 import math
 
 from zorp import (
-    exceptions as z_exc,
-    parsers,
+    readers,
     sniffers
 )
 from . exceptions import TopHitException
@@ -36,40 +35,21 @@ def get_file_sha256(src_path, block_size=2 ** 20) -> bytes:
 
 
 @helpers.capture_errors
-def normalize_contents(src_path: str, parser_options: dict, dest_path: str, log_path: str) -> bool:
+def normalize_contents(reader: readers.BaseReader, dest_path: str) -> bool:
     """
     Initial content ingestion: load the file and write variants in a standardized format
 
     This routine will deliberately exclude lines that could not be handled in a reliable fashion, such as pval=NA
     """
-    parser = parsers.GenericGwasLineParser(**parser_options)
-    reader = sniffers.guess_gwas_generic(src_path, parser=parser)
-
-    success = False
-    try:
-        dest_fn = reader.write(dest_path, make_tabix=True)
-    except z_exc.TooManyBadLinesException as e:
-        raise e
-    else:
-        success = True
-        logger.info('Conversion succeeded! Results written to: {}'.format(dest_fn))
-    finally:
-        # Always write a log entry, no matter what
-        with open(log_path, 'a+') as f:
-            for n, reason, _ in reader.errors:
-                f.write('Excluded row {} from output due to parse error: {}\n'.format(n, reason))
-            if success:
-                f.write('[success] GWAS file has been converted.\n')
-                return True
-            else:
-                f.write('[failure] Could not create normalized GWAS file.\n')
+    reader.write(dest_path, make_tabix=True)
     # In reality a failing task will usually raise an exception rather than returning False
-    return False
+    return True
 
 
 @helpers.capture_errors
 def generate_manhattan(in_filename: str, out_filename: str) -> bool:
     """Generate manhattan plot data for the processed file"""
+    # Strong assumption: there are no invalid lines when a file reaches this stage; this operates on normalized data
     reader = sniffers.guess_gwas_standard(in_filename)\
         .add_filter('neg_log_pvalue')
 

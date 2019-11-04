@@ -10,6 +10,12 @@ from django.db import transaction
 from django.dispatch import receiver
 from django.utils import timezone
 
+from zorp import (
+    parsers,
+    sniffers,
+    exceptions as z_exc
+)
+
 from locuszoom_plotting_service.gwas import models
 from util.ingest import (
     exceptions,
@@ -73,13 +79,33 @@ def normalize_gwas(self, instance: models.AnalysisFileset):
 
     log_path = instance.normalized_gwas_log_path
 
-    if not validators.standard_gwas_validator.validate(src_path, instance.parser_options):
+    parser = parsers.GenericGwasLineParser(**parser_options)
+    reader = sniffers.guess_gwas_generic(src_path, parser=parser, skip_errors=True)
+
+    is_valid = False
+    try:
+        is_valid = validators.standard_gwas_validator.validate(src_path, reader)
+    except z_exc.TooManyBadLinesException as e:
+        raise e
+    else:
+        logger.info('GWAS file contents successfully validated')
+    finally:
+        # Always write a log entry, no matter what
+        with open(log_path, 'a+') as f:
+            for n, reason, _ in reader.errors:
+                f.write('Excluded row {} from output due to parse error: {}\n'.format(n, reason))
+            if is_valid:
+                f.write('[success] The GWAS file passed validation. Read the logs carefully, in case any specific lines failed to parse.\n')  # noqa
+            else:
+                f.write('[failure] Could not create normalized GWAS file.\n')
+
+    if not is_valid:
         logger.info(f"Could not load GWAS '{src_path}' because contents failed to validate")
         raise exceptions.ValidationException(f'Validation failed for study ID {instance.metadata.slug}')
 
     # For now the writer expects a temp file name, and it creates the .gz version internally
     tmp_normalized_path = dest_path.replace('.txt.gz', '.txt')
-    processors.normalize_contents(src_path, parser_options, tmp_normalized_path, log_path)
+    processors.normalize_contents(reader, tmp_normalized_path)
 
 
 @shared_task(bind=True)

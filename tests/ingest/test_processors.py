@@ -1,5 +1,7 @@
 import os
 
+from zorp import parsers, sniffers
+
 from util.ingest import processors
 
 
@@ -11,18 +13,20 @@ SAMPLE_NORM = os.path.join(os.path.dirname(__file__), 'fixtures/gwas.tab.gz')
 
 class TestPipelineTasks:
     def test_normalizes(self, tmpdir):
-        status = processors.normalize_contents(
-            SAMPLE_FILE,
-            {  # Parser options for sample file
+        parser_options = {  # Parser options for sample file
                 'chrom_col': 1,
                 'pos_col': 2,
                 'ref_col': 3,
                 'alt_col': 4,
                 'pvalue_col': 5,
                 'is_neg_log_pvalue': False
-            },
+        }
+        parser = parsers.GenericGwasLineParser(**parser_options)
+        reader = sniffers.guess_gwas_generic(SAMPLE_FILE, parser=parser, skip_errors=True)
+
+        status = processors.normalize_contents(
+            reader,
             os.path.join(tmpdir, 'normalized.txt'),
-            os.path.join(tmpdir, 'logalog.log'),
         )
 
         assert status is True, 'Normalization completed successfully'

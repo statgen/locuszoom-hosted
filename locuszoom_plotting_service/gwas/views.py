@@ -182,7 +182,7 @@ class GwasDelete(lz_permissions.GwasOwner, DeleteView):
         # The same gwas file might be revised or re-processed, and we want to delete all known copies.
         for fileset in gwas.analysisfileset_set.all():
             target_path = util.get_study_folder(fileset, absolute_path=True)
-            logger.info('User has requested that we delete media folder: ', target_path)
+            logger.info('User has requested that we delete media folder: {}'.format(target_path))
             if not target_path or not os.path.isdir(target_path) or \
                     target_path.strip('/') == settings.MEDIA_ROOT.strip('/'):
                 # Guard against some malformed path bugs that would be really awkward to explain
