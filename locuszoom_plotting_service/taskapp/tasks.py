@@ -135,9 +135,10 @@ def summarize_gwas(self, instance: models.AnalysisFileset):
 @lz_file_prep("Prepare a manhattan plot")
 def manhattan_plot(self, instance: models.AnalysisFileset):
     # This is a separate task because it can be quite slow
+    metadata = instance.metadata
     normalized_path = instance.normalized_gwas_path
     manhattan_path = instance.manhattan_path
-    processors.generate_manhattan(normalized_path, manhattan_path)
+    processors.generate_manhattan(metadata.build, normalized_path, manhattan_path)
 
 
 @shared_task(bind=True)
