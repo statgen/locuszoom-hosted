@@ -6,10 +6,13 @@ import json
 import logging
 import math
 
+from genelocator import get_genelocator
+import genelocator.exception as gene_exc
 from zorp import (
     readers,
     sniffers
 )
+
 from . exceptions import TopHitException
 from . import (
     helpers,
@@ -47,7 +50,7 @@ def normalize_contents(reader: readers.BaseReader, dest_path: str) -> bool:
 
 
 @helpers.capture_errors
-def generate_manhattan(in_filename: str, out_filename: str) -> bool:
+def generate_manhattan(build: str, in_filename: str, out_filename: str) -> bool:
     """Generate manhattan plot data for the processed file"""
     # Strong assumption: there are no invalid lines when a file reaches this stage; this operates on normalized data
     reader = sniffers.guess_gwas_standard(in_filename)\
@@ -59,7 +62,23 @@ def generate_manhattan(in_filename: str, out_filename: str) -> bool:
 
     manhattan_data = binner.get_result()
 
+    gl = get_genelocator('GRCh38', coding_only=False)
     for v_dict in manhattan_data['unbinned_variants']:
+        # Annotate nearest gene(s) for all "top hits", and also clean up values so JS can handle them
+        # It's possible to have more than one nearest gene for a given position (if variant is inside, not just near)
+        try:
+            nearest_genes = [
+                {
+                    'symbol': res['symbol'],
+                    'ensg': res['ensg']
+                }
+                for res in gl.at(v_dict["chrom"], v_dict["pos"])
+            ]
+        except (gene_exc.BadCoordinateException, gene_exc.NoResultsFoundException):
+            nearest_genes = []
+
+        v_dict['nearest_genes'] = nearest_genes
+
         if math.isinf(v_dict['neg_log_pvalue']):
             # JSON has no concept of infinity; use a string that browsers can type-coerce into the correct number
             v_dict['neg_log_pvalue'] = 'Infinity'
@@ -72,7 +91,6 @@ def generate_manhattan(in_filename: str, out_filename: str) -> bool:
 @helpers.capture_errors
 def generate_qq(in_filename: str, out_filename) -> bool:
     """Largely borrowed from PheWeb code (load.qq.make_json_file)"""
-    # TODO: Currently the ingest pipeline never stores "af"/"maf" at all, which could affect this calculation
     # TODO: This step appears to load ALL data into memory (list on generator). This could be a memory hog; not sure if
     #   there is a way around it as it seems to rely on sorting values
     reader = sniffers.guess_gwas_standard(in_filename)\
@@ -80,7 +98,6 @@ def generate_qq(in_filename: str, out_filename) -> bool:
 
     # TODO: Pheweb QQ code benefits from being passed { num_samples: n }, from metadata stored outside the
     #   gwas file. This is used when AF/MAF are present (which at the moment ingest pipeline does not support)
-
     variants = list(qq.augment_variants(reader))
 
     rv = {}

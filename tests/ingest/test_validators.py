@@ -7,7 +7,7 @@ from util.ingest import (
 )
 
 from zorp import (
-    parsers, readers, sniffers
+    parsers, sniffers
 )
 
 
@@ -24,23 +24,22 @@ class TestStandardGwasValidator:
 
     @pytest.mark.skip(reason="Unclear whether this is actually a requirement for PheWeb loaders; revisit")
     def test_wrong_chrom_order(self):
-        reader = readers.IterableReader([
-            "#chrom\tpos\tref\talt\tpvalue",
+        reader = sniffers.guess_gwas_generic([
+            "#chrom\tpos\tref\talt\tneg_log_pvalue",
             "2\t1\tA\tC\t7.3",
             "1\t1\tA\tC\t7.3"
-        ], parser=parsers.standard_gwas_parser_quick, skip_rows=1)
+        ], skip_rows=1)
 
         with pytest.raises(val_exc.ValidationException):
             validators.standard_gwas_validator._validate_contents(reader)
 
-    @pytest.mark.skip
-    def test_chroms_not_sorted(self):
-        reader = readers.IterableReader([
-            "#chrom\tpos\tref\talt\tpvalue",
+    def test_chroms_not_contiguous(self):
+        reader = sniffers.guess_gwas_generic([
+            "#chrom\tpos\tref\talt\tneg_log_pvalue",
             "1\t1\tA\tC\t7.3",
             "X\t1\tA\tC\t7.3",
             "1\t2\tA\tC\t7.3",
-        ], parser=parsers.standard_gwas_parser_quick, skip_rows=1)
+        ], skip_rows=1)
 
         with pytest.raises(val_exc.ValidationException):
             validators.standard_gwas_validator._validate_contents(reader)

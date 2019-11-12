@@ -264,6 +264,36 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
             return base;
         }
 
+        // Add gene name labels to the plot: the 7 most significant peaks, up to 2 gene labels per data point
+        // Note: this is slightly different from PheWeb's code (b/c nearest_genes is represented differently)
+        const variants_to_label = unbinned_variants.slice()
+            .filter(v => (!!v.peak && v.neg_log_pvalue > 7.301))  // Only label peaks above line of gwas significance
+            .sort((a, b) => b.neg_log_pvalue - a.neg_log_pvalue)  // most significant first
+            .slice(0, 7);
+        gwas_plot.append('g')
+            .attr('class', 'genenames')
+            .selectAll('text.genenames')
+            .data(variants_to_label)
+            .enter()
+            .append('text')
+            .attr('class', 'genename_text')
+            .style('font-style', 'italic')
+            .attr('text-anchor', 'middle')
+            .attr('transform', function(d) {
+                return fmt('translate({0},{1})',
+                           x_scale(get_genomic_position(d)),
+                           y_scale(d.neg_log_pvalue) - 5);
+            })
+            .text(function(d) {
+                // Old datasets: no symbol. New dataset: hash with symbol & ensg keys
+                const genes = (d.nearest_genes || []).map(gene => gene.symbol);
+                if (genes.length <= 2) {
+                    return genes.join(',');
+                } else {
+                    return genes.slice(0, 2).join(',') + ',...';
+                }
+            });
+
         function pp1() {
             gwas_plot.append('g').attr('class', 'variant_hover_rings')
                 .selectAll('a.variant_hover_ring')

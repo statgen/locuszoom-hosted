@@ -42,9 +42,10 @@ class _GwasValidator:
 
     @helpers.capture_errors
     def _validate_data_rows(self, reader) -> bool:
-        """Data must be sorted, all values must be readable, and all chroms must be known"""
+        """Data must be sorted, all values must be readable, and all chroms must be contiguous"""
         # Horked from PheWeb's `load.read_input_file.PhenoReader` class
         cp_groups = itertools.groupby(reader, key=lambda v: (v.chrom, v.pos))
+        chrom_seen = set()
 
         prev_chrom = None
         prev_pos = -1
@@ -53,6 +54,12 @@ class _GwasValidator:
             if cur_chrom == prev_chrom and cp[1] < prev_pos:
                 # Positions not in correct order for Pheweb to use
                 raise v_exc.ValidationException('Positions must be sorted prior to uploading')
+
+            if cur_chrom != prev_chrom:
+                if cur_chrom in chrom_seen:
+                    raise v_exc.ValidationException('Chromosomes must be sorted (so that all variants for the same chromosome are contiguous)')  # noqa
+                else:
+                    chrom_seen.add(cur_chrom)
 
             prev_chrom = cur_chrom
             prev_pos = cp[1]

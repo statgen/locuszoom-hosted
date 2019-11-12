@@ -36,3 +36,4 @@ boltons~=19.1
 scipy~=1.2
 python-magic==0.4.15
 git+git://github.com/abought/zorp.git@ef0398a
+genelocator==1.1.1

@@ -35,7 +35,7 @@ class TestPipelineTasks:
 
     def test_makes_manhattan(self, tmpdir):
         expected = tmpdir / 'manhattan.json'
-        status = processors.generate_manhattan(SAMPLE_NORM, expected)
+        status = processors.generate_manhattan('GRCh38', SAMPLE_NORM, expected)
         assert status is True
         assert expected.exists(), 'Manhattan data created'
 
