@@ -60,7 +60,8 @@
   <div>
     <div class="row">
       <div class="col-md-12">
-        <b-jumbotron :fluid="true" lead="Create and share interactive GWAS Plots" class="search-field">
+        <b-jumbotron :fluid="true" lead="Upload. Analyze. Share." class="search-field">
+          <p>Make GWAS region and Manhattan plots. Private, public, or shared only with collaborators.</p>
           <form @submit.prevent="doSearch">
             <b-input-group>
               <b-form-input type="text" placeholder="Search by label, study name, or PMID" v-model="search_text"/>
