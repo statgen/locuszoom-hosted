@@ -3253,25 +3253,25 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
-"locuszoom-tabix@https://github.com/statgen/localzoom#dbcc3e5":
-  version "0.4.0"
-  resolved "https://github.com/statgen/localzoom#dbcc3e59a2061903d831ca4f8d6874f271f2590f"
+"locuszoom-tabix@https://github.com/statgen/localzoom#v0.5.0":
+  version "0.5.0"
+  resolved "https://github.com/statgen/localzoom#b0b53bf835c84a196d145b6e17d0c317c384567a"
   dependencies:
     "@sentry/browser" "^4.5.2"
     bootstrap "^4.1.3"
     bootstrap-vue "^2.0.0-rc.11"
     gwas-credible-sets "^0.1.0"
-    locuszoom "0.10.0-beta.2"
+    locuszoom "0.10.0"
     lodash "^4.17.11"
     tabix-reader "https://github.com/abought/tabix-reader"
     tabulator-tables "^4.1.4"
     vue "^2.6.10"
     vue-bootstrap-typeahead "^0.2.6"
 
-locuszoom@0.10.0-beta.2:
-  version "0.10.0-beta.2"
-  resolved "https://registry.yarnpkg.com/locuszoom/-/locuszoom-0.10.0-beta.2.tgz#7c007c421ee3c1e39f9adab6612874761bb455c6"
-  integrity sha512-SkyquD7OCPJQcCrFoJxHBlA9/U9CNJb+EE1n+O/jnX5CqiFlPUHHrzi8KzBUPZ25DQHdtCHXM7YE+0imHTrYDg==
+locuszoom@0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/locuszoom/-/locuszoom-0.10.0.tgz#7dad2341af6e539f6bbf0878ec1753a521e7c647"
+  integrity sha512-v+g8YKHszmZL7/yJg5EDZhrGS3jlGoP/WTXM0WFjTUi8MrPCADaeutwx/FhkmZtbhtlb+khO+8EYItaaTGEMLg==
   dependencies:
     d3 "3.5.17"
     promise-polyfill "^8.1.3"
