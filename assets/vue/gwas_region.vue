@@ -14,6 +14,7 @@
             'lz_layout',
             'lz_sources',
             'study_names',
+            'top_hits_url'
         ],
         data() {
             return {
@@ -47,6 +48,25 @@
                 this.c_start = region.start;
                 this.c_end = region.end;
             },
+            fetchTopHits() {
+                // Used for batch mode "get top hits" button
+                // Fetch pre-computed top loci, in sorted order, and return list of [ [chr, star, end] ] entries
+                return fetch(this.top_hits_url)
+                    .then(resp => {
+                        if (resp.ok) {
+                            return resp.json();
+                        }
+                        throw new Error('Could not retrieve results');
+                    }).then(json => {
+                        return json.unbinned_variants.filter(variant => !!variant.peak)
+                            .sort((a,b) => b.neg_log_pvalue - a.neg_log_pvalue)
+                            .map(variant => ({
+                                    chr: variant.chrom,
+                                    start: +variant.pos - Math.floor(MAX_REGION_SIZE / 2),
+                                    end: +variant.pos + Math.floor(MAX_REGION_SIZE / 2)
+                            }));
+                    });
+            }
         },
         components: { BatchSpec, BatchScroller, PlotPanes, RegionPicker }
     }
@@ -66,7 +86,11 @@
             search_url="https://portaldev.sph.umich.edu/api/v1/annotation/omnisearch/"/>
         <batch-spec class="ml-1"
                     :max_range="max_region_size"
-                    @ready="activateBatchMode"/>
+                    @ready="activateBatchMode">
+          <template #preset-button="{updateRegions}">
+            <button class="btn btn-warning"  @click="updateRegions(fetchTopHits())">Get top hits</button>
+          </template>
+        </batch-spec>
       </div>
     </div>
     <div class="row" v-else>

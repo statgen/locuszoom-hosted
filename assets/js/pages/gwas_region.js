@@ -24,7 +24,8 @@ function makePlot(template_vars) {
         {
             lz_sources: getBasicSources(assoc_sources),
             lz_layout: getBasicLayout(state, panels, { responsive_resize: false }),
-            study_names: [template_vars.label]
+            study_names: [template_vars.label],
+            top_hits_url: template_vars.top_hits_url,
         }, template_vars,
         {
             genome_build: template_vars.build,
