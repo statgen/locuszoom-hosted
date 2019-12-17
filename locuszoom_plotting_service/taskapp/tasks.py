@@ -8,6 +8,7 @@ from django.core.mail import mail_admins, send_mail
 from django.db.models import signals
 from django.db import transaction
 from django.dispatch import receiver
+from django.urls import reverse
 from django.utils import timezone
 
 from zorp import (
@@ -156,8 +157,9 @@ def mark_success(self, fileset_id):
     metadata.save()
 
     # TODO: Render this as a nicer-looking template
+    log_url = reverse('gwas:gwas-ingest-log', kwargs={'slug': metadata.slug})
     send_mail('[locuszoom] Upload succeeded',
-              f'Your upload is done processing. Please visit https://{settings.LZ_OFFICIAL_DOMAIN}{metadata.get_absolute_url()} to see the Manhattan plot and begin exploring regions of your data.',  # noqa
+              f'Your upload is done processing. Please visit https://{settings.LZ_OFFICIAL_DOMAIN}{metadata.get_absolute_url()} to see the Manhattan plot and begin exploring regions of your data.\nBe sure to review the ingest logs for any warnings: https://{settings.LZ_OFFICIAL_DOMAIN}{log_url}',  # noqa
               'locuszoom-service@umich.edu',
               [metadata.owner.email])
 
@@ -176,8 +178,9 @@ def mark_failure(self, fileset_id):
     instance.save()
 
     metadata = instance.metadata
+    log_url = reverse('gwas:gwas-ingest-log', kwargs={'slug': metadata.slug})
     send_mail('[locuszoom] Upload failed',
-              f'Your upload failed to process. Please visit https://{settings.LZ_OFFICIAL_DOMAIN}{metadata.get_absolute_url()} to see the error logs.',  # noqa
+              f'Your upload failed to process. Please review the ingest logs for warnings and error messages: https://{settings.LZ_OFFICIAL_DOMAIN}{log_url}\nOr visit the upload page to change settings: https://{settings.LZ_OFFICIAL_DOMAIN}{metadata.get_absolute_url()}',  # noqa
               'locuszoom-service@umich.edu',
               [metadata.owner.email])
 
