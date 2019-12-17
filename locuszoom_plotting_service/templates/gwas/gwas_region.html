@@ -22,6 +22,9 @@
         <span class="text-muted">Uploaded by: {{ gwas.owner.display_name }}, {{ gwas.created | date }}</span>
         {% if gwas.is_public %}<span class="badge badge-info">Public</span> {% else %}<span class="badge badge-warning">Private</span>{% endif %}
         {% if gwas.pmid %}<a href="https://www.ncbi.nlm.nih.gov/pubmed/{{gwas.pmid}}" target="_blank" class="badge badge-dark">PubMed</a>{% endif %}
+        {% if gwas.owner == request.user %}(<a href="{% url 'gwas:edit' gwas.slug %}">edit</a>)
+          {% if not gwas.is_public %}(<a href="{% url 'gwas:share' gwas.slug %}">share</a>){% endif %}
+        {% endif %}
       </div>
     </div>
 
