@@ -50,7 +50,7 @@
             },
             fetchTopHits() {
                 // Used for batch mode "get top hits" button
-                // Fetch pre-computed top loci, in sorted order, and return list of [ [chr, star, end] ] entries
+                // Fetch pre-computed top loci, in sorted order, and return list of [ {chr, start, end} ] entries
                 return fetch(this.top_hits_url)
                     .then(resp => {
                         if (resp.ok) {
