@@ -13,7 +13,6 @@ function createTopHitsTable(selector, data, region_url) {
     data = data.filter(v => !!v.peak)
         .map(item => {
             // FIXME: Synthetic field; feed a marker into pheweb loader code for better tables in the future
-            // TODO: Get pheweb "nearest gene" annotations working (and make build agnostic)
             item.marker = `${item.chrom}: ${item.pos.toLocaleString()}`;
             return item;
         });

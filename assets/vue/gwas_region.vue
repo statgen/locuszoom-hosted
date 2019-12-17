@@ -58,12 +58,13 @@
                         }
                         throw new Error('Could not retrieve results');
                     }).then(json => {
+                        // Convert the list of peaks (top hits) into manageable nearby regions (target +/- 250k)
                         return json.unbinned_variants.filter(variant => !!variant.peak)
-                            .sort((a,b) => b.neg_log_pvalue - a.neg_log_pvalue)
+                            .sort((a, b) => b.neg_log_pvalue - a.neg_log_pvalue)
                             .map(variant => ({
-                                    chr: variant.chrom,
-                                    start: +variant.pos - Math.floor(MAX_REGION_SIZE / 2),
-                                    end: +variant.pos + Math.floor(MAX_REGION_SIZE / 2)
+                                chr: variant.chrom,
+                                start: +variant.pos - 250000,
+                                end: +variant.pos + 250000
                             }));
                     });
             }
@@ -76,21 +77,23 @@
   <div>
     <div class="row" v-if="!batch_mode_active">
       <div class="col-md-4"></div>
-      <div class="col-md-8 d-flex justify-content-end">
-        <region-picker
-            @ready="updateRegion"
-            @fail="showMessage"
-            class="float-right"
-            :build="build"
-            :max_range="max_region_size"
-            search_url="https://portaldev.sph.umich.edu/api/v1/annotation/omnisearch/"/>
-        <batch-spec class="ml-1"
-                    :max_range="max_region_size"
-                    @ready="activateBatchMode">
-          <template #preset-button="{updateRegions}">
-            <button class="btn btn-warning"  @click="updateRegions(fetchTopHits())">Get top hits</button>
-          </template>
-        </batch-spec>
+      <div class="col-md-8">
+        <div class="d-flex justify-content-end">
+          <region-picker
+              @ready="updateRegion"
+              @fail="showMessage"
+              class="float-right"
+              :build="build"
+              :max_range="max_region_size"
+              search_url="https://portaldev.sph.umich.edu/api/v1/annotation/omnisearch/"/>
+          <batch-spec class="ml-1"
+                      :max_range="max_region_size"
+                      @ready="activateBatchMode">
+            <template #preset-button="{updateRegions}">
+              <button class="btn btn-warning" @click="updateRegions(fetchTopHits())">Get top hits</button>
+            </template>
+          </batch-spec>
+        </div>
       </div>
     </div>
     <div class="row" v-else>
@@ -110,10 +113,8 @@
                     :assoc_layout="lz_layout" :assoc_sources="lz_sources"
                     :study_names="study_names" :has_credible_sets="true"
                     :build="build"
-                    :chr="c_chr" :start="c_start" :end="c_end" />
+                    :chr="c_chr" :start="c_start" :end="c_end"/>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped></style>

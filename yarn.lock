@@ -3253,9 +3253,9 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
-"locuszoom-tabix@https://github.com/statgen/localzoom#v0.5.0":
+"locuszoom-tabix@https://github.com/statgen/localzoom#918fd75":
   version "0.5.0"
-  resolved "https://github.com/statgen/localzoom#b0b53bf835c84a196d145b6e17d0c317c384567a"
+  resolved "https://github.com/statgen/localzoom#918fd7525f7e14c13dae60dc6f630188b1669c53"
   dependencies:
     "@sentry/browser" "^4.5.2"
     bootstrap "^4.1.3"
