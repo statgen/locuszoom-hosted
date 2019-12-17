@@ -214,6 +214,10 @@ class GwasRegion(lz_permissions.GwasViewPermission, DetailView):
                 reverse('apiv1:gwas-region', kwargs={'slug': gwas.slug}),
                 token
             ),
+            'top_hits_url': add_token(
+                reverse('gwas:manhattan-json', kwargs={'slug': gwas.slug}),
+                token,
+            ),
             'label': gwas.label,
             'build': gwas.build,
             # Default region for bare URLs is the top hit in the study
