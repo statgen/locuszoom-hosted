@@ -185,7 +185,7 @@ fileField.addEventListener('click', function(e) {
     e.target.value = null;
 });
 
-fileField.addEventListener('change', function (e) {
+fileField.addEventListener('change', function (event) {
     // Custom validators for uploaded file
     //  Ref: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation#Limiting_the_size_of_a_file_before_its_upload
     fileField.setCustomValidity('');
