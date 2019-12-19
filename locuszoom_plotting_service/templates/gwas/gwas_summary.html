@@ -150,7 +150,7 @@
     // Required as hardcoded global reference in PheWeb pheno.js
     window.model = {
       urlprefix: '{% filter add_token:token %}{% url 'gwas:region' gwas.slug %}{% endfilter %}',
-      tooltip_underscoretemplate: '<b><%- d.chrom %>:<%- d.pos.toLocaleString() %> <%- d.ref %> / <%- d.alt %></b><br>-log<sub>10</sub>(p): <%- d.neg_log_pvalue && d.neg_log_pvalue.toFixed(3) %><br>Nearest gene(s): <%- d.nearest_genes && d.nearest_genes.length && d.nearest_genes.map(function(gene) { return gene.symbol; }).join(", ") %>'
+      tooltip_underscoretemplate: '<b><%- d.chrom %>:<%- d.pos.toLocaleString() %> <%- d.ref %> / <%- d.alt %></b><br>-log<sub>10</sub>(p): <%- d.neg_log_pvalue && (+d.neg_log_pvalue).toFixed(3) %><br>Nearest gene(s): <%- d.nearest_genes && d.nearest_genes.length && d.nearest_genes.map(function(gene) { return gene.symbol; }).join(", ") %>'
     };
     window.pheno = '';
   </script>

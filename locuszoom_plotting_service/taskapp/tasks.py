@@ -122,7 +122,7 @@ def summarize_gwas(self, instance: models.AnalysisFileset):
         gwas=instance.metadata,
         label='Top hit',
         chrom=best_row.chrom,
-        start=best_row.pos - 250_000,
+        start=max(best_row.pos - 250_000, 1),
         end=best_row.pos + 250_000
     )
     instance.metadata.top_hit_view = top_hit
