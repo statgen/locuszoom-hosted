@@ -44,6 +44,7 @@ function createTopHitsTable(selector, data, region_url) {
             {
                 title: 'Nearest gene(s)',
                 field: 'nearest_genes',
+                sorter: 'string',
                 formatter: cell => {
                     const genes = cell.getValue() || [];  // There will be studies that predate this feature, and won't have a value
                     // Convert the list of ensg/symbol objects to a string- eventually we can add links to ext DB
