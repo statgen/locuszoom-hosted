@@ -4,7 +4,7 @@
 
 import LocusZoom from 'locuszoom';
 
-import { sourceName} from 'locuszoom-tabix/src/util/lz-helpers';
+import { sourceName} from 'localzoom/src/util/lz-helpers';
 
 LocusZoom.KnownDataSources.extend('AssociationLZ', 'AssociationApi', {
     getURL(state, chain,fields) {
