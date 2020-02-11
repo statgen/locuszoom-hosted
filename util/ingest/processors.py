@@ -62,7 +62,7 @@ def generate_manhattan(build: str, in_filename: str, out_filename: str) -> bool:
 
     manhattan_data = binner.get_result()
 
-    gl = get_genelocator('GRCh38', coding_only=False)
+    gl = get_genelocator(build, coding_only=False)
     for v_dict in manhattan_data['unbinned_variants']:
         # Annotate nearest gene(s) for all "top hits", and also clean up values so JS can handle them
         # It's possible to have more than one nearest gene for a given position (if variant is inside, not just near)
