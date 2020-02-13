@@ -20,6 +20,10 @@ function fmt(format) {
 
 function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, tooltip_template = null} = {}) {
     // FIXME: Replace global variables with options object
+    // Order from weakest to strongest pvalue, so that the strongest variant will be on top (z-order) and easily hoverable
+    // In the DOM, later siblings are displayed over top of (and occluding) earlier siblings.
+    unbinned_variants = _.sortBy(unbinned_variants, function(d) { return d.neg_log_pvalue; });
+
     const get_chrom_offsets = _.memoize(function() {
         const  chrom_padding = 2e7;
         const chrom_extents = {};
@@ -120,7 +124,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
         const plot_margin = {
             'left': 70,
             'right': 30,
-            'top': 10,
+            'top': 20,
             'bottom': 50,
         };
         const plot_width = svg_width - plot_margin.left - plot_margin.right;
