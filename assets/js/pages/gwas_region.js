@@ -38,6 +38,6 @@ function makePlot(template_vars) {
     })}).$mount('#app');
 }
 
-// On page load, generate a plot, and send Google Analytics metrics if applicable
+// On page load, generate a plot, and send Google Analytics metrics for first plot rendered
 window.lz_widget = makePlot(window.template_args);
 count_region_view();
