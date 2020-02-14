@@ -1,9 +1,9 @@
 <script>
     // Custom interactivity attached to the "GWAS Region/LocusZoom plot" page
-    import BatchSpec from 'locuszoom-tabix/src/components/BatchSpec.vue';
-    import BatchScroller from 'locuszoom-tabix/src/components/BatchScroller.vue';
-    import PlotPanes from 'locuszoom-tabix/src/components/PlotPanes.vue';
-    import RegionPicker from 'locuszoom-tabix/src/components/RegionPicker.vue';
+    import BatchSpec from 'localzoom/src/components/BatchSpec.vue';
+    import BatchScroller from 'localzoom/src/components/BatchScroller.vue';
+    import PlotPanes from 'localzoom/src/components/PlotPanes.vue';
+    import RegionPicker from 'localzoom/src/components/RegionPicker.vue';
 
     const MAX_REGION_SIZE = 1000000;
 

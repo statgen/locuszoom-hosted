@@ -2,9 +2,9 @@ import Vue from 'vue';
 import App from '../../vue/gwas_region.vue';
 
 import { paramsFromUrl } from 'locuszoom/dist/ext/lz-dynamic-urls.min';
-import { stateUrlMapping } from 'locuszoom-tabix/src/util/lz-helpers';
 
-import { getBasicSources, createStudyLayout, getBasicLayout } from 'locuszoom-tabix/src/util/lz-helpers';
+import { stateUrlMapping, getBasicSources, createStudyLayout, getBasicLayout } from 'localzoom/src/util/lz-helpers';
+import count_region_view from 'localzoom/src/util/metrics';
 import { createStudyAssocSources } from '../util/lz-helpers';
 
 function makePlot(template_vars) {
@@ -38,4 +38,6 @@ function makePlot(template_vars) {
     })}).$mount('#app');
 }
 
+// On page load, generate a plot, and send Google Analytics metrics for first plot rendered
 window.lz_widget = makePlot(window.template_args);
+count_region_view();

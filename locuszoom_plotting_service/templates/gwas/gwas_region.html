@@ -3,7 +3,7 @@
 
 {% block title %}Region plot- {{ gwas.label }}{% endblock %}
 {% block css %}
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locuszoom@0.9.0/dist/locuszoom.css" type="text/css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locuszoom@0.10.1/dist/locuszoom.css" type="text/css"/>
 {% endblock %}
 
 {% block content %}
@@ -41,31 +41,4 @@
   {#  {{ js_vars | json_script: 'js-vars' }}#}
   {#  Define the LocusZoom plot #}
   {% render_bundle 'gwas_region' %}
-
-  {% if GOOGLE_ANALYTICS_ID %}
-    <script>
-      // Track an aggregate sum of all possible region plots generated.
-      // This section contains a hack around the fact that there is no direct event for `history.pushState`
-      // Ref: https://stackoverflow.com/a/25673911/1422268
-      var _wr = function(type) {
-        var orig = history[type];
-        return function() {
-            var rv = orig.apply(this, arguments);
-            var e = new Event(type);
-            e.arguments = arguments;
-            window.dispatchEvent(e);
-            return rv;
-        };
-      };
-      // Monkey-patching: icky, but necessary.
-      history.pushState = _wr('pushState'); // Define a synthetic DOM event by wrapping the history function.
-
-      var listener = function() { gtag('event', 'regionview'); };
-      // Count a new region plot on page load, and whenever url changes (forward = pushState, back = popstate);
-      listener();
-      window.addEventListener('popstate', listener);
-      window.addEventListener('pushState', listener);  // synthetic event
-    </script>
-  {% endif %}
-
 {% endblock %}

@@ -35,5 +35,5 @@ pyyaml  # Required for OpenAPI rendering
 boltons~=19.1
 scipy~=1.2
 python-magic==0.4.15
-zorp==0.1.1
+git+git://github.com/abought/zorp.git@893d383
 genelocator==1.1.1

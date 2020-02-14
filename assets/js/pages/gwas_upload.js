@@ -9,8 +9,8 @@ import pako from 'pako';
 
 import App from '../../vue/gwas_upload.vue';
 
-import { isHeader } from 'locuszoom-tabix/src/gwas/sniffers';
-import { makeParser } from 'locuszoom-tabix/src/gwas/parsers';
+import { isHeader } from 'localzoom/src/gwas/sniffers';
+import { makeParser } from 'localzoom/src/gwas/parsers';
 
 const PREVIEW_BYTES = 5000;  // enough for 50-100 lines
 const MAX_UPLOAD_SIZE = 1048576 * 1000; // 1000 MiB # FIXME: Currently upload limit is only implemented in the frontend
@@ -185,7 +185,7 @@ fileField.addEventListener('click', function(e) {
     e.target.value = null;
 });
 
-fileField.addEventListener('change', function (e) {
+fileField.addEventListener('change', function (event) {
     // Custom validators for uploaded file
     //  Ref: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation#Limiting_the_size_of_a_file_before_its_upload
     fileField.setCustomValidity('');

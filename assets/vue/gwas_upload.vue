@@ -1,7 +1,7 @@
 <script>
     // Custom interactivity associated with the "Upload your own GWAS" page.
     // This enhances just one part of the upload form.
-    import AdderWizard from 'locuszoom-tabix/src/components/AdderWizard.vue';
+    import AdderWizard from 'localzoom/src/components/AdderWizard.vue';
 
     export default {
         name: 'gwas_upload',
