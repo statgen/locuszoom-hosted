@@ -2,7 +2,12 @@
 {% load render_bundle from webpack_loader %}
 
 {% block content %}
-  <div id="app"></div>
+  <div class="container-fluid px-0">
+    <div class="d-flex justify-content-center alert alert-secondary m-0">
+      Working from home? The "share" feature provides private access to GWAS plots for trusted collaborators.
+    </div>
+    <div id="app"></div>
+  </div>
 {% endblock %}
 
 {%  block javascript %}
