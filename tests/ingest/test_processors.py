@@ -27,6 +27,8 @@ class TestPipelineTasks:
         status = processors.normalize_contents(
             reader,
             os.path.join(tmpdir, 'normalized.txt'),
+            'GRCh38',
+            debug_mode=True
         )
 
         assert status is True, 'Normalization completed successfully'

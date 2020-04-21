@@ -51,6 +51,11 @@ This app uses internal django features to serve static assets, so those do not r
 ### Run migrations for the first time
 `$ sudo docker-compose -f production.yml run --rm django python manage.py migrate`
 
+### Load sample data required for base functionality
+```bash
+$ docker-compose -f production.yml run --rm django zorp-assets download --type snp_to_rsid --tag genome_build GRCh37 --no-update
+$ docker-compose -f production.yml run --rm django zorp-assets download --type snp_to_rsid --tag genome_build GRCh38 --no-update
+```
 ### Create an admin user
 You will need to enter some configuration into the admin panel before using the app for the first time.
 

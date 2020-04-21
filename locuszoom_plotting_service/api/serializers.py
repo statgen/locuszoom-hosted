@@ -40,6 +40,7 @@ class GwasFileSerializer(drf_serializers.Serializer):
     position = drf_serializers.IntegerField(source='pos', read_only=True)
     ref_allele = drf_serializers.CharField(source='ref', read_only=True)
     alt_allele = drf_serializers.CharField(source='alt', read_only=True)
+    rsid = drf_serializers.CharField(read_only=True)
     log_pvalue = drf_serializers.SerializerMethodField(method_name='get_neg_log_pvalue', read_only=True)
     variant = drf_serializers.CharField(source='marker', read_only=True)
     beta = drf_serializers.FloatField(read_only=True)
