@@ -3305,15 +3305,15 @@ loader-utils@1.2.3, loader-utils@^1.0.1, loader-utils@^1.0.2, loader-utils@^1.1.
     emojis-list "^2.0.0"
     json5 "^1.0.1"
 
-"localzoom@https://github.com/statgen/localzoom#d57a4d7":
+"localzoom@https://github.com/statgen/localzoom#13ec101":
   version "0.5.3"
-  resolved "https://github.com/statgen/localzoom#d57a4d78b7612f7dbb2032d001839eacf7ac5596"
+  resolved "https://github.com/statgen/localzoom#13ec101a5a2d02e725d8bbb3f9b7e5356cc5efaa"
   dependencies:
     "@sentry/browser" "^4.5.2"
     bootstrap "^4.4.1"
     bootstrap-vue "^2.0.0-rc.11"
     gwas-credible-sets "^0.1.0"
-    locuszoom "https://github.com/statgen/locuszoom#42f7c64127893f5f1b00ddf9b81acf369179dc36"
+    locuszoom "0.11.0-beta.1"
     lodash "^4.17.11"
     tabix-reader "https://github.com/abought/tabix-reader"
     tabulator-tables "^4.1.4"
@@ -3328,9 +3328,10 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
-"locuszoom@https://github.com/statgen/locuszoom#42f7c64127893f5f1b00ddf9b81acf369179dc36":
-  version "0.10.2"
-  resolved "https://github.com/statgen/locuszoom#42f7c64127893f5f1b00ddf9b81acf369179dc36"
+locuszoom@0.11.0-beta.1:
+  version "0.11.0-beta.1"
+  resolved "https://registry.yarnpkg.com/locuszoom/-/locuszoom-0.11.0-beta.1.tgz#ae0b852b6a37fdd6dc54a635793c9354e43ad9c6"
+  integrity sha512-vtEorrux9gLx7YrGpyLia5Hp9w90EJ9vw6wXT4vENBoN1UA4Gzw6dFHIUcdCx0eoy+Qmi6pwpWPd7YHF4zmkmg==
   dependencies:
     d3 "3.5.17"
     promise-polyfill "^8.1.3"
