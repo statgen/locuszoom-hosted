@@ -40,7 +40,7 @@ Make sure to build the UI code (`yarn install && yarn run prod`) before creating
 this step should be automated!!)
 
 Build the docker container in production (or download an appropriate pre-made image):
-`sudo docker-compose -f production.yml build`
+`sudo docker-compose -f production.yml build --pull`
 
 Start the container:
 `sudo docker-compose -f production.yml up -d`
@@ -83,7 +83,7 @@ A sample callback URL for OAuth registration (in local development) would be:
 ## Releasing a new version (checklist)
 - (future) Verify backup status on DB backups
 - `yarn install --from-lockfile && yarn run prod`
-- `docker-compose -f production.yml build`
+- `docker-compose -f production.yml build --pull`
 - `docker-compose -f production.yml up -d`
 - (optional) `docker-compose -f production.yml run --rm django python manage.py migrate`
 
