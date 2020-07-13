@@ -29,6 +29,14 @@ $ docker-compose -f local.yml build
 $ docker-compose -f local.yml up
 ```
 
+On the first installation, you will also need to download some large asset files required for annotations. (see 
+deployment docs for the correct command to use with production assets)
+
+```bash
+$ docker-compose -f local.yml run --rm django zorp-assets download --type snp_to_rsid_test --tag genome_build GRCh37 --no-update
+$ docker-compose -f local.yml run --rm django zorp-assets download --type snp_to_rsid_test --tag genome_build GRCh38 --no-update
+```
+
 ### Setting Up Your Users
 
 - To create an **superuser account**, use the following command. This must be performed first, in order to set up
@@ -56,6 +64,7 @@ into your browser. Now the user's email should be verified and ready to go.
 `$ docker-compose -f local.yml run --rm django python manage.py makemigrations`
 
 Then verify the migration file is correct, and restart docker to apply the migrations automatically.
+(in production, you must apply the migrations manually; see deployment guide for details)
 
 
 ## Development and testing helpers

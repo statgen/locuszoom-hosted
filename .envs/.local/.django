@@ -25,3 +25,6 @@ GOOGLE_ANALYTICS_ID=
 # ------------------------------------------------------------------------------
 SENTRY_DSN=
 SENTRY_DSN_FRONTEND=
+
+# Set the location of download large lookup files (which are downloaded separately, after the build step)
+ZORP_ASSETS_DIR=/app/.lookups
