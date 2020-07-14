@@ -42,6 +42,10 @@ function createTopHitsTable(selector, data, region_url) {
                 },
             },
             {
+                title: 'rsID',
+                field: 'rsid',
+            },
+            {
                 title: 'Nearest gene(s)',
                 field: 'nearest_genes',
                 sorter: 'string',

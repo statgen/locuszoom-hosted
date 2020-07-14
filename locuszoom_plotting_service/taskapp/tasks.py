@@ -74,6 +74,8 @@ def hash_contents(self, instance: models.AnalysisFileset):
 @shared_task(bind=True)
 @lz_file_prep("Normalize GWAS file format")
 def normalize_gwas(self, instance: models.AnalysisFileset):
+    metadata = instance.metadata
+
     src_path = os.path.join(settings.MEDIA_ROOT, instance.raw_gwas_file.name)
     dest_path = instance.normalized_gwas_path
     parser_options = instance.parser_options
@@ -106,7 +108,7 @@ def normalize_gwas(self, instance: models.AnalysisFileset):
 
     # For now the writer expects a temp file name, and it creates the .gz version internally
     tmp_normalized_path = dest_path.replace('.txt.gz', '.txt')
-    processors.normalize_contents(reader, tmp_normalized_path)
+    processors.normalize_contents(reader, tmp_normalized_path, metadata.build, debug_mode=settings.DEBUG)
 
 
 @shared_task(bind=True)

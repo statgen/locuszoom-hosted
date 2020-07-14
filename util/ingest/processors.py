@@ -9,6 +9,7 @@ import math
 from genelocator import get_genelocator
 import genelocator.exception as gene_exc
 from zorp import (
+    lookups,
     readers,
     sniffers
 )
@@ -38,12 +39,17 @@ def get_file_sha256(src_path, block_size=2 ** 20) -> bytes:
 
 
 @helpers.capture_errors
-def normalize_contents(reader: readers.BaseReader, dest_path: str) -> bool:
+def normalize_contents(reader: readers.BaseReader, dest_path: str, build: str, debug_mode=False) -> bool:
     """
     Initial content ingestion: load the file and write variants in a standardized format
 
     This routine will deliberately exclude lines that could not be handled in a reliable fashion, such as pval=NA
+
+    In "debug mode", the ingest process will use a smaller (test environment optimized) version of the
+        rsid_finder lookup.
     """
+    rsid_finder = lookups.SnpToRsid(build, test=debug_mode)
+    reader.add_lookup('rsid', lambda variant: rsid_finder(variant.chrom, variant.pos, variant.ref, variant.alt))
     reader.write(dest_path, make_tabix=True)
     # In reality a failing task will usually raise an exception rather than returning False
     return True

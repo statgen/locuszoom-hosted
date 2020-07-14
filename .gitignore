@@ -37,6 +37,9 @@ locuszoom_plotting_service/media/
 scripts/data_loaders/raw/*
 scripts/data_loaders/sources/*
 
+### Things mounted by local-mode docker container
+.lookups/
+
 # Configuration files that should not be checked into Git
 .envs/*
 !.envs/.local/
