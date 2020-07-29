@@ -9,7 +9,6 @@
 import _ from 'underscore';
 
 // NOTE: `qval` means `-log10(pvalue)`.
-// Hello
 function fmt(format) {
     // convenience functions- from pheweb common.js
     const args = Array.prototype.slice.call(arguments, 1);
