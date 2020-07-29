@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import App from '../../vue/gwas_region.vue';
 
-import { paramsFromUrl } from 'locuszoom/dist/ext/lz-dynamic-urls.min';
+import { paramsFromUrl } from 'locuszoom/esm/ext/lz-dynamic-urls';
 
 import { stateUrlMapping, getBasicSources, createStudyLayout, getBasicLayout } from 'localzoom/src/util/lz-helpers';
 import count_region_view from 'localzoom/src/util/metrics';

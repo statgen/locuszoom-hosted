@@ -3,17 +3,21 @@
  */
 
 import LocusZoom from 'locuszoom';
+import 'locuszoom/dist/locuszoom.css';
 
 import { sourceName} from 'localzoom/src/util/lz-helpers';
+import {AssociationLZ} from 'locuszoom/esm/data/adapters';
 
-LocusZoom.KnownDataSources.extend('AssociationLZ', 'AssociationApi', {
+
+class AssociationApi extends AssociationLZ {
     getURL(state, chain,fields) {
         const base = new URL(this.url, window.location.origin);
         base.searchParams.set('chrom', state.chr);
         base.searchParams.set('start', state.start);
         base.searchParams.set('end', state.end);
         return base;
-    },
+    }
+
     annotateData(records) {
         // Our API is a mix of portaldev and zorp field names. Smooth out differences.
         // TODO: Eventually it would be nice to use a consistent field spec. Key blocker is lz layout.
@@ -21,9 +25,10 @@ LocusZoom.KnownDataSources.extend('AssociationLZ', 'AssociationApi', {
             item.stderr_beta = item.se;
             return item;
         });
-    },
-});
+    }
+}
 
+LocusZoom.Adapters.add('AssociationApi', AssociationApi);
 
 /**
  * Define sources used to add a study to the plot. Having this as a separate method is useful when dynamically
