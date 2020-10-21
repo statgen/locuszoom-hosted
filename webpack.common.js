@@ -7,8 +7,8 @@
 
 const path = require('path');
 const BundleTracker = require('webpack-bundle-tracker');
-const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+// const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 const assetPath = path.resolve(__dirname, 'assets/js');
@@ -26,8 +26,8 @@ module.exports = {
         gwas_region: path.resolve(assetPath, 'pages/gwas_region.js'),
     },
     plugins: [
-        new FriendlyErrorsWebpackPlugin(),
-        new CleanWebpackPlugin([outputPath], { watch: true }),
+        // new FriendlyErrorsWebpackPlugin(),  // Disabled until compatible with webpack5
+        new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
         new BundleTracker({ filename: './webpack-stats.json' }),
     ],
@@ -66,6 +66,7 @@ module.exports = {
     },
     output: {
         path: outputPath,
+        publicPath: '/static/webpack_bundles/',
         filename: '[name]-[hash].js',
     },
 };
