@@ -70,7 +70,6 @@ THIRD_PARTY_APPS = [
     'allauth.socialaccount.providers.google',
     'rest_framework',
     'django_filters',
-    'webpack_loader'
 ]
 LOCAL_APPS = [
     'locuszoom_plotting_service.users.apps.UsersAppConfig',  # Auth, login, and user detail pages
@@ -324,15 +323,3 @@ GOOGLE_ANALYTICS_ID = env('GOOGLE_ANALYTICS_ID', default=None)
 # ------------------------------------------------------------------------------
 SENTRY_DSN = env('SENTRY_DSN', default=None)
 SENTRY_DSN_FRONTEND = env('SENTRY_DSN_FRONTEND', default=None)
-
-# This is used to find the interactive parts of pages, which are written and built using Vue.js + Webpack
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'webpack_bundles/',  # must end with slash
-        'STATS_FILE': str(ROOT_DIR.path('webpack-stats.json')),
-        'POLL_INTERVAL': 0.1,
-        'TIMEOUT': None,
-        'IGNORE': [r'.+\.hot-update.js']
-    }
-}

@@ -9,8 +9,7 @@ celerybeat.pid
 staticfiles/
 
 # Webpack built assets (and files that reference them)
-assets/webpack_bundles/
-webpack-stats.json
+locuszoom_plotting_service/static/webpack_bundles/
 
 # Sphinx documentation
 docs/_build/

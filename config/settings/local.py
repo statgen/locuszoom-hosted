@@ -74,4 +74,3 @@ CELERY_TASK_EAGER_PROPAGATES = True
 # Misc other configuration
 # ------------------------------------------------------------------------------
 LZ_OFFICIAL_DOMAIN = 'localhost:8000'
-WEBPACK_LOADER['DEFAULT']['CACHE'] = not DEBUG  # noqa F405

@@ -65,8 +65,12 @@ module.exports = {
         ]
     },
     output: {
-        path: outputPath,
-        publicPath: '/static/webpack_bundles/',
-        filename: '[name]-[hash].js',
+        path: path.resolve(__dirname, 'locuszoom_plotting_service/static/webpack_bundles'), // Should be in STATICFILES_DIRS,
+        publicPath: '/static/', // Should match Django STATIC_URL
+        filename: '[name].js', // In prod, Django will apply its own hashing to static asset filenames
+        chunkFilename: '[id]-[chunkhash].js' // DO have Webpack hash chunk filename, see below
+    },
+    devServer: {
+        writeToDisk: true, // Write files to disk in dev mode, so Django can serve the assets
     },
 };

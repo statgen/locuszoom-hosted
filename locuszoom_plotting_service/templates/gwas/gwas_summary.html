@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
-{% load render_bundle from webpack_loader %}
-
+{% load static %}
 
 {% block title %}Study- {{ gwas.label }}{% endblock %}
 
@@ -162,5 +161,5 @@
     </script>
   {% endif %}
 
-  {% render_bundle 'gwas_summary' %}
+  <script src="{% static 'webpack_bundles/gwas_summary.js' %}"></script>
 {% endblock %}

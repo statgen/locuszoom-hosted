@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load render_bundle from webpack_loader %}
+{% load static %}
 
 {% block title %}Your Profile{% endblock %}
 
@@ -16,5 +16,5 @@
 {% endblock %}
 
 {% block javascript %}
-  {% render_bundle 'profile' %}
+  <script src="{% static 'webpack_bundles/profile.js' %}"></script>
 {% endblock %}

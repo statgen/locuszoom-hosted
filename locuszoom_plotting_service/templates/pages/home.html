@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load render_bundle from webpack_loader %}
+{% load static %}
 
 {% block content %}
   <div class="container-fluid px-0">
@@ -14,5 +14,5 @@
   <script type="application/javascript">
     window.template_args = {{ js_vars | safe }};
   </script>
-  {% render_bundle 'home_search' %}
+  <script src="{% static 'webpack_bundles/home_search.js' %}"></script>
 {% endblock %}
