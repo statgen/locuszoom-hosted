@@ -8,7 +8,7 @@
 
 import * as d3 from 'd3';
 import d3Tip from 'd3-tip';
-import _ from 'underscore';
+import {memoize, property, range, some, sortBy, template} from 'lodash';
 
 // NOTE: `qval` means `-log10(pvalue)`.
 function fmt(format) {
@@ -23,9 +23,9 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
     // FIXME: Replace global variables with options object
     // Order from weakest to strongest pvalue, so that the strongest variant will be on top (z-order) and easily hoverable
     // In the DOM, later siblings are displayed over top of (and occluding) earlier siblings.
-    unbinned_variants = _.sortBy(unbinned_variants, function(d) { return d.neg_log_pvalue; });
+    unbinned_variants = sortBy(unbinned_variants, function(d) { return d.neg_log_pvalue; });
 
-    const get_chrom_offsets = _.memoize(function() {
+    const get_chrom_offsets = memoize(function() {
         const  chrom_padding = 2e7;
         const chrom_extents = {};
 
@@ -41,7 +41,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
         variant_bins.forEach(update_chrom_extents);
         unbinned_variants.forEach(update_chrom_extents);
 
-        const chroms = _.sortBy(Object.keys(chrom_extents), parseInt);
+        const chroms = sortBy(Object.keys(chrom_extents), parseInt);
 
         const chrom_genomic_start_positions = {};
         chrom_genomic_start_positions[chroms[0]] = 0;
@@ -72,11 +72,11 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
     function get_y_axis_config(max_data_qval, plot_height, includes_pval0) {
 
         let possible_ticks = [];
-        if (max_data_qval <= 14) { possible_ticks = _.range(0, 14.1, 2); }
-        else if (max_data_qval <= 28) { possible_ticks = _.range(0, 28.1, 4); }
-        else if (max_data_qval <= 40) { possible_ticks = _.range(0, 40.1, 8); }
+        if (max_data_qval <= 14) { possible_ticks = range(0, 14.1, 2); }
+        else if (max_data_qval <= 28) { possible_ticks = range(0, 28.1, 4); }
+        else if (max_data_qval <= 40) { possible_ticks = range(0, 40.1, 8); }
         else {
-            possible_ticks = _.range(0, 20.1, 4);
+            possible_ticks = range(0, 20.1, 4);
             if (max_data_qval <= 70) { possible_ticks = possible_ticks.concat([30,40,50,60,70]); }
             else if (max_data_qval <= 120) { possible_ticks = possible_ticks.concat([40,60,80,100,120]); }
             else if (max_data_qval <= 220) { possible_ticks = possible_ticks.concat([60,100,140,180,220]); }
@@ -159,7 +159,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
             .domain(genomic_position_extent)
             .range([0, plot_width]);
 
-        const includes_pval0 = _.any(unbinned_variants, function(variant) { return variant.pvalue === 0; });
+        const includes_pval0 = some(unbinned_variants, function(variant) { return variant.pvalue === 0; });
 
         const highest_plot_qval = Math.max(
             -Math.log10(significance_threshold) + 0.5,
@@ -169,7 +169,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
                 }));
                 if (best_unbinned_qval !== undefined) {return best_unbinned_qval;}
                 return d3.max(variant_bins, function(bin) {
-                    return d3.max(bin, _.property('qval'));
+                    return d3.max(bin, property('qval'));
                 });
             })());
 
@@ -250,7 +250,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
             .on('mouseout', significance_threshold_tooltip.hide);
 
         // Points & labels
-        const tooltip_template = _.template(window.model.tooltip_underscoretemplate);
+        const tooltip_template = template(window.model.tooltip_underscoretemplate);
         const point_tooltip = d3Tip()
             .attr('class', 'd3-tip')
             .html(function(d) {
@@ -369,7 +369,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
                     d.color = color_by_chrom(d.chrom);
                 });
             bins.selectAll('circle.binned_variant_point')
-                .data(_.property('qvals'))
+                .data(property('qvals'))
                 .enter()
                 .append('circle')
                 .attr('class', 'binned_variant_point')
@@ -386,7 +386,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
                     return variant_bins[parent_i].color;
                 });
             bins.selectAll('circle.binned_variant_line')
-                .data(_.property('qval_extents'))
+                .data(property('qval_extents'))
                 .enter()
                 .append('line')
                 .attr('class', 'binned_variant_line')
@@ -543,7 +543,7 @@ function create_qq_plot(maf_ranges, qq_ci) {
             .tickSizeOuter(0)
             .tickPadding(7)
             .tickFormat(d3.format('d')) //integers
-            .tickValues(_.range(exp_max)); //prevent unlabeled, non-integer ticks.
+            .tickValues(range(exp_max)); //prevent unlabeled, non-integer ticks.
         qq_plot.append('g')
             .attr('class', 'x axis')
             .attr('transform', fmt('translate(0,{0})', plot_height))
@@ -554,7 +554,7 @@ function create_qq_plot(maf_ranges, qq_ci) {
             .tickSizeOuter(0)
             .tickPadding(7)
             .tickFormat(d3.format('d')) //integers
-            .tickValues(_.range(obs_max)); //prevent unlabeled, non-integer ticks.
+            .tickValues(range(obs_max)); //prevent unlabeled, non-integer ticks.
         qq_plot.append('g')
             .attr('class', 'y axis')
             .call(y_axis);
