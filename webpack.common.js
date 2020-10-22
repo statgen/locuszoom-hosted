@@ -6,14 +6,12 @@
 //   https://owais.lone.pw/blog/webpack-plus-reactjs-and-django/
 
 const path = require('path');
-const BundleTracker = require('webpack-bundle-tracker');
 // const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const assetPath = path.resolve(__dirname, 'assets/js');
-const outputPath = path.resolve(__dirname, 'assets/webpack_bundles');
-
 
 module.exports = {
     context: __dirname,
@@ -29,7 +27,7 @@ module.exports = {
         // new FriendlyErrorsWebpackPlugin(),  // Disabled until compatible with webpack5
         new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
-        new BundleTracker({ filename: './webpack-stats.json' }),
+        // new BundleAnalyzerPlugin(), // Uncomment when assessing bundle size
     ],
     resolve: {
         alias: {
@@ -59,10 +57,25 @@ module.exports = {
                 test: /\.css$/,
                 use: [
                     'vue-style-loader',
+                    'style-loader',
                     'css-loader',
                 ]
             }
         ]
+    },
+    optimization: {
+        chunkIds: 'named',
+        splitChunks: {
+            cacheGroups: {
+                vendor: {
+                    test: /node_modules/,
+                    chunks: 'initial',
+                    name: 'vendor',
+                    priority: 10,
+                    enforce: true
+                }
+            }
+        }
     },
     output: {
         path: path.resolve(__dirname, 'locuszoom_plotting_service/static/webpack_bundles'), // Should be in STATICFILES_DIRS,
