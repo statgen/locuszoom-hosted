@@ -4,8 +4,10 @@
  * TODO: Replace this with a manhattan plot implementation in LZjs Core
  */
 
-/* global $, d3 */
-// The specified d3.tip version does not work well with modules; revisit
+/* global $ */
+
+import * as d3 from 'd3';
+import d3Tip from 'd3-tip';
 import _ from 'underscore';
 
 // NOTE: `qval` means `-log10(pvalue)`.
@@ -97,7 +99,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
         let max_plot_qval = ticks[ticks.length - 1];
         // If we have any qval=inf (pval=0) variants, leave space for them.
         if (includes_pval0) { max_plot_qval *= 1.1; }
-        let scale = d3.scale.linear().clamp(true);
+        let scale = d3.scaleLinear().clamp(true);
         if (max_plot_qval <= 40) {
             scale = scale
                 .domain([max_plot_qval, 0])
@@ -141,7 +143,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
 
         // Significance Threshold line
         const significance_threshold = 5e-8;
-        const significance_threshold_tooltip = d3.tip()
+        const significance_threshold_tooltip = d3Tip()
             .attr('class', 'd3-tip')
             .html('Significance Threshold: 5E-8')
             .offset([-8,0]);
@@ -153,7 +155,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
             return d3.extent(extent1.concat(extent2));
         })();
 
-        const x_scale = d3.scale.linear()
+        const x_scale = d3.scaleLinear()
             .domain(genomic_position_extent)
             .range([0, plot_width]);
 
@@ -175,9 +177,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
         const y_scale = y_axis_config.scale;
 
         // TODO: draw a small y-axis-break at 20 if `y_axis_config.draw_break_at_20`
-        const y_axis = d3.svg.axis()
-            .scale(y_scale)
-            .orient('left')
+        const y_axis = d3.axisLeft(y_scale)
             .tickFormat(d3.format('d'))
             .tickValues(y_axis_config.ticks);
         gwas_plot.append('g')
@@ -217,7 +217,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
             });
         })();
 
-        const color_by_chrom = d3.scale.ordinal()
+        const color_by_chrom = d3.scaleOrdinal()
             .domain(get_chrom_offsets().chroms)
             .range(['#AFAFAF', '#007bff']);
 
@@ -251,7 +251,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
 
         // Points & labels
         const tooltip_template = _.template(window.model.tooltip_underscoretemplate);
-        const point_tooltip = d3.tip()
+        const point_tooltip = d3Tip()
             .attr('class', 'd3-tip')
             .html(function(d) {
                 return tooltip_template({d: d});
@@ -260,7 +260,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
         gwas_svg.call(point_tooltip);
 
         function get_link_to_LZ(variant) {
-            var base = new URL(window.model.urlprefix, window.location.origin);
+            let base = new URL(window.model.urlprefix, window.location.origin);
             base.searchParams.set('chrom', variant.chrom);
             base.searchParams.set('start', Math.max(0, variant.pos - 200 * 1000));
             base.searchParams.set('end', variant.pos + 200 * 1000);
@@ -363,6 +363,7 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
                 .enter()
                 .append('g')
                 .attr('class', 'bin')
+                .attr('data-index', function(d, i) { return i; }) // make parent index available from DOM
                 .each(function(d) { //todo: do this in a forEach
                     d.x = x_scale(get_genomic_position(d));
                     d.color = color_by_chrom(d.chrom);
@@ -372,17 +373,16 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
                 .enter()
                 .append('circle')
                 .attr('class', 'binned_variant_point')
-                .attr('cx', function(d, i, parent_i) {
+                .attr('cx', function(d, i) {
+                    const parent_i = +this.parentNode.getAttribute('data-index');
                     return variant_bins[parent_i].x;
                 })
                 .attr('cy', function(qval) {
                     return y_scale(qval);
                 })
                 .attr('r', 2.3)
-                .style('fill', function(d, i, parent_i) {
-                // return color_by_chrom(d3.select(this.parentNode).datum().chrom); //slow
-                // return color_by_chrom(this.parentNode.__data__.chrom); //slow?
-                // return this.parentNode.__data__.color;
+                .style('fill', function(d, i) {
+                    const parent_i = +this.parentNode.getAttribute('data-index');
                     return variant_bins[parent_i].color;
                 });
             bins.selectAll('circle.binned_variant_line')
@@ -390,11 +390,20 @@ function create_gwas_plot(variant_bins, unbinned_variants, {url_prefix = null, t
                 .enter()
                 .append('line')
                 .attr('class', 'binned_variant_line')
-                .attr('x1', function(d, i, parent_i) { return variant_bins[parent_i].x; })
-                .attr('x2', function(d, i, parent_i) { return variant_bins[parent_i].x; })
+                .attr('x1', function(d, i) {
+                    const parent_i = +this.parentNode.getAttribute('data-index');
+                    return variant_bins[parent_i].x;
+                })
+                .attr('x2', function(d, i) {
+                    const parent_i = +this.parentNode.getAttribute('data-index');
+                    return variant_bins[parent_i].x;
+                })
                 .attr('y1', function(d) { return y_scale(d[0]); })
                 .attr('y2', function(d) { return y_scale(d[1]); })
-                .style('stroke', function(d, i, parent_i) { return variant_bins[parent_i].color; })
+                .style('stroke', function(d, i) {
+                    const parent_i = +this.parentNode.getAttribute('data-index');
+                    return variant_bins[parent_i].color;
+                })
                 .style('stroke-width', 4.6)
                 .style('stroke-linecap', 'round');
         }
@@ -456,10 +465,10 @@ function create_qq_plot(maf_ranges, qq_ci) {
             .attr('id', 'qq_plot')
             .attr('transform', fmt('translate({0},{1})', plot_margin.left, plot_margin.top));
 
-        const x_scale = d3.scale.linear()
+        const x_scale = d3.scaleLinear()
             .domain([0, exp_max])
             .range([0, plot_width]);
-        const y_scale = d3.scale.linear()
+        const y_scale = d3.scaleLinear()
             .domain([0, obs_max])
             .range([plot_height, 0]);
 
@@ -467,7 +476,7 @@ function create_qq_plot(maf_ranges, qq_ci) {
         qq_plot.append('path')
             .attr('class', 'trumpet_ci')
             .datum(qq_ci)
-            .attr('d', d3.svg.area()
+            .attr('d', d3.area()
                 .x( function(d) {
                     return x_scale(d.x);
                 }).y0( function(d) {
@@ -483,6 +492,7 @@ function create_qq_plot(maf_ranges, qq_ci) {
             .data(maf_ranges)
             .enter()
             .append('g')
+            .attr('data-index', function(d, i) { return i; }) // make parent index available from DOM
             .attr('class', 'qq_points')
             .selectAll('circle.qq_point')
             .data(function(maf_range) { return maf_range.qq.bins; })
@@ -491,7 +501,9 @@ function create_qq_plot(maf_ranges, qq_ci) {
             .attr('cx', function(d) { return x_scale(d[0]); })
             .attr('cy', function(d) { return y_scale(d[1]); })
             .attr('r', 1.5)
-            .attr('fill', function (d, i, parent_index) {
+            .attr('fill', function (d, i) {
+                // Nested selections, d3 v4 workaround
+                const parent_index = +this.parentNode.getAttribute('data-index');
                 return maf_ranges[parent_index].color;
             });
 
@@ -526,11 +538,9 @@ function create_qq_plot(maf_ranges, qq_ci) {
             });
 
         // Axes
-        const xAxis = d3.svg.axis()
-            .scale(x_scale)
-            .orient('bottom')
-            .innerTickSize(-plot_height) // this approach to a grid is taken from <http://bl.ocks.org/hunzy/11110940>
-            .outerTickSize(0)
+        const xAxis = d3.axisBottom(x_scale)
+            .tickSizeInner(-plot_height) // this approach to a grid is taken from <http://bl.ocks.org/hunzy/11110940>
+            .tickSizeOuter(0)
             .tickPadding(7)
             .tickFormat(d3.format('d')) //integers
             .tickValues(_.range(exp_max)); //prevent unlabeled, non-integer ticks.
@@ -539,11 +549,9 @@ function create_qq_plot(maf_ranges, qq_ci) {
             .attr('transform', fmt('translate(0,{0})', plot_height))
             .call(xAxis);
 
-        const y_axis = d3.svg.axis()
-            .scale(y_scale)
-            .orient('left')
-            .innerTickSize(-plot_width)
-            .outerTickSize(0)
+        const y_axis = d3.axisLeft(y_scale)
+            .tickSizeInner(-plot_width)
+            .tickSizeOuter(0)
             .tickPadding(7)
             .tickFormat(d3.format('d')) //integers
             .tickValues(_.range(obs_max)); //prevent unlabeled, non-integer ticks.

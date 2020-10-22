@@ -28,12 +28,13 @@
   "dependencies": {
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "^2.18.0",
-    "d3": "3.5.16",
+    "d3": "^5.16.0",
     "d3-tip": "0.9.1",
     "gwas-credible-sets": "^0.1.0",
     "localzoom": "https://github.com/statgen/localzoom#0.6.8",
     "locuszoom": "0.13.0-beta.1",
     "pako": "^1.0.11",
+    "tabulator-tables": "^4.1.4",
     "underscore": "1.11.0",
     "vue": "^2.6.12",
     "vuejs-paginator": "^2.0.2"
