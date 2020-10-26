@@ -1,7 +1,6 @@
 fastnumbers==3.0.0
 furl==2.0.0
 argon2-cffi==20.1.0  # https://github.com/hynek/argon2_cffi
-redis==3.5.3 # https://github.com/antirez/redis
 celery==4.4.6  # pyup: < 5.0,!=4.4.7  # https://github.com/celery/celery
 flower==0.9.5  # https://github.com/mher/flower
 whitenoise==5.2.0 # https://github.com/evansd/whitenoise
@@ -9,6 +8,7 @@ whitenoise==5.2.0 # https://github.com/evansd/whitenoise
 # Django
 # ------------------------------------------------------------------------------
 django==3.0.10  # https://www.djangoproject.com/
+django-celery-beat==2.0.0  # https://github.com/celery/django-celery-beat
 django-environ==0.4.5  # https://github.com/joke2k/django-environ
 django-model-utils==4.0.0  # https://github.com/jazzband/django-model-utils
 django-filter==2.4.0  # https://github.com/carltongibson/django-filter/

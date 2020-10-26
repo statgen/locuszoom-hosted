@@ -254,12 +254,19 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-result_serializer
 CELERY_RESULT_SERIALIZER = 'json'
+# http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-task_acks_late
+# This causes messages from worker tasks to be received only after the task has completed, not right
+# before it executes. This means your tasks MUST be idempotent (i.e. no side effects or issues from
+# running the task multiple times).
+CELERY_TASK_ACKS_LATE = True
+# This prevents the task from being lost simply because the worker was killed or terminated
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-time-limit
-# TODO: set to whatever value is adequate in your circumstances
 CELERY_TASK_TIME_LIMIT = None
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-soft-time-limit
-# TODO: set to whatever value is adequate in your circumstances
 CELERY_TASK_SOFT_TIME_LIMIT = None
+# https://docs.celeryproject.org/en/v4.4.6/userguide/configuration.html#std:setting-worker_prefetch_multiplier
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # Disabled prefetching so that workers don't reserve tasks, best for long tasks
 
 
 #####
