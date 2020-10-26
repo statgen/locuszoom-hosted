@@ -1,4 +1,17 @@
-FROM python:3.6
+### Production dockerfile for the web app. JS and python are implemented as two steps of a multistage build.
+# Multistage build
+
+# Step 1: JS assets. Ensure that a change to package.json or yarn.lock invalidates the cache
+# TODO Switch to node14LTS when it is released
+FROM node:erbium as jsbuilder
+COPY ./package.json ./yarn.lock /build/
+COPY . /build/
+WORKDIR /build/
+RUN yarn install --from-lockfile && yarn run prod
+
+
+# Step 2 (main): Django app. Install python dependencies, add volume mounts, and run.
+FROM python:3.8
 
 ARG UID
 ARG GID
@@ -51,7 +64,10 @@ RUN sed -i 's/\r//' /start-flower
 RUN chmod +x /start-flower
 RUN chown lzupload /start-flower
 
+
+# Copy code and built JS assets FIXME: A little clunky as it depends on some very specific known pathnames.
 COPY . /app
+COPY --from=jsbuilder /build/locuszoom_plotting_service/static/webpack_bundles /app/locuszoom_plotting_service/static/webpack_bundles
 
 RUN chown -R lzupload /app
 
