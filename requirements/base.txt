@@ -2,7 +2,7 @@ fastnumbers==3.0.0
 furl==2.0.0
 argon2-cffi==20.1.0  # https://github.com/hynek/argon2_cffi
 celery==4.4.6  # pyup: < 5.0,!=4.4.7  # https://github.com/celery/celery
-flower==0.9.5  # https://github.com/mher/flower
+flower==0.9.3  # https://github.com/mher/flower
 whitenoise==5.2.0 # https://github.com/evansd/whitenoise
 
 # Django
