@@ -25,9 +25,11 @@ or with live rebuilding, if you intend to be changing JS code as you work:
 - In a second open terminal::
 
 ```
-$ docker-compose -f local.yml build
+$ docker system prune && docker-compose -f local.yml build --pull
 $ docker-compose -f local.yml up
 ```
+
+(`docker system prune` is optional, but it can save your hard drive from filling up as you experiment with different build options)
 
 On the first installation, you will also need to download some large asset files required for annotations. (see 
 deployment docs for the correct command to use with production assets)

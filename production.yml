@@ -29,6 +29,8 @@ services:
     command: /start
     ports:
       - "5000:5000"
+    restart:
+      unless-stopped
 
   postgres:
     build:
@@ -48,21 +50,29 @@ services:
       - production_postgres_data_backups:/backups
     env_file:
       - ./.envs/.production/.postgres
+    restart:
+      unless-stopped
 
   redis:
     image: redis:3.2
+    restart:
+      unless-stopped
 
   celeryworker:
     <<: *django
     image: locuszoom_plotting_service_production_celeryworker
     command: /start-celeryworker
     ports: []
+    restart:
+      unless-stopped
 
   celerybeat:
     <<: *django
     image: locuszoom_plotting_service_production_celerybeat
     command: /start-celerybeat
     ports: []
+    restart:
+      unless-stopped
 
   flower:
     <<: *django
@@ -70,3 +80,5 @@ services:
     ports:
       - "5555:5555"
     command: /start-flower
+    restart:
+      unless-stopped
