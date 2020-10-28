@@ -6,7 +6,6 @@
 //   https://owais.lone.pw/blog/webpack-plus-reactjs-and-django/
 
 const path = require('path');
-// const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -24,7 +23,6 @@ module.exports = {
         gwas_region: path.resolve(assetPath, 'pages/gwas_region.js'),
     },
     plugins: [
-        // new FriendlyErrorsWebpackPlugin(),  // Disabled until compatible with webpack5
         new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
         // new BundleAnalyzerPlugin(), // Uncomment when assessing bundle size
