@@ -2,8 +2,7 @@
 # Multistage build
 
 # Step 1: JS assets. Ensure that a change to package.json or yarn.lock invalidates the cache
-# TODO Switch to node14LTS when it is released
-FROM node:erbium as jsbuilder
+FROM node:fermium as jsbuilder
 COPY ./package.json ./yarn.lock /build/
 COPY . /build/
 WORKDIR /build/
@@ -76,8 +75,5 @@ RUN chown lzupload /lz-uploads
 USER lzupload
 
 WORKDIR /app
-
-# TODO: add a JS build step. Eg:
-#    https://medium.com/@shakyShane/lets-talk-about-docker-artifacts-27454560384f
 
 ENTRYPOINT ["/entrypoint"]
