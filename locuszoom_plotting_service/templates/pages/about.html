@@ -25,233 +25,212 @@
           <a href="https://sph.umich.edu/csg/">Center for Statistical Genetics.</a>
         </p>
 
-        <div class="accordion mb-3" id="faq-questions">
-          <div class="card">
-            <div class="card-header" id="heading-question-privacy">
-              <a href="#" class="mb-0 text-info" data-toggle="collapse" aria-expanded="false"
-                 data-target="#question-privacy" aria-controls="question-privacy">Is my data private?
-              </a>
-            </div>
-            <div id="question-privacy" class="collapse" aria-labelledby="heading-question-privacy"
-                 data-parent="#faq-questions">
-              <div class="card-body">
-                <p>
-                  When uploading, you can choose whether to make your dataset either public (viewable by anyone) or
-                  private (viewable only to yourself). If you make your dataset public, other people will be able to
-                  download the standardized summary statistic files that we generate during the upload process.
-                  For all datasets, interactive plotting features require that we keep a copy of the data on our
-                  servers.
-                  We make every effort to keep this secure, but if privacy is a driving issue, consider using the
-                  <a href="https://statgen.github.io/localzoom/">LocalZoom</a> tool to generate region plots
-                  client-side instead. <em>LocalZoom</em> does not provide any enhanced annotation features, but it
-                  works without uploading your data.
-                </p>
-                <p>
-                  You can delete your results from our servers at any time. The "delete this study" button may be found
-                  by clicking the "edit" link at the top of the summary page
-                  (only visible on studies that you uploaded).
-                </p>
-              </div>
-            </div>
-          </div>
+        <h2>Frequently asked questions</h2>
+        <div><ul id="auto-toc"></ul><!-- Generated automatically via JS --></div>
 
-          <div class="card">
-            <div class="card-header" id="heading-question-size">
-              <a href="#" class="mb-0 text-info" data-toggle="collapse" aria-expanded="false"
-                 data-target="#question-size" aria-controls="question-size">How much data can I plot?
-              </a>
-            </div>
-            <div id="question-size" class="collapse" aria-labelledby="heading-question-size"
-                 data-parent="#faq-questions">
-              <div class="card-body">
-                <p>
-                  LocusZoom.js is dynamic and interactive: you can plot regions up to 500 kb wide at one time, but you
-                  can explore as many regions as you wish from a single upload. The server accepts uploads of up to
-                  1 GB (this may change in the future). A manhattan plot and list of suggested regions will also be
-                  generated for you.
-                </p>
-                <p>
-                  Note that the size limit is the same whether you compress your file or not. You will see faster
-                  uploads- and more data- if you compress your files with gzip/bgzip before uploading!
-                </p>
-              </div>
-            </div>
-          </div>
+        <h3 class="faq" id="privacy">Is my data private?</h3>
+        <p>
+          When uploading, you can choose whether to make your dataset either public (viewable by anyone) or
+          private (viewable only to yourself). If you make your dataset public, other people will be able to
+          download the standardized summary statistic files that we generate during the upload process.
+          For all datasets, interactive plotting features require that we keep a copy of the data on our
+          servers.
+          We make every effort to keep this secure, but if privacy is a driving issue, consider using the
+          <a href="https://statgen.github.io/localzoom/">LocalZoom</a> tool to generate region plots
+          client-side instead. <em>LocalZoom</em> does not provide any enhanced annotation features, but it
+          works without uploading your data.
+        </p>
+        <p>
+          You can delete your results from our servers at any time. The "delete this study" button may be found
+          by clicking the "edit" link at the top of the summary page
+          (only visible on studies that you uploaded).
+        </p>
 
-          <div class="card">
-            <div class="card-header" id="heading-question-prep">
-              <a href="#" class="mb-0 text-info" data-toggle="collapse" aria-expanded="false"
-                 data-target="#question-prep" aria-controls="question-prep">
-                How should I prepare my data for uploading?
-              </a>
-            </div>
-            <div id="question-prep" class="collapse" aria-labelledby="heading-question-prep"
-                 data-parent="#faq-questions">
-              <div class="card-body">
-                The server attempts to handle many common GWAS formats, but we strongly recommend that you compress and
-                tabix-index your results first. (text, gzip, or bgzip are supported)
-                Your file should contain columns that identify key information, as described
-                below. The data must a <strong>tab-delimited</strong> file and be <strong>sorted</strong> by chromosome
-                and position. The upload step will ignore any columns whose meaning is not explicitly specified.
-                The following columns are expected:
+        <h3 class="faq" id="how-much-data">How much data can I plot?</h3>
+        <p>
+          LocusZoom.js is dynamic and interactive: you can plot regions up to 500 kb wide at one time, but you
+          can explore as many regions as you wish from a single upload. The server accepts uploads of up to
+          1 GB (this may change in the future). A manhattan plot and list of suggested regions will also be
+          generated for you.
+        </p>
+        <p>
+          Note that the size limit is the same whether you compress your file or not. You will see faster
+          uploads- and more data- if you compress your files with gzip/bgzip before uploading!
+        </p>
+
+        <h3 class="faq" id="prepare-data">How should I prepare my data for uploading?</h3>
+        <p>
+          The server attempts to handle many common GWAS formats, but we strongly recommend that you compress and
+          tabix-index your results first. (text, gzip, or bgzip are supported)
+          Your file should contain columns that identify key information, as described
+          below. The data must a <strong>tab-delimited</strong> file and be <strong>sorted</strong> by chromosome
+          and position. The upload step will ignore any columns whose meaning is not explicitly specified.
+          The following columns are expected:
+        </p>
+        <ul>
+          <li>Variant specification
+            <ul>
+              <li>By marker (chrom_pos:ref/alt): <i>9:22125503_G/C</i>, OR</li>
+              <li>By individual columns (preferred)
                 <ul>
-                  <li>Variant specification
-                    <ul>
-                      <li>By marker (chrom_pos:ref/alt): <i>9:22125503_G/C</i>, OR</li>
-                      <li>By individual columns (preferred)
-                        <ul>
-                          <li>Chromosome</li>
-                          <li>Position</li>
-                          <li>Ref. allele (according to human reference genome)</li>
-                          <li>Alt. allele (according to human reference genome)</li>
-                        </ul>
-                      </li>
-                    </ul>
-                  </li>
-                  <li>p-value or -log<sub>10</sub> p-value</li>
-                  <li>(optional) Effect size (&beta;), assuming alt allele is the effect allele</li>
-                  <li>(optional) Standard error of the effect size</li>
-                  <li>
-                    (optional) Allele frequency; will be oriented towards the alt allele
-                    <ul>
-                      <li>Use frequency as given (single column)</li>
-                      <li>Calculate from two columns, as <i>COUNT</i> / <i>NSAMPLES</i> / 2</li>
-                      <li>
-                        Note: at present, this service <b>does not</b> support files where the allele frequency refers
-                        to a
-                        different allele (ref or alt) per row. The frequency must always refer to the same column for
-                        all rows.
-                      </li>
-                    </ul>
-                  </li>
+                  <li>Chromosome</li>
+                  <li>Position</li>
+                  <li>Ref. allele (according to human reference genome) (optional for plots, but required for LD)</li>
+                  <li>Alt. allele (according to human reference genome) (optional for plots, but required for LD)</li>
                 </ul>
-              </div>
-            </div>
-          </div>
+              </li>
+            </ul>
+          </li>
+          <li>p-value or -log<sub>10</sub> p-value</li>
+          <li>(optional) Effect size (&beta;), assuming alt allele is the effect allele</li>
+          <li>(optional) Standard error of the effect size</li>
+          <li>
+            (optional) Allele frequency; will be oriented towards the alt allele
+            <ul>
+              <li>Use frequency as given (single column)</li>
+              <li>Calculate from two columns, as <i>COUNT</i> / <i>NSAMPLES</i> / 2</li>
+              <li>
+                Note: at present, this service <b>does not</b> support files where the allele frequency refers
+                to a
+                different allele (ref or alt) per row. The frequency must always refer to the same column for
+                all rows.
+              </li>
+            </ul>
+          </li>
+        </ul>
 
-          <div class="card">
-            <div class="card-header" id="heading-question-share">
-              <a href="#" class="mb-0 text-info" data-toggle="collapse" aria-expanded="false"
-                 data-target="#question-share" aria-controls="question-share">
-                How do I share my results with only collaborators?
-              </a>
-            </div>
-            <div id="question-share" class="collapse" aria-labelledby="heading-question-share"
-                 data-parent="#faq-questions">
-              <div class="card-body">
-                Sometimes, it may be useful to share a GWAS with a collaborator, without having to make it public for
-                everyone. This service allows you to generate private links that can be sent to trusted collaborators.
-                These secret links allow view-only access to all summary and region plots. Sharing features can be
-                accessed from the "share" link on top of the GWAS summary page.
-              </div>
-            </div>
-          </div>
+        <h3 class="faq" id="missing-ld">Why is LD information not being shown for my data?</h3>
+        <p>
+          Sometimes, a region plot will be missing Linkage Disequilibrium (LD) information, and all points will be
+          shown in grey. The two most common reasons are as follows:
+        </p>
+        <ol>
+          <li>
+            In order to provide LD annotations, your dataset must specify all of the information required to uniquely identify a variant (chromosome,
+            position, reference allele, alt allele). Reference and alt alleles should be defined in terms of the
+            selected genome build (GRCh37 or 38), and no additional information should be appended to the variant specifier.
+          </li>
+          <li>
+            LD information is computed relative to the most significant SNP in the dataset. Thus, the LD reference SNP
+            must be present in the LD reference panel used. It is sometimes possible for the reference variant
+            not to be known to the panel or population, especially if your dataset has a lot of imputed or rare variants.
+            (a different reference variant can be selected via the tooltip that appears when you mouse over any variant).
+          </li>
+        </ol>
+        <p>
+          This site uses an LD reference panel based on 1000G data, with several sub populations available.
+          Missing variants are most commonly a problem for build 37, which uses an older version of this reference panel.
+          As of Summer 2020, build GRCh38 datasets use an improved 1000G LD panel based on deep whole-genome sequencing.
+          Although we are exploring the possibility of additional LD reference panels, this is often difficult due to
+          restrictions on public sharing of data.
+        </p>
 
-          <div class="card">
-            <div class="card-header" id="heading-question-feedback">
-              <a href="#" class="mb-0 text-info" data-toggle="collapse" aria-expanded="false"
-                 data-target="#question-feedback" aria-controls="question-feedback">
-                How do I request a feature?
-              </a>
-            </div>
-            <div id="question-feedback" class="collapse" aria-labelledby="heading-question-feedback"
-                 data-parent="#faq-questions">
-              <div class="card-body">
-                The new LocusZoom.org is still evolving, and we welcome your feedback about what features to add next.
-                Please consider answering our <a href="https://forms.gle/GWzg9nzaDU5qrXJM8">user survey</a>, or
-                contact us <a href="mailto:locuszoom-service@umich.edu">directly</a>.
-              </div>
-            </div>
-          </div>
+        <h3 class="faq" id="private-sharing">How do I share my results with only collaborators?</h3>
+        <p>
+          Sometimes, it may be useful to share a GWAS with a collaborator, without having to make it public for
+          everyone. This service allows you to generate private links that can be sent to trusted collaborators.
+          These secret links allow view-only access to all summary and region plots. Sharing features can be
+          accessed from the "share" link on top of the GWAS summary page.
+        </p>
 
-          <div class="card">
-            <div class="card-header" id="heading-question-bug">
-              <a href="#" class="mb-0 text-info" data-toggle="collapse" aria-expanded="false"
-                 data-target="#question-bug" aria-controls="question-bug">
-                How do I report a problem?
-              </a>
-            </div>
-            <div id="question-bug" class="collapse" aria-labelledby="heading-question-bug" data-parent="#faq-questions">
-              <div class="card-body">
-                <p>
-                  There are several ways to reach us, including our
-                  <a href="https://groups.google.com/forum/#!forum/locuszoom">user group</a> and
-                  <a href="https://github.com/statgen/locuszoom">public bug tracker</a>. For questions
-                  involving security or sensitive data, we may be reached at
-                  <a href="mailto:locuszoom-service@umich.edu">locuszoom-service@umich.edu</a>.
-                </p>
-              </div>
-            </div>
-          </div>
+        <h3 class="faq" id="suggestions">How do I request a feature?</h3>
+        <p>
+          The new LocusZoom.org is still evolving, and we welcome your feedback about what features to add next.
+          Please consider answering our <a href="https://forms.gle/GWzg9nzaDU5qrXJM8">user survey</a>, or
+          contact us <a href="mailto:locuszoom-service@umich.edu">directly</a>.
+        </p>
 
-          <div class="card">
-            <div class="card-header" id="heading-question-locuszooms">
-              <a href="#" class="mb-0 text-info" data-toggle="collapse" aria-expanded="false"
-                 data-target="#question-locuszooms" aria-controls="question-locuszooms">
-                What other ways are there to use LocusZoom?
-              </a>
-            </div>
-            <div id="question-locuszooms" class="collapse" aria-labelledby="heading-question-locuszooms"
-                 data-parent="#faq-questions">
-              <div class="card-body">
-                The new LocusZoom.org emphasizes interactive plots and comparisons across data. However, there are
-                times when you may wish to do something extremely specialized that is not possible on a general purpose
-                web server. Here are some alternatives:
-                <ul>
-                  <li>
-                    <a href="https://statgen.github.io/localzoom/">LocalZoom</a>: A browser-based tool that makes
-                    interactive region plots, without requiring you to upload highly sensitive data. It does not
-                    provide annotations, or summaries such as manhattan and QQ plots.
-                  </li>
-                  <li>
-                    <a href="https://github.com/statgen/locuszoom-standalone">LocusZoom Standalone (command line)</a>:
-                    A Python command line tool that supports a wide variety of custom options. This is useful for
-                    highly custom plots (such as private LD information that cannot be shared on a public web server).
-                    However, please note that this tool is <span class="text-danger">not actively maintained</span>,
-                    and the bundled datasets may be quite out of date. We are working on adding more of these old
-                    familiar features to our new, more frequently updated web tools.
-                  </li>
-                  <li>
-                    <a href="https://locuszoom.org">Old LocusZoom.org</a>: Our old upload service, which was limited
-                    to a small number of plots per upload. It remains active for now while we transition features to
-                    the new website, but is <span class="text-danger">not actively maintained</span>,
-                    and will be removed in the future.
-                  </li>
-                </ul>
+        <h3 class="faq" id="bug-reports">How do I report a problem?</h3>
+        <p>
+          There are several ways to reach us, including our
+          <a href="https://groups.google.com/forum/#!forum/locuszoom">user group</a> and
+          <a href="https://github.com/statgen/locuszoom">public bug tracker</a>. For questions
+          involving security or sensitive data, we may be reached at
+          <a href="mailto:locuszoom-service@umich.edu">locuszoom-service@umich.edu</a>.
+        </p>
 
-                If you would like to customize these features for your own internal needs, each of the pieces that
-                powers the website is independently available as modular building blocks:
-                <ul>
-                  <li><a href="https://github.com/statgen/locuszoom">LocusZoom.js</a>: A Javascript/d3 embeddable
-                    plugin for interactively visualizing statistical genetic data from customizable sources.
-                  </li>
-                  <li>
-                    <a href="https://github.com/statgen/LDServer">LD Server</a>: A fast, RESTful API server for
-                    calculating linkage disequilibrium. Supports multiple datasets and populations. You can set
-                    up your own with private genotype data, or use our public instance for LD information calculated
-                    from 1000G.
-                  </li>
-                  <li>
-                    <a href="https://portaldev.sph.umich.edu/docs/api/v1/#introduction">Annotation data APIs</a>: Our
-                    APIs provide genes, recombination rates, and other annotation data from well-defined sources, for
-                    builds GRCh37 and GRCh38.
-                  </li>
-                  <li>
-                    <a href="https://github.com/statgen/localzoom/">LocalZoom (source code)</a>: A set of Vue.js web
-                    components and JS parsers for GWAS files. This contains the common UI for Locuszoom.org and
-                    LocalZoom, but pieces may be imported and used individually. (this library is still evolving,
-                    and pieces may change between versions)
-                  </li>
-                  <li>
-                    <strong>LocusZoom Hosted</strong>: We expect to make the source code for this website available in
-                    the near future. Check back for updates.
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+        <h3 class="faq" id="other-locuszooms">What other ways are there to use LocusZoom?</h3>
+        <p>
+          The new LocusZoom.org emphasizes interactive plots and comparisons across data. However, there are
+          times when you may wish to do something extremely specialized that is not possible on a general purpose
+          web server. Here are some alternatives:
+        </p>
+        <ul>
+          <li>
+            <a href="https://statgen.github.io/localzoom/">LocalZoom</a>: A browser-based tool that makes
+            interactive region plots, without requiring you to upload highly sensitive data. It does not
+            provide annotations, or summaries such as manhattan and QQ plots.
+          </li>
+          <li>
+            <a href="https://github.com/statgen/locuszoom-standalone">LocusZoom Standalone (command line)</a>:
+            A Python command line tool that supports a wide variety of custom options. This is useful for
+            highly custom plots (such as private LD information that cannot be shared on a public web server).
+            However, please note that this tool is <span class="text-danger">not actively maintained</span>,
+            and the bundled datasets may be quite out of date. We are working on adding more of these old
+            familiar features to our new, more frequently updated web tools.
+          </li>
+          <li>
+            <a href="http://locuszoom.org">Old LocusZoom.org</a>: Our old upload service, which was limited
+            to a small number of plots per upload. It remains active for now while we transition features to
+            the new website, but is <span class="text-danger">not actively maintained</span>,
+            and will be removed in the future.
+          </li>
+        </ul>
+
+        If you would like to customize these features for your own internal needs, each of the pieces that
+        powers the website is independently available as modular building blocks:
+        <ul>
+          <li><a href="https://github.com/statgen/locuszoom">LocusZoom.js</a>: A Javascript/d3 embeddable
+            plugin for interactively visualizing statistical genetic data from customizable sources.
+          </li>
+          <li>
+            <a href="https://github.com/statgen/LDServer">LD Server</a>: A fast, RESTful API server for
+            calculating linkage disequilibrium. Supports multiple datasets and populations. You can set
+            up your own with private genotype data, or use our public instance for LD information calculated
+            from 1000G.
+          </li>
+          <li>
+            <a href="https://github.com/statgen/gwas-credible-sets/">Credible sets calculation</a>: A client-side
+            JavaScript library for calculating Bayes factors and credible sets using p-values from GWAS results.
+            These functions can be used separately, or combined with LocusZoom.js for interactive credible set
+            visualization. This is a fairly simple method, which allows it to be used with a wide range of
+            user-uploaded datasets.
+          </li>
+          <li>
+            <a href="https://portaldev.sph.umich.edu/docs/api/v1/#introduction">Annotation data APIs</a>: Our
+            APIs provide genes, recombination rates, and other annotation data from well-defined sources, for
+            builds GRCh37 and GRCh38.
+          </li>
+          <li>
+            <a href="https://github.com/statgen/localzoom/">LocalZoom (source code)</a>: A set of Vue.js web
+            components and JS parsers for GWAS files. This contains the common UI for Locuszoom.org and
+            LocalZoom, but pieces may be imported and used individually. (this library is still evolving,
+            and pieces may change between versions)
+          </li>
+          <li>
+            <strong>LocusZoom Hosted</strong>: We expect to make the source code for this website available in
+            the near future. Check back for updates.
+          </li>
+        </ul>
+
       </div>
     </div>
   </div>
 {% endblock %}
+
+{% block javascript %}
+<script>
+  // Automatically generate a TOC based on headings with "class=faq"
+  const questions = document.querySelectorAll('.faq');
+  const dest = document.getElementById('auto-toc');
+  questions.forEach(function(node){
+    const listitem = document.createElement('li');
+    const a = document.createElement('a');
+    a.innerText = node.innerText;
+    a.href = `#${node.id}`;
+    listitem.appendChild(a);
+    dest.append(listitem);
+  });
+</script>
+{% endblock javascript %}
+
