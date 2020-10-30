@@ -1,0 +1,60 @@
+##### Example file. Rename to .django to use in production
+
+# General
+# ------------------------------------------------------------------------------
+# DJANGO_READ_DOT_ENV_FILE=True
+DJANGO_SETTINGS_MODULE=config.settings.production
+DJANGO_SECRET_KEY=
+# The admin site has restricted functionality, but make it hard for bots to find. In the future this could be served separately behind a VPN
+DJANGO_ADMIN_URL=admin-changeme-something-very-hard-to-guess/
+# The localhost entries work if we are using a reverse proxy
+DJANGO_ALLOWED_HOSTS=.my.locuszoom.org,localhost,localhost:5000
+LZ_OFFICIAL_DOMAIN=my.locuszoom.org
+
+# Security
+# ------------------------------------------------------------------------------
+# TIP: It is better to handle the redirect via the server. However, django can handle the redirect if needed.
+DJANGO_SECURE_SSL_REDIRECT=False
+
+# Email
+# ------------------------------------------------------------------------------
+DJANGO_SERVER_EMAIL=locuszoom-noreply@host.example
+
+DJANGO_EMAIL_HOST=smtp.host.example
+DJANGO_EMAIL_HOST_USER=locuszoom-noreply
+DJANGO_EMAIL_HOST_PASSWORD=
+
+# django-allauth
+# ------------------------------------------------------------------------------
+# This can be disabling if, eg, you are running a private instance and don't want random people to upload things
+DJANGO_ACCOUNT_ALLOW_REGISTRATION=True
+
+# Gunicorn
+# ------------------------------------------------------------------------------
+# Recommend 2-4x # cores
+WEB_CONCURRENCY=8
+
+# Our Sentry configuration uses two buckets: one for python errors (backend) and one for JS (frontend)
+# ------------------------------------------------------------------------------
+SENTRY_DSN=
+SENTRY_DSN_FRONTEND=
+
+# Google Analytics
+# ------------------------------------------------------------------------------
+GOOGLE_ANALYTICS_ID=
+
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0
+
+# Celery
+# ------------------------------------------------------------------------------
+
+# Flower
+## Set these to very hard to guess values
+CELERY_FLOWER_USER=
+CELERY_FLOWER_PASSWORD=
+CELERY_WORKERS=12
+
+# For now, re-use the local "uploads" mount point as a place to store the large lookup files required by annotations
+ZORP_ASSETS_DIR=/lz-uploads/.lookups

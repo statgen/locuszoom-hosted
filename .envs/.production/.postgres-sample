@@ -1,0 +1,8 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=locuszoom_plotting_service
+# Please make sure to set these.
+POSTGRES_USER=
+POSTGRES_PASSWORD=

@@ -1,6 +1,6 @@
 # LocusZoom: Hosted Upload Service
 
-Upload and share GWAS results with LocusZoom.js
+Upload, analyze, and share GWAS results with LocusZoom.js. Try it at [my.locuszoom.org](https://my.locuszoom.org).
 
 
 ## Settings
@@ -11,10 +11,11 @@ For a basic guide to most settings, see the [cookiecutter-django docs](https://c
 
 
 ### Quickstart
-The following commands will start a development environment. Some IDEs (such as Pycharm) are able to run the app via
- run configurations, which may be more convenient than starting things through the terminal. 
+The following commands will start a development environment. Some IDEs (such as Pycharm) are able to run the app via run configurations, which may be more convenient than starting things through the terminal.
+
+For production deployment instructions, see [docs/deploy/index.md](docs/deploy/index.md). 
  
-- In one tab, build assets: 
+- In one tab, build assets (in local development, this is currently done on the host system, outside of Docker): 
 
 `$ yarn run prod`
 
@@ -31,8 +32,9 @@ $ docker-compose -f local.yml up
 
 (`docker system prune` is optional, but it can save your hard drive from filling up as you experiment with different build options)
 
-On the first installation, you will also need to download some large asset files required for annotations. (see 
-deployment docs for the correct command to use with production assets)
+On the first installation, you will also need to download some large asset files required for annotations. For local development, a "test" version is available that will only annotate a limited subset of biologically interesting genes; this subset is much smaller than the full database, and easier to use on a laptop.
+
+(see deployment docs for the correct command to use with production assets)
 
 ```bash
 $ docker-compose -f local.yml run --rm django zorp-assets download --type snp_to_rsid_test --tag genome_build GRCh37 --no-update
@@ -65,8 +67,7 @@ into your browser. Now the user's email should be verified and ready to go.
 
 `$ docker-compose -f local.yml run --rm django python manage.py makemigrations`
 
-Then verify the migration file is correct, and restart docker to apply the migrations automatically.
-(in production, you must apply the migrations manually; see deployment guide for details)
+Then verify the migration file is correct, and restart Docker to apply the migrations automatically. (in production, you must apply the migrations manually; see deployment guide for details)
 
 
 ## Development and testing helpers
@@ -80,7 +81,7 @@ This script generates fake studies for search results, but it notably does not r
  It may be improved in the future to generate more realistic and complete fake data. 
 
 ### Opening a terminal for debugging
-Because all development happens inside a docker container, it is sometimes useful to open a terminal for debugging
+Because all development happens inside a Docker container, it is sometimes useful to open a terminal for debugging
 purposes. This can be done as follows.
 
 On a running container::
@@ -116,55 +117,18 @@ A suite of unit tests is available::
 
 `$ docker-compose -f local.yml run --rm django pytest`
 
-## Celery
-
-This app comes with Celery. The docker configuration will automatically launch celery workers when the app starts, but 
-the commands below may be useful when running the app in other environments.
-
-To run a celery worker:
-
-```bash
-$ cd locuszoom_plotting_service
-$ celery -A locuszoom_plotting_service.taskapp worker -l info
-```
-
-Please note: For Celery's import magic to work, it is important *where* the celery commands are run. If you are in the
-same folder with *manage.py*, you should be ok.
-
-
 ## Sentry
 
 Sentry is an error logging aggregator service. If a key (DSN) is provided in your .env file, errors will be tracked
- automatically. You will need one DSN each for your frontend (JS) and backend (python) code.
+ automatically.
 
 ## Deployment
 
 ### Docker
-This app uses docker to manage dependencies and create a working environment. See 
+This app uses Docker to manage dependencies and create a working environment. See 
 [deployment documentation](docs/deploy/index.md) for instructions on how to create a working, production server 
-environment. A local, debug-friendly docker configuration is also provided in this repo, and many of the instructions 
+environment. A local, debug-friendly Docker configuration is also provided in this repo, and many of the instructions 
 in this document assume this is what you will use. 
  
- The original docker configuration has been modified from cookiecutter-django; see their docs for more information 
+ The original Docker configuration has been modified from cookiecutter-django; see their docs for more information 
  about default options and design choices.  
-
-
-### (future) Initializing the app with default data
-
-Certain app features, such as "tagging datasets", will require loading initial data into the database.
-
-This feature is not yet used in production, but the notes below demonstrate loader scripts in progress.
-
-These datasets may be large or restricted by licensing rules; as such, they are not distributed with the code and must
-be downloaded/reprocessed separately for loading.
-
-- [SNOMED CT (Core) / May 2019](https://www.nlm.nih.gov/research/umls/Snomed/core_subset.html)
-
-These files must be downloaded separately due to license issues (they cannot be distributed with this repo).
-Run the appropriate scripts in `scripts/data_loaders/` to transform them into a format suitable for django usage.
-
-After creating the app, run the following command (once) to load them in (using the appropriate docker-compose file)::
-
-`$ docker-compose -f local.yml run --rm django python3 manage.py loaddata scripts/data_loaders/sources/snomed.json`
-
-[![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg)](https://github.com/pydanny/cookiecutter-django/)

@@ -42,3 +42,7 @@ scripts/data_loaders/sources/*
 # Configuration files that should not be checked into Git
 .envs/*
 !.envs/.local/
+# Exclude production envs, EXCEPT samples
+!.envs/.production/
+.envs/.production/*
+!.envs/.production/*sample
