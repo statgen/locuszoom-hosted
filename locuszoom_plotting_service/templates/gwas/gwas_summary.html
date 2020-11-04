@@ -97,7 +97,7 @@
           <h3>Manhattan Plot</h3>
           <p>
             Click on any peak in the manhattan plot below to jump to a specific LocusZoom region view, or visit the
-            <a href="{% url 'gwas:region' gwas.slug %}">region page</a> to make plots for any region in your dataset
+            <a href="{% filter add_token:token %}{% url 'gwas:region' gwas.slug %}{% endfilter %}">region page</a> to make plots for any region in your dataset
             (with search features for gene, position, or rsid).
           </p>
           <div id="manhattan_plot_container"></div>
