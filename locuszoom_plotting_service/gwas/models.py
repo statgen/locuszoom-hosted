@@ -163,7 +163,7 @@ class AnalysisFileset(TimeStampedModel):
     # Options related to the ingestion pipeline
     parser_options = JSONField(null=False,
                                blank=False,
-                               default={},  # Uploads must tell us how to they are parsed
+                               default=lambda: {},  # Uploads must tell us how they are parsed
                                help_text='Parser options (zorp-compatible parser kwarg names)')
 
     ingest_status = models.IntegerField(choices=constants.INGEST_STATES, default=0,

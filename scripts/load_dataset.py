@@ -20,11 +20,11 @@ sys.path.append(str(Path(__file__).parent.parent.resolve()))
 django.setup()
 
 
-from locuszoom_plotting_service.gwas.models import (
+from locuszoom_plotting_service.gwas.models import ( # noqa
     AnalysisInfo,
     AnalysisFileset,
     User
-) # noqa
+)
 
 
 def ingest_from_local(owner_id: int, path_to_file: str,

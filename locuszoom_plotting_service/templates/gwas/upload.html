@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
-{% load render_bundle from webpack_loader %}
+
+{% block title %}Upload your data{% endblock %}
 
 {% block css %}
   <style> {# Hack: hide this form field because we will set parser options via vue modal #}
@@ -48,5 +50,5 @@
 {% endblock %}
 
 {%  block javascript %}
-  {% render_bundle 'gwas_upload' %}
+  <script src="{% static 'webpack_bundles/gwas_upload.js' %}"></script>
 {% endblock %}

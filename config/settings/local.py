@@ -67,6 +67,7 @@ INSTALLED_APPS += ['django_extensions']  # noqa F405
 # Celery
 # ------------------------------------------------------------------------------
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-always-eager
+# Enabling this can facilitate debugging, but for ingest tasks, running synchronously is very slow
 CELERY_TASK_ALWAYS_EAGER = False
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-eager-propagates
 CELERY_TASK_EAGER_PROPAGATES = True
@@ -74,4 +75,3 @@ CELERY_TASK_EAGER_PROPAGATES = True
 # Misc other configuration
 # ------------------------------------------------------------------------------
 LZ_OFFICIAL_DOMAIN = 'localhost:8000'
-WEBPACK_LOADER['DEFAULT']['CACHE'] = not DEBUG  # noqa F405

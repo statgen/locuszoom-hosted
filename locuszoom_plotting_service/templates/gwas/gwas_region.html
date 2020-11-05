@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load render_bundle from webpack_loader %}
+{% load static %}
 
 {% block title %}Region plot- {{ gwas.label }}{% endblock %}
 
@@ -37,5 +37,5 @@
 
   {#  {{ js_vars | json_script: 'js-vars' }}#}
   {#  Define the LocusZoom plot #}
-  {% render_bundle 'gwas_region' %}
+  <script src="{% static 'webpack_bundles/gwas_region.js' %}"></script>
 {% endblock %}
