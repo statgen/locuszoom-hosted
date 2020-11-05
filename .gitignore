@@ -9,8 +9,7 @@ celerybeat.pid
 staticfiles/
 
 # Webpack built assets (and files that reference them)
-assets/webpack_bundles/
-webpack-stats.json
+locuszoom_plotting_service/static/webpack_bundles/
 
 # Sphinx documentation
 docs/_build/
@@ -43,3 +42,7 @@ scripts/data_loaders/sources/*
 # Configuration files that should not be checked into Git
 .envs/*
 !.envs/.local/
+# Exclude production envs, EXCEPT samples
+!.envs/.production/
+.envs/.production/*
+!.envs/.production/*sample

@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.8
 # NOTE: Some dependencies require specialized libraries that slimmer images (like alpine) do not yet support, eg
 #   musl doesn't seem to provide GLOB_TILDE
 
@@ -6,11 +6,7 @@ ENV PYTHONUNBUFFERED 1
 
 # libmagic: file format detection
 RUN apt-get update && apt-get install -y libmagic-dev
-
-# Requirements are installed here to ensure they will be cached.
-COPY ./requirements /requirements
 RUN pip install --upgrade pip wheel
-RUN pip install -r /requirements/local.txt
 
 COPY ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r//' /entrypoint
@@ -31,6 +27,10 @@ RUN chmod +x /start-celerybeat
 COPY ./compose/local/django/celery/flower/start /start-flower
 RUN sed -i 's/\r//' /start-flower
 RUN chmod +x /start-flower
+
+# Requirements are installed here to ensure they will be cached.
+COPY ./requirements /requirements
+RUN pip install -r /requirements/local.txt
 
 WORKDIR /app
 

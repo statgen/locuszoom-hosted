@@ -70,7 +70,6 @@ THIRD_PARTY_APPS = [
     'allauth.socialaccount.providers.google',
     'rest_framework',
     'django_filters',
-    'webpack_loader'
 ]
 LOCAL_APPS = [
     'locuszoom_plotting_service.users.apps.UsersAppConfig',  # Auth, login, and user detail pages
@@ -255,12 +254,19 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-result_serializer
 CELERY_RESULT_SERIALIZER = 'json'
+# http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-task_acks_late
+# This causes messages from worker tasks to be received only after the task has completed, not right
+# before it executes. This means your tasks MUST be idempotent (i.e. no side effects or issues from
+# running the task multiple times).
+CELERY_TASK_ACKS_LATE = True
+# This prevents the task from being lost simply because the worker was killed or terminated
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-time-limit
-# TODO: set to whatever value is adequate in your circumstances
 CELERY_TASK_TIME_LIMIT = None
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-soft-time-limit
-# TODO: set to whatever value is adequate in your circumstances
 CELERY_TASK_SOFT_TIME_LIMIT = None
+# https://docs.celeryproject.org/en/v4.4.6/userguide/configuration.html#std:setting-worker_prefetch_multiplier
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # Disabled prefetching so that workers don't reserve tasks, best for long tasks
 
 
 #####
@@ -324,15 +330,3 @@ GOOGLE_ANALYTICS_ID = env('GOOGLE_ANALYTICS_ID', default=None)
 # ------------------------------------------------------------------------------
 SENTRY_DSN = env('SENTRY_DSN', default=None)
 SENTRY_DSN_FRONTEND = env('SENTRY_DSN_FRONTEND', default=None)
-
-# This is used to find the interactive parts of pages, which are written and built using Vue.js + Webpack
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'webpack_bundles/',  # must end with slash
-        'STATS_FILE': str(ROOT_DIR.path('webpack-stats.json')),
-        'POLL_INTERVAL': 0.1,
-        'TIMEOUT': None,
-        'IGNORE': [r'.+\.hot-update.js']
-    }
-}

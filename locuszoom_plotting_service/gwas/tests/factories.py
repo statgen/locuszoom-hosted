@@ -4,6 +4,7 @@ import random
 from django.db.models import signals
 from django.utils import timezone
 import factory
+from factory.django import DjangoModelFactory
 
 from locuszoom_plotting_service.users.tests.factories import UserFactory
 from .. import constants as lz_constants
@@ -19,7 +20,7 @@ def choose_consortium() -> str:
 
 
 @factory.django.mute_signals(signals.post_save)
-class AnalysisFilesetFactory(factory.DjangoModelFactory):
+class AnalysisFilesetFactory(DjangoModelFactory):
     raw_gwas_file = None  # Only create temp files if has_data trait is True
 
     ingest_status = 0  # pending (most tests don't run celery tasks, and therefore are "pending" processing)
@@ -50,7 +51,7 @@ class AnalysisFilesetFactory(factory.DjangoModelFactory):
         )
 
 
-class AnalysisInfoFactory(factory.DjangoModelFactory):
+class AnalysisInfoFactory(DjangoModelFactory):
     owner = factory.SubFactory(UserFactory)
     label = factory.Faker('sentence', nb_words=2)
     study_name = factory.LazyFunction(choose_consortium)
@@ -65,7 +66,7 @@ class AnalysisInfoFactory(factory.DjangoModelFactory):
         model = lz_models.AnalysisInfo
 
 
-class ViewLinkFactory(factory.DjangoModelFactory):
+class ViewLinkFactory(DjangoModelFactory):
     label = factory.Faker('sentence', nb_words=2)
     gwas = factory.SubFactory(AnalysisInfoFactory)
 

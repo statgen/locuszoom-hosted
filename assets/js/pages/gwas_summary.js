@@ -6,7 +6,7 @@ import {create_qq_plot, create_gwas_plot} from '../util/pheweb_plots';
 
 import Tabulator from 'tabulator-tables';
 import 'tabulator-tables/dist/css/bootstrap/tabulator_bootstrap4.css';
-import { pairs, sortBy } from 'underscore';
+import { toPairs, sortBy } from 'lodash';
 
 function createTopHitsTable(selector, data, region_url) {
     // Filter the manhattan json to a subset of just peaks, largest -log10p first
@@ -95,7 +95,7 @@ if (window.template_args.ingest_status === 2) {
                 return resp.json();
             })
             .then(data => {
-                sortBy(pairs(data.overall.gc_lambda), function (d) {
+                sortBy(toPairs(data.overall.gc_lambda), function (d) {
                     return -d[0];
                 }).forEach(function (d, i) {
                     // FIXME: Manually constructed HTML; change
@@ -111,7 +111,8 @@ if (window.template_args.ingest_status === 2) {
                 } else {
                     create_qq_plot([{ maf_range: [0, 0.5], qq: data.overall.qq, count: data.overall.count }], data.ci);
                 }
-            }).catch(() => {
+            }).catch((e) => {
+                console.error(e);
                 document.getElementById('qq_plot_container').textContent = 'Could not fetch QQ plot data.';
             });
     });

@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
-{% load render_bundle from webpack_loader %}
-
+{% load static %}
 
 {% block title %}Study- {{ gwas.label }}{% endblock %}
 
@@ -98,7 +97,7 @@
           <h3>Manhattan Plot</h3>
           <p>
             Click on any peak in the manhattan plot below to jump to a specific LocusZoom region view, or visit the
-            <a href="{% url 'gwas:region' gwas.slug %}">region page</a> to make plots for any region in your dataset
+            <a href="{% filter add_token:token %}{% url 'gwas:region' gwas.slug %}{% endfilter %}">region page</a> to make plots for any region in your dataset
             (with search features for gene, position, or rsid).
           </p>
           <div id="manhattan_plot_container"></div>
@@ -138,10 +137,6 @@
 {% endblock %}
 
 {% block javascript %}
-  <script src="https://cdn.jsdelivr.net/npm/d3@3.5.16" type="application/javascript"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/d3-tip@0.6.7" type="application/javascript"></script>
-
   <script type="application/javascript">
     {#var template_args = JSON.parse(document.getElementById('js-vars').textContent);#}
     {# FIXME: Improve JS variable handling for Django 2.1 LTS #}
@@ -162,5 +157,5 @@
     </script>
   {% endif %}
 
-  {% render_bundle 'gwas_summary' %}
+  <script src="{% static 'webpack_bundles/gwas_summary.js' %}"></script>
 {% endblock %}

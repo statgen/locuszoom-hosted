@@ -12,7 +12,7 @@ from .models import AnalysisInfo
 #  social auth user tokens. We'll manually de-register them in an file that is loaded after allauth
 admin.site.unregister([SocialToken])
 
-# We may want to re-enable this in the future, but for now this is a powerful action and we will delete it
+# We may want to re-enable this in the future, but for now this is a powerful action and we will disable it
 admin.site.disable_action('delete_selected')
 
 

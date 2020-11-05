@@ -21,10 +21,11 @@ LZ_OFFICIAL_DOMAIN=localhost:8000
 # ------------------------------------------------------------------------------
 GOOGLE_ANALYTICS_ID=
 
-# Sentry uses two buckets: one for python errors (backend) and one for JS (frontend)
+# Our Sentry configuration uses two buckets: one for python errors (backend) and one for JS (frontend)
 # ------------------------------------------------------------------------------
 SENTRY_DSN=
 SENTRY_DSN_FRONTEND=
 
 # Set the location of download large lookup files (which are downloaded separately, after the build step)
+# This path is relative to the docker container
 ZORP_ASSETS_DIR=/app/.lookups
