@@ -2,6 +2,8 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+{% block title %}Upload your data{% endblock %}
+
 {% block css %}
   <style> {# Hack: hide this form field because we will set parser options via vue modal #}
     #div_id_fileset-parser_options {
