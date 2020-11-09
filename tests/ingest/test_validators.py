@@ -55,6 +55,17 @@ class TestStandardGwasValidator:
         with pytest.raises(val_exc.ValidationException):
             validators.standard_gwas_validator._validate_contents(reader)
 
+    def test_rejects_rsids(self):
+        reader = sniffers.guess_gwas_generic([
+            "#chrom\tpos\tref\talt\tneg_log_pvalue",
+            "X\t1\tA\tC\t7.3",
+            "rs1100\t2\tA\tC\t7.3",
+            "rs2521\t1\tA\tC\t7.3",
+        ])
+
+        with pytest.raises(val_exc.ValidationException, match='is an rsID'):
+            validators.standard_gwas_validator._validate_contents(reader)
+
     def test_validates_for_file(self):
         sample_fn = os.path.join(os.path.dirname(__file__), 'fixtures/gwas.tab')
         parser = parsers.GenericGwasLineParser(**{  # Parser options for sample file
