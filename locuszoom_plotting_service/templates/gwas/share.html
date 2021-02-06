@@ -33,10 +33,10 @@
                 <td>{% firstof link.label link.created %}</td>
                 <td>
                   <div class="input-group" id="copy-controls-{{ forloop.counter }}">
-                    <input type="text" id="copy-value-{{ forloop.counter }}"  class="form-control"
+                    <input type="text" id="copy-value-{{ forloop.counter }}"  class="form-control" readonly
                            value="{{ request.scheme }}://{{ request.get_host }}{{ link.get_absolute_url }}">
                     <div class="input-group-append">
-                      <button id="copy-button-{{ forloop.counter }}" class="btn btn-outline-info ">Copy</button>
+                      <button id="copy-button-{{ forloop.counter }}" class="btn btn-outline-info">Copy</button>
                     </div>
                   </div>
                 </td>

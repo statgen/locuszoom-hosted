@@ -51,6 +51,10 @@ class _GwasValidator:
         prev_pos = -1
         for cp, tied_variants in cp_groups:
             cur_chrom = cp[0]
+
+            if cur_chrom.startswith('RS'):  # Parser always capitalizes chrom names
+                raise v_exc.ValidationException(f'Invalid chromosome specified: value "{cur_chrom}" is an rsID')
+
             if cur_chrom == prev_chrom and cp[1] < prev_pos:
                 # Positions not in correct order for Pheweb to use
                 raise v_exc.ValidationException('Positions must be sorted prior to uploading')

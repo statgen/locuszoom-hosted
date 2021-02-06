@@ -12,8 +12,9 @@ function createTopHitsTable(selector, data, region_url) {
     // Filter the manhattan json to a subset of just peaks, largest -log10p first
     data = data.filter(v => !!v.peak)
         .map(item => {
-            // FIXME: Synthetic field; feed a marker into pheweb loader code for better tables in the future
-            item.marker = `${item.chrom}: ${item.pos.toLocaleString()}`;
+            // Synthetic field; manhattan loader doesn't provide ref/alt information
+            const ref_alt = (item.ref && item.alt) ? ` ${item.ref}/${item.alt}` : '';
+            item.marker = `${item.chrom}: ${item.pos.toLocaleString()}${ref_alt}`;
             return item;
         });
 
@@ -26,6 +27,13 @@ function createTopHitsTable(selector, data, region_url) {
         columns: [
             {
                 title: 'Marker', field: 'marker', formatter: 'link',
+                sorter(a, b, aRow, bRow, column, dir, sorterParams) {
+                    // Sort by chrom, then position
+                    const a_data = aRow.getData();
+                    const b_data = bRow.getData();
+                    return (a_data.chrom).localeCompare(b_data.chrom, undefined, {numeric: true})
+                        || a_data.pos - b_data.pos;
+                },
                 formatterParams: {
                     label: (cell) => cell.getData().marker,
                     url: (cell) => {
