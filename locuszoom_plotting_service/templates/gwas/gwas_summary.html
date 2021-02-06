@@ -83,11 +83,28 @@
 
     {% if gwas.ingest_status == 2 %}
       <div class="row">
-        <div class="col-md-8"></div>
-        <div class="col-md-4">
+        <div class="col-md-12">
           <a class="btn btn-outline-secondary float-right" href="{% filter add_token:token %}{% url 'gwas:gwas-download' gwas.slug %}{% endfilter %}">Download summary statistics</a>
           {%  if request.user == gwas.owner %}
             <a class="btn btn-outline-secondary float-right" href="{% url 'gwas:gwas-ingest-log' gwas.slug %}">Ingest Logs</a>
+            <div class="dropdown">
+              <button type="button" id="checksumDropdown"
+                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                      class="btn btn-outline-secondary dropdown-toggle float-right">
+                Checksum
+              </button>
+              <div class="dropdown-menu p-1" aria-labelledby="checksumDropdown">
+                Uploaded file hash (SHA256):<br>
+                <div class="input-group" id="copy-sha256">
+                  <input id="copy-value-sha256" type="text" class="form-control"
+                         readonly size="15"
+                         value="{{ gwas.files.file_sha256.hex }}">
+                  <div class="input-group-append">
+                    <button id="copy-button-sha256" class="btn btn-outline-info ">Copy</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           {% endif %}
         </div>
       </div>
@@ -125,6 +142,8 @@
     {% else %}
       <p>We were unable to process your uploaded GWAS file. Please review the logs for the cause, and contact us
         if you believe the problem is an error.</p>
+      <p>You can verify that you uploaded the correct file by comparing the checksum (SHA256):<br>
+        <span class="text-muted">{{ gwas.files.file_sha256.hex }}</span></p>
       {%  if request.user == gwas.owner %}
         <form method="post" action="{% url 'gwas:rerun' gwas.slug %}" class="form-horizontal">
           {% csrf_token %}
@@ -148,6 +167,16 @@
       tooltip_underscoretemplate: '<b><%- d.chrom %>:<%- d.pos.toLocaleString() %> <%- (d.ref && d.alt) ? (d.ref + "/" + d.alt) : "" %></b><br>-log<sub>10</sub>(p): <%- d.neg_log_pvalue && (+d.neg_log_pvalue).toFixed(3) %><br>Nearest gene(s): <%- d.nearest_genes && d.nearest_genes.length && d.nearest_genes.map(function(gene) { return gene.symbol; }).join(", ") %>'
     };
     window.pheno = '';
+
+    // For logged in users, show SHA256 and provide a "copy to clipboard" button
+    const copyButton = document.querySelector('#copy-button-sha256');
+    if (copyButton) {
+      copyButton.addEventListener('click', () => {
+        document.querySelector('#copy-value-sha256').select();
+        document.execCommand('copy');
+      });
+    }
+
   </script>
 
   {% if GOOGLE_ANALYTICS_ID %}
