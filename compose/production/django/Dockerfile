@@ -1,12 +1,12 @@
 ### Production dockerfile for the web app. JS and python are implemented as two steps of a multistage build.
 # Multistage build
 
-# Step 1: JS assets. Ensure that a change to package.json or yarn.lock invalidates the cache
+# Step 1: JS assets. Ensure that a change to package.json or package-lock.json invalidates the cache
 FROM node:fermium as jsbuilder
-COPY ./package.json ./yarn.lock /build/
+COPY ./package.json ./package-lock.json /build/
 COPY . /build/
 WORKDIR /build/
-RUN yarn install --from-lockfile && yarn run prod
+RUN npm install ci && npm run prod
 
 
 # Step 2 (main): Django app. Install python dependencies, add volume mounts, and run.

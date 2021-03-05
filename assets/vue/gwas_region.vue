@@ -4,6 +4,7 @@
     import BatchScroller from 'localzoom/src/components/BatchScroller.vue';
     import PlotPanes from 'localzoom/src/components/PlotPanes.vue';
     import RegionPicker from 'localzoom/src/components/RegionPicker.vue';
+    import {setup_feature_metrics} from 'localzoom/src/util/metrics';
 
     const MAX_REGION_SIZE = 1000000;
 
@@ -34,6 +35,11 @@
             };
         },
         methods: {
+            activateMetrics() {
+                // After plot is created, initiate metrics capture
+                // TODO: This is a mite finicky; consider further refactoring in the future?
+                this.$refs.plotWidget.$refs.assoc_plot.callPlot(setup_feature_metrics);
+            },
             activateBatchMode(regions) {
                 this.batch_mode_active = true;
                 this.batch_mode_regions = regions;
@@ -108,12 +114,15 @@
     </div>
     <div class="row">
       <div class="col-md-12">
-        <plot-panes ref="plotWidget"
-                    :dynamic_urls="true"
-                    :assoc_layout="lz_layout" :assoc_sources="lz_sources"
-                    :study_names="study_names" :has_credible_sets="true"
-                    :build="build"
-                    :chr="c_chr" :start="c_start" :end="c_end"/>
+        <plot-panes
+            ref="plotWidget"
+            :dynamic_urls="true"
+            :assoc_layout="lz_layout" :assoc_sources="lz_sources"
+            :study_names="study_names" :has_credible_sets="true"
+            :build="build"
+            :chr="c_chr" :start="c_start" :end="c_end"
+            @plot-created="activateMetrics"
+        />
       </div>
     </div>
   </div>
