@@ -102,13 +102,20 @@
         <h3 class="faq" id="missing-ld">Why is LD information not being shown for my data?</h3>
         <p>
           Sometimes, a region plot will be missing Linkage Disequilibrium (LD) information, and all points will be
-          shown in grey. The two most common reasons are as follows:
+          shown in grey. The three most common reasons are as follows:
         </p>
         <ol>
           <li>
             In order to provide LD annotations, your dataset must specify all of the information required to uniquely identify a variant (chromosome,
             position, reference allele, alt allele). Reference and alt alleles should be defined in terms of the
             selected genome build (GRCh37 or 38), and no additional information should be appended to the variant specifier.
+          </li>
+          <li>
+            Some datasets (especially meta-analysis) are known to use a different convention (like "effect" allele),
+            in which the reference and alt alleles are not consistently in the same column for every variant (row):
+            eg in one row, the effect allele might be the ref, and in another row it would be the alt.
+            There is no single convention for how to specify this across all the file formats that we support; hence we
+            ask users to specify "ref" and "alt" alleles as discrete columns for the variant identifier.
           </li>
           <li>
             LD information is computed relative to the most significant SNP in the dataset. Thus, the LD reference SNP
@@ -121,7 +128,7 @@
           This site uses an LD reference panel based on 1000G data, with several sub populations available.
           Missing variants are most commonly a problem for build 37, which uses an older version of this reference panel.
           As of Summer 2020, build GRCh38 datasets use an improved 1000G LD panel based on deep whole-genome sequencing.
-          Although we are exploring the possibility of additional LD reference panels, this is often difficult due to
+          Although we are exploring the possibility of additional LD reference panels, this is non-trivial due to
           restrictions on public sharing of data.
         </p>
 
