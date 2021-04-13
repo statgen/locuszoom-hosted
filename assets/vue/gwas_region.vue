@@ -39,6 +39,11 @@
                 // After plot is created, initiate metrics capture
                 // TODO: This is a mite finicky; consider further refactoring in the future?
                 this.$refs.plotWidget.$refs.assoc_plot.callPlot(setup_feature_metrics);
+                // FIXME: In tabbed UI, Bootstrap-vue has an issue where the tab panel is not fully initialized when
+                //    content area is rendered. The result is that the plot width is slightly incorrect. Redrawing
+                //    after a small delay helps to ensure that the plot is not truncated off the edge of the screen.
+                //    This can be removed if we move away from the "tab/sidebar" UI design.
+                setTimeout(() => this.$refs.plotWidget.$refs.assoc_plot.callPlot((plot) => plot.rescaleSVG()));
             },
             activateBatchMode(regions) {
                 this.batch_mode_active = true;
