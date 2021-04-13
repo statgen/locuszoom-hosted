@@ -23,7 +23,7 @@ function makePlot(template_vars) {
     const app_params = Object.assign(
         {
             lz_sources: getBasicSources(assoc_sources),
-            lz_layout: getBasicLayout(state, panels, { responsive_resize: false }),
+            lz_layout: getBasicLayout(state, panels, { responsive_resize: true }),
             study_names: [template_vars.label],
             top_hits_url: template_vars.top_hits_url,
         }, template_vars,
