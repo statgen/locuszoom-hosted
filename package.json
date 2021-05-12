@@ -33,7 +33,7 @@
     "gwas-credible-sets": "^0.1.0",
     "localzoom": "https://github.com/statgen/localzoom#867247a",
     "locuszoom": "^0.13.2",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "pako": "^1.0.11",
     "tabulator-tables": "^4.1.4",
     "vue": "^2.6.12",
