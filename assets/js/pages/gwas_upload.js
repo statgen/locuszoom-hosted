@@ -9,8 +9,8 @@ import pako from 'pako';
 
 import App from '../../vue/gwas_upload.vue';
 
-import { isHeader } from 'localzoom/src/gwas/sniffers';
-import { makeParser } from 'localzoom/src/gwas/parsers';
+import { _isHeader } from 'locuszoom/esm/ext/lz-parsers/gwas/sniffers';
+import { makeGWASParser } from 'locuszoom/esm/ext/lz-parsers';
 
 const PREVIEW_BYTES = 5000;  // enough for 50-100 lines
 const MAX_UPLOAD_SIZE = 1048576 * 1000; // 1000 MiB # FIXME: Currently upload limit is only implemented in the frontend
@@ -157,9 +157,9 @@ modal.$on('has_options', function (parser_options) { // Close with options selec
     fileField.setCustomValidity('');
 
     // Once we know how to parse the file, do some quick validation to decide if the rows are sorted
-    const parser = makeParser(parser_options);
+    const parser = makeGWASParser(parser_options);
     modal.file_reader.getRows().then((rows) => {
-        const first_data_index = rows.findIndex(text => !isHeader(text));
+        const first_data_index = rows.findIndex(text => !_isHeader(text));
 
         let is_valid;
         try {

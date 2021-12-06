@@ -26,7 +26,7 @@
         </p>
 
         <h2>Frequently asked questions</h2>
-        <div><ul id="auto-toc"></ul><!-- Generated automatically via JS --></div>
+        <div><ul id="auto-toc"></ul><!-- Generated automatically via JS (based on headings with class=faq) --></div>
 
         <h3 class="faq" id="cite">How should I cite this?</h3>
         <p>
@@ -104,6 +104,20 @@
           </li>
         </ul>
 
+        <h3 class="faq" id="tabix-data-formats">How should I prepare local (tabix) files to add to the plot?</h3>
+        <p>
+          When viewing any LocusZoom plot on this site, you will be offered the option to "add [a] tabix-indexed datafile" to the plot.
+          This allows you to compare the plot in front of you with other information of interest, without having to share
+          sensitive or private information. Several types of track can be added. Inspired by <a href="https://statgen.github.io/localzoom" target="_blank">LocalZoom</a>,
+          the files will remain on your local computer (they will not be uploaded, and will vanish when the page is refreshed). Remote files (such as an S3 bucket) are also supported, so long as they follow the format instructions..
+        </p>
+        <p>
+          The use of Tabix allows region queries for files of any size, but it does require that the files be prepared
+          carefully before use. Some files (especially PLINK 1.9 LD) can be finicky to generate or require additional processing. We have gathered
+          detailed <a target="_blank" href="https://statgen.github.io/localzoom#instructions">instructions</a>
+          for how to run each step of the required programs, along with other format information. These instructions also cover how to configure cloud storage providers (Google Cloud or S3), so that you can host your own files at a remote URL without needing to manually configure an entire web server.
+        </p>
+
         <h3 class="faq" id="missing-ld">Why is LD information not being shown for my data?</h3>
         <p>
           Sometimes, a region plot will be missing Linkage Disequilibrium (LD) information, and all points will be
@@ -135,6 +149,12 @@
           As of Summer 2020, build GRCh38 datasets use an improved 1000G LD panel based on deep whole-genome sequencing.
           Although we are exploring the possibility of additional LD reference panels, this is non-trivial due to
           restrictions on public sharing of data.
+        </p>
+        <p>
+          Alternatively, the "add tabix file" feature allows you to generate your own LD and add it to the plot.
+          Because LD is sometimes considered sensitive information, we explicitly do not support uploading LD data to our server;
+          each person you are sharing the plot with will need to add their own LD from a local file (or remote URL). We welcome
+          suggestions for how to make this more reusable in the future.
         </p>
 
         <h3 class="faq" id="private-sharing">How do I share my results with only collaborators?</h3>
