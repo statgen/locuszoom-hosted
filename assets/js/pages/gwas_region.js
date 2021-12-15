@@ -18,10 +18,7 @@ function makePlot(template_vars) {
         state
     );
     const assoc_sources = createStudyAssocSources(template_vars.label, template_vars.assoc_base_url);
-    const panels = createStudyLayouts('gwas', template_vars.label, template_vars.label, {
-        has_credible_sets: true,
-        has_gwas_catalog: true
-    }, template_vars.build);
+    const panels = createStudyLayouts('gwas', template_vars.label, template_vars.label);
     const app_params = Object.assign(
         {
             lz_sources: getBasicSources(assoc_sources),

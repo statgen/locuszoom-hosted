@@ -107,7 +107,6 @@
       <div class="col-md-12">
         <gwas-toolbar
           :batch_region_getter="fetchTopHits"
-          :has_credible_sets="true"
           :genome_build.sync="genome_build"
           :max_studies="6"
           :known_tracks="known_tracks"
@@ -121,8 +120,9 @@
         <plot-panes
             ref="plotWidget"
             :dynamic_urls="true"
-            :base_layout="lz_layout" :base_sources="lz_sources"
-            :known_tracks="known_tracks" :has_credible_sets="true"
+            :base_layout="lz_layout"
+            :base_sources="lz_sources"
+            :known_tracks="known_tracks"
             :genome_build="genome_build"
             :chr="c_chr" :start="c_start" :end="c_end"
             @plot-created="activateMetrics"
