@@ -10,11 +10,12 @@ import {AssociationLZ} from 'locuszoom/esm/data/adapters';
 
 
 class AssociationApi extends AssociationLZ {
-    getURL(state, chain,fields) {
-        const base = new URL(this.url, window.location.origin);
-        base.searchParams.set('chrom', state.chr);
-        base.searchParams.set('start', state.start);
-        base.searchParams.set('end', state.end);
+    _getURL(request_options) {
+        const { chr, start, end } = request_options;
+        const base = new URL(this._url, window.location.origin);
+        base.searchParams.set('chrom', chr);
+        base.searchParams.set('start', start);
+        base.searchParams.set('end', end);
         return base;
     }
 
@@ -40,11 +41,11 @@ LocusZoom.Adapters.add('AssociationApi', AssociationApi);
 function createStudyAssocSources(label, url) {
     const name = sourceName(label);
     return [
-        [`assoc_${name}`, ['AssociationApi', { url, params: { id_field: 'variant' } }]],
+        [`assoc_gwas_${name}`, ['AssociationApi', { url }]],
         [
-            `credset_${name}`, [
+            `credset_gwas_${name}`, [
                 'CredibleSetLZ',
-                { params: { fields: { log_pvalue: `assoc_${name}:log_pvalue` }, threshold: 0.95 } },
+                { threshold: 0.95 },
             ],
         ],
     ];
