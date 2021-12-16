@@ -1,7 +1,7 @@
 <script>
     // Custom interactivity associated with the "Upload your own GWAS" page.
     // This enhances just one part of the upload form.
-    import AdderWizard from 'localzoom/src/components/AdderWizard.vue';
+    import GwasParserOptions from 'localzoom/src/components/GwasParserOptions.vue';
 
     export default {
         name: 'gwas_upload',
@@ -17,16 +17,16 @@
                 this.$root.$emit('has_options', parser_options);
             }
         },
-        components: { AdderWizard },
+        components: { GwasParserOptions },
     }
 </script>
 
 <template>
   <div>
-    <adder-wizard v-if="show_modal"
+    <gwas-parser-options v-if="show_modal"
                   :file_reader="file_reader"
                   @ready="sendConfig"
-                  @close="closeModal"></adder-wizard>
+                  @close="closeModal"></gwas-parser-options>
   </div>
 </template>
 
