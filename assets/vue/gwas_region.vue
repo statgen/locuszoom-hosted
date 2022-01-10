@@ -8,7 +8,7 @@
     import RegionPicker from 'localzoom/src/components/RegionPicker.vue';
     import { DATA_TYPES } from 'localzoom/src/util/constants';
     import { activateUserLD } from 'localzoom/src/util/lz-helpers';
-    import {setup_feature_metrics} from 'localzoom/src/util/metrics';
+    import {count_add_track, setup_feature_metrics} from 'localzoom/src/util/metrics';
 
     const MAX_REGION_SIZE = 1000000;
 

@@ -6,7 +6,7 @@ FROM node:fermium as jsbuilder
 COPY ./package.json ./package-lock.json /build/
 COPY . /build/
 WORKDIR /build/
-RUN npm install ci && npm run prod
+RUN npm ci && npm run prod
 
 
 # Step 2 (main): Django app. Install python dependencies, add volume mounts, and run.
