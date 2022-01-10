@@ -57,11 +57,11 @@ class _GwasValidator:
 
             if cur_chrom == prev_chrom and cp[1] < prev_pos:
                 # Positions not in correct order for Pheweb to use
-                raise v_exc.ValidationException('Positions must be sorted prior to uploading')
+                raise v_exc.ValidationException(f'Positions must be sorted prior to uploading. Position chr{cur_chrom}:{cp[1]} should not follow chr{prev_chrom}:{prev_pos}')
 
             if cur_chrom != prev_chrom:
                 if cur_chrom in chrom_seen:
-                    raise v_exc.ValidationException('Chromosomes must be sorted (so that all variants for the same chromosome are contiguous)')  # noqa
+                    raise v_exc.ValidationException(f'Chromosomes must be sorted (so that all variants for the same chromosome are contiguous). Error at position: chr{cur_chrom}:{cp[1]}')  # noqa
                 else:
                     chrom_seen.add(cur_chrom)
 

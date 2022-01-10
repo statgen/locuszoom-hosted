@@ -142,8 +142,9 @@
     {% else %}
       <p>We were unable to process your uploaded GWAS file. Please review the logs for the cause, and contact us
         if you believe the problem is an error.</p>
-      <p>You can verify that you uploaded the correct file by comparing the checksum (SHA256):<br>
-        <span class="text-muted">{{ gwas.files.file_sha256.hex }}</span></p>
+      {# FIXME: At present, metadata.files is only set at conclusion of a successful upload (tasks.py). This makes it difficult to show the SHA, which lives in the associated "this is the file for a study" record. #}
+      {#      <p>You can verify that you uploaded the correct file by comparing the checksum (SHA256):<br>#}
+      {#        <span class="text-muted">{{ gwas.files.file_sha256.hex }}</p>#}
       {%  if request.user == gwas.owner %}
         <form method="post" action="{% url 'gwas:rerun' gwas.slug %}" class="form-horizontal">
           {% csrf_token %}
