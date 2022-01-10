@@ -95,6 +95,8 @@
                     }
                 }
 
+                count_add_track(data_type);
+                this.known_tracks.push({data_type, filename, display_name});
             },
         },
         components: { BatchSpec, BatchScroller, GwasToolbar, PlotPanes, RegionPicker }
