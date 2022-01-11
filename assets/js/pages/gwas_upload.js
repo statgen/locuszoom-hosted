@@ -13,7 +13,7 @@ import { _isHeader } from 'locuszoom/esm/ext/lz-parsers/gwas/sniffers';
 import { makeGWASParser } from 'locuszoom/esm/ext/lz-parsers';
 
 const PREVIEW_BYTES = 5000;  // enough for 50-100 lines
-const MAX_UPLOAD_SIZE = 1048576 * 1000; // 1000 MiB # FIXME: Currently upload limit is only implemented in the frontend
+const MAX_UPLOAD_SIZE = 1048576 * 1250; // 1250 MiB # FIXME: Currently upload limit is only implemented in the frontend
 
 
 class BaseReader {
