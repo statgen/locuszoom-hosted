@@ -17,11 +17,11 @@ For production deployment instructions, see [docs/deploy/index.md](docs/deploy/i
  
 - In one tab, build assets (in local development, this is currently done on the host system, outside of Docker): 
 
-`$ yarn run prod`
+`$ npm run prod`
 
 or with live rebuilding, if you intend to be changing JS code as you work:
 
-`$ yarn run dev`
+`$ npm run dev`
 
 - In a second open terminal::
 
