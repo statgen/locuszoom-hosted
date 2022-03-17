@@ -219,7 +219,7 @@ class GwasRegion(lz_permissions.GwasViewPermission, DetailView):
                 token,
             ),
             'label': gwas.label,
-            'build': gwas.build,
+            'genome_build': gwas.build,
             # Default region for bare URLs is the top hit in the study
             'chr': gwas.top_hit_view.chrom,
             'start': gwas.top_hit_view.start,
