@@ -171,7 +171,7 @@ modal.$on('has_options', function (parser_options) { // Close with options selec
             is_valid = false;
         }
         if (!is_valid) {  // slightly vague message; in rare cases some middle data rows may be unparseable
-            fileField.setCustomValidity('Your file must be sorted by chromosome and position prior to upload.');
+            fileField.setCustomValidity('Validation error. Check that all column options are specified correctly. Your file must be sorted by chromosome and position prior to upload.');
         }
     });
 });
