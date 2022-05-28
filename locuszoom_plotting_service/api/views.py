@@ -132,6 +132,7 @@ class GwasRegionView(generics.RetrieveAPIView):
             raise drf_exceptions.ParseError('"end" position must be greater than "start"')
 
         if not (0 <= (end - start) <= settings.LZ_MAX_REGION_SIZE):
-            raise drf_exceptions.ParseError(f'Cannot handle requested region size. Max allowed is {500_000}')
+            raise drf_exceptions.ParseError(
+                f'Cannot handle requested region size. Max allowed is {settings.LZ_MAX_REGION_SIZE}')
 
         return chrom, start, end
