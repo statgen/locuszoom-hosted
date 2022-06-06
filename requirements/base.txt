@@ -25,5 +25,5 @@ pyyaml  # Required for OpenAPI rendering
 boltons~=20.2.1
 scipy~=1.5.3
 python-magic==0.4.18
-zorp[perf,lookups]==0.3.4
+zorp[perf,lookups]==0.3.6
 genelocator==1.1.2

@@ -55,15 +55,19 @@ class TestStandardGwasValidator:
         with pytest.raises(val_exc.ValidationException):
             validators.standard_gwas_validator._validate_contents(reader)
 
-    def test_rejects_rsids(self):
+    def test_whitelists_chroms(self):
         reader = sniffers.guess_gwas_generic([
             "#chrom\tpos\tref\talt\tneg_log_pvalue",
             "X\t1\tA\tC\t7.3",
-            "rs1100\t2\tA\tC\t7.3",
-            "rs2521\t1\tA\tC\t7.3",
+            "chr1\t2\tA\tC\t7.3",
+            "invalid\t1\tA\tC\t7.3",
         ])
 
-        with pytest.raises(val_exc.ValidationException, match='is an rsID'):
+        with pytest.raises(
+            val_exc.ValidationException,
+            match="Chromosome INVALID is not a valid chromosome name. Must be "
+                  "one of: '1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 M MT X Y'"
+        ):
             validators.standard_gwas_validator._validate_contents(reader)
 
     def test_validates_for_file(self):

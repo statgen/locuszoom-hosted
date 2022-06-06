@@ -164,6 +164,8 @@ modal.$on('has_options', function (parser_options) { // Close with options selec
         let is_valid;
         try {
             const sample_data = rows.slice(first_data_index).map(row => parser(row));
+            // Note: in future, may want to reflect the "allowed chromosomes whitelist" in frontend validator
+            //  (for now, there's a slight gap between what the web UI and the server check when giving feedback)
             is_valid = validateSortOrder(sample_data);
         } catch (e) {
             // TODO: Improve UI representation of other parsing errors, like AF out of range
@@ -171,7 +173,7 @@ modal.$on('has_options', function (parser_options) { // Close with options selec
             is_valid = false;
         }
         if (!is_valid) {  // slightly vague message; in rare cases some middle data rows may be unparseable
-            fileField.setCustomValidity('Your file must be sorted by chromosome and position prior to upload.');
+            fileField.setCustomValidity('Validation error. Check that all column options are specified correctly. Your file must be sorted by chromosome and position prior to upload.');
         }
     });
 });

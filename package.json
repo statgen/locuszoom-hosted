@@ -31,7 +31,7 @@
     "d3": "^5.16.0",
     "d3-tip": "0.9.1",
     "gwas-credible-sets": "^0.1.0",
-    "localzoom": "git+https://github.com/statgen/localzoom.git#b78103b",
+    "localzoom": "git+https://github.com/statgen/localzoom.git#84215bf",
     "locuszoom": "0.14.0",
     "lodash": "^4.17.21",
     "pako": "^1.0.11",
