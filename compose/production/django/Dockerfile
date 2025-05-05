@@ -19,7 +19,7 @@ ENV PYTHONUNBUFFERED 1
 
 # libmagic: file format detection
 RUN apt-get update && apt-get install -y libmagic-dev
-
+RUN pip install --upgrade pip==22.1.2 wheel
 RUN \
   if [ -n "$GID" ]; then \
     addgroup --gid $GID lzupload; \
