@@ -1,3 +1,11 @@
+# Step 1: JS assets
+FROM node:fermium AS jsbuilder
+COPY ./package.json ./package-lock.json /build/
+COPY . /build/
+WORKDIR /build/
+RUN npm ci && npm run prod
+
+# Step 2
 FROM python:3.8
 # NOTE: Some dependencies require specialized libraries that slimmer images (like alpine) do not yet support, eg
 #   musl doesn't seem to provide GLOB_TILDE
@@ -6,7 +14,11 @@ ENV PYTHONUNBUFFERED 1
 
 # libmagic: file format detection
 RUN apt-get update && apt-get install -y libmagic-dev
-RUN pip install --upgrade pip wheel
+RUN pip install --upgrade pip==22.1.2 wheel
+
+# Requirements are installed here to ensure they will be cached.
+COPY ./requirements /requirements
+RUN pip install -r /requirements/local.txt
 
 COPY ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r//' /entrypoint
@@ -28,9 +40,9 @@ COPY ./compose/local/django/celery/flower/start /start-flower
 RUN sed -i 's/\r//' /start-flower
 RUN chmod +x /start-flower
 
-# Requirements are installed here to ensure they will be cached.
-COPY ./requirements /requirements
-RUN pip install -r /requirements/local.txt
+# Copy code and built JS assets FIXME: A little clunky as it depends on some very specific known pathnames.
+COPY . /app
+COPY --from=jsbuilder /build/locuszoom_plotting_service/static/webpack_bundles /app/locuszoom_plotting_service/static/webpack_bundles
 
 WORKDIR /app
 
